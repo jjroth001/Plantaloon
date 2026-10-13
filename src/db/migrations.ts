@@ -76,6 +76,14 @@ const MIGRATIONS: string[] = [
     value  TEXT NOT NULL
   );
   `,
+
+  // 2: wishlist — catalog plants saved for later
+  `
+  CREATE TABLE wish (
+    species_id  TEXT PRIMARY KEY NOT NULL,
+    added_at    INTEGER NOT NULL
+  );
+  `,
 ];
 
 /** The migration SQL in order (for tests that build a database from scratch). */

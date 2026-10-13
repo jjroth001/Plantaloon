@@ -2,6 +2,7 @@ import { Image } from 'expo-image';
 import { View } from 'react-native';
 
 import { getGroup } from '@/catalog';
+import { catalogPhoto } from '@/catalog/media';
 import { Icon } from '@/components/icons/icon';
 import type { Photo } from '@/db/types';
 import { photoUri } from '@/lib/photos';
@@ -11,11 +12,14 @@ import { useTheme } from '@/theme/theme-provider';
 export function PlantAvatar({
   photo,
   groupId,
+  speciesId,
   size,
   radius,
 }: {
   photo: Photo | null | undefined;
   groupId: string;
+  /** Falls back to the catalog photo of this species when there's no photo of your own. */
+  speciesId?: string | null;
   size: number;
   /** Defaults to a circle. */
   radius?: number;
@@ -26,6 +30,18 @@ export function PlantAvatar({
     return (
       <Image
         source={{ uri: photoUri(photo.file) }}
+        style={{ width: size, height: size, borderRadius, backgroundColor: theme.element }}
+        contentFit="cover"
+        transition={180}
+        accessible={false}
+      />
+    );
+  }
+  const fallback = catalogPhoto(speciesId);
+  if (fallback) {
+    return (
+      <Image
+        source={fallback.image}
         style={{ width: size, height: size, borderRadius, backgroundColor: theme.element }}
         contentFit="cover"
         transition={180}

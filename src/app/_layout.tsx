@@ -102,6 +102,10 @@ function RootNavigator() {
           <Stack.Screen name="add/index" options={{ ...sheet, title: 'Add a plant' }} />
           <Stack.Screen name="add/group" options={{ headerShown: true, title: 'Closest match' }} />
           <Stack.Screen name="add/details" options={{ headerShown: true, title: 'Add a plant' }} />
+          <Stack.Screen name="species/[id]" options={{ headerShown: true, title: '' }} />
+          <Stack.Screen name="guide/[id]" options={{ headerShown: true, title: '' }} />
+          <Stack.Screen name="credits" options={{ headerShown: true, title: 'Photo credits' }} />
+          <Stack.Screen name="wishlist" options={{ headerShown: true, title: 'Wishlist' }} />
           <Stack.Screen name="rooms" options={{ headerShown: true, title: 'Rooms' }} />
           <Stack.Screen name="room/[id]" options={{ ...sheet, title: 'Room' }} />
           <Stack.Screen name="about" options={{ headerShown: true, title: 'About Plantaloon' }} />

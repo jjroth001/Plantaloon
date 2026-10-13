@@ -1,6 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 import type { AccentName, ThemeMode } from '@/constants/theme';
+import type { ClimatePlace } from '@/lib/location';
 
 export type Settings = {
   /** Light, dark, or follow the phone. */
@@ -19,6 +20,8 @@ export type Settings = {
   lastBackupAt: number | null;
   /** First-run room setup has been done. */
   onboarded: boolean;
+  /** Rough place (about 50 km) for outdoor months; only set after the user opts in. */
+  climatePlace: ClimatePlace | null;
 };
 
 function defaultSettings(): Settings {
@@ -35,6 +38,7 @@ function defaultSettings(): Settings {
     haptics: true,
     lastBackupAt: null,
     onboarded: false,
+    climatePlace: null,
   };
 }
 

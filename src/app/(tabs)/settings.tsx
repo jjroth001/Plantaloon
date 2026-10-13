@@ -20,6 +20,7 @@ import { ACCENTS, makePalette, Spacing, type AccentName } from '@/constants/them
 import { setSetting } from '@/db/settings';
 import { useSettings } from '@/db/use-settings';
 import { pickBackup, restoreBackup, shareBackup } from '@/lib/data-transfer';
+import { requestClimatePlace } from '@/lib/location';
 import { formatRelativeDay, dateOf } from '@/lib/dates';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
 import { remindersSupported, requestNotificationPermission } from '@/lib/notifications';
@@ -211,6 +212,55 @@ export default function SettingsScreen() {
             value={s.haptics}
             onChange={(v) => setSetting(db, 'haptics', v)}
           />
+        </Card>
+      </View>
+
+      <View style={styles.section}>
+        <SectionTitle>Your area</SectionTitle>
+        <Card>
+          {s.climatePlace ? (
+            <ListRow
+              icon="map-pin"
+              title="Rough area saved"
+              subtitle={`Near ${s.climatePlace.lat.toFixed(1)}°, ${s.climatePlace.lon.toFixed(1)}° · used for outdoor months`}
+              right={
+                <Pressable
+                  accessibilityRole="button"
+                  hitSlop={8}
+                  onPress={() => setSetting(db, 'climatePlace', null)}>
+                  <ThemedText type="label" color="danger">
+                    Forget
+                  </ThemedText>
+                </Pressable>
+              }
+            />
+          ) : (
+            <ListRow
+              icon="map-pin"
+              title="Use my rough area"
+              subtitle="Shows which months each plant can go outside where you live"
+              onPress={async () => {
+                try {
+                  const place = await requestClimatePlace();
+                  if (place) {
+                    await setSetting(db, 'climatePlace', place);
+                    successFeedback();
+                  } else {
+                    Alert.alert(
+                      'Location not shared',
+                      'Without it, plant pages show a general rule for summering plants outside.',
+                    );
+                  }
+                } catch (error) {
+                  Alert.alert('Couldn’t read your area', (error as Error).message);
+                }
+              }}
+            />
+          )}
+          <ThemedText type="caption" color="textSecondary">
+            Uses approximate location once, rounded to about 50 km. It stays on this phone, isn’t
+            included in backups, and nothing is sent anywhere: the climate data is built in.
+          </ThemedText>
         </Card>
       </View>
 

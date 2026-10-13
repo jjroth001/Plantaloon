@@ -22,7 +22,7 @@ export default function AddPlantSearch() {
   const results: Species[] = deferred.trim() ? searchSpecies(deferred) : popularSpecies();
 
   const choose = (species: Species) =>
-    router.push({ pathname: '/add/details', params: { speciesId: species.id } });
+    router.push({ pathname: '/species/[id]', params: { id: species.id } });
 
   return (
     <View style={[styles.fill, { backgroundColor: theme.background }]}>

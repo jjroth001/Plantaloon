@@ -1,7 +1,7 @@
 import { addDatabaseChangeListener, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite';
 import { useEffect, useState, type DependencyList } from 'react';
 
-export type Table = 'room' | 'plant' | 'schedule' | 'entry' | 'photo' | 'setting';
+export type Table = 'room' | 'plant' | 'schedule' | 'entry' | 'photo' | 'setting' | 'wish';
 
 const RERUN_DELAY_MS = 30;
 

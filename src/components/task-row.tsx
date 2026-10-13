@@ -44,7 +44,8 @@ export function TaskRow({
           accessibilityLabel={`${task.name}, open plant`}
           onPress={() => router.push({ pathname: '/plant/[id]', params: { id: task.plant.id } })}
           style={({ pressed }) => [styles.main, pressed && styles.pressed]}>
-          <PlantAvatar photo={task.cover} groupId={task.plant.groupId} size={48} />
+          <PlantAvatar photo={task.cover} groupId={task.plant.groupId}
+ speciesId={task.plant.speciesId} size={48} />
           <View style={styles.text}>
             <ThemedText type="subheading" numberOfLines={1}>
               {task.name}

@@ -8,7 +8,9 @@ import { transaction } from './transaction';
  */
 export const BACKUP_FORMAT = 1;
 
-const TABLES = ['room', 'plant', 'schedule', 'entry', 'photo', 'setting'] as const;
+const TABLES = ['room', 'plant', 'schedule', 'entry', 'photo', 'setting', 'wish'] as const;
+/** Tables older backups may not have (added after the first release). */
+const OPTIONAL_TABLES = new Set<string>(['wish']);
 type TableName = (typeof TABLES)[number];
 
 type Row = Record<string, string | number | null>;
@@ -23,7 +25,7 @@ export type BackupHeader = {
 export type PhotoLine = { photo: string; data: string };
 
 /** Settings that belong to this phone, not to the plants. */
-const LOCAL_SETTINGS = new Set(['onboarded', 'lastBackupAt']);
+const LOCAL_SETTINGS = new Set(['onboarded', 'lastBackupAt', 'climatePlace']);
 
 export async function backupHeader(db: SQLiteDatabase, now = Date.now()): Promise<BackupHeader> {
   const tables = {} as Record<TableName, Row[]>;
@@ -54,6 +56,7 @@ const COLUMNS: Record<TableName, readonly string[]> = {
   entry: ['id', 'plant_id', 'type', 'at', 'note', 'data', 'created_at', 'updated_at'],
   photo: ['id', 'entry_id', 'plant_id', 'file', 'width', 'height', 'taken_at', 'created_at'],
   setting: ['key', 'value'],
+  wish: ['species_id', 'added_at'],
 };
 
 /** Parses and checks the first line. Throws an Error with a user-facing message. */
@@ -71,6 +74,9 @@ export function parseBackupHeader(line: string): BackupHeader {
     throw new Error('This backup was made by a newer version of Plantaloon. Update the app first.');
   }
   for (const table of TABLES) {
+    if (OPTIONAL_TABLES.has(table) && raw.tables && raw.tables[table] === undefined) {
+      raw.tables[table] = [];
+    }
     const rows = raw.tables?.[table];
     const ok =
       Array.isArray(rows) &&
@@ -106,7 +112,7 @@ export function parsePhotoLine(line: string): PhotoLine | null {
 export async function restoreTables(db: SQLiteDatabase, backup: BackupHeader): Promise<void> {
   await transaction(db, async () => {
     await db.execAsync(
-      `DELETE FROM photo WHERE 1; DELETE FROM entry WHERE 1; DELETE FROM schedule WHERE 1; DELETE FROM plant WHERE 1; DELETE FROM room WHERE 1;
+      `DELETE FROM photo WHERE 1; DELETE FROM entry WHERE 1; DELETE FROM schedule WHERE 1; DELETE FROM plant WHERE 1; DELETE FROM room WHERE 1; DELETE FROM wish WHERE 1;
        DELETE FROM setting WHERE key NOT IN (${[...LOCAL_SETTINGS].map((k) => `'${k}'`).join(', ')});`,
     );
     for (const table of TABLES) {
@@ -134,7 +140,7 @@ export function summarize(backup: BackupHeader): BackupSummary {
 export async function eraseAllData(db: SQLiteDatabase): Promise<void> {
   await transaction(db, async () => {
     await db.execAsync(
-      'DELETE FROM photo WHERE 1; DELETE FROM entry WHERE 1; DELETE FROM schedule WHERE 1; DELETE FROM plant WHERE 1; DELETE FROM room WHERE 1; DELETE FROM setting WHERE 1;',
+      'DELETE FROM photo WHERE 1; DELETE FROM entry WHERE 1; DELETE FROM schedule WHERE 1; DELETE FROM plant WHERE 1; DELETE FROM room WHERE 1; DELETE FROM wish WHERE 1; DELETE FROM setting WHERE 1;',
     );
   });
   // Reclaims the space; if it can't run right now, the data is already gone anyway.

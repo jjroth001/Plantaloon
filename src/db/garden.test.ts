@@ -194,6 +194,17 @@ test('backup round trip restores everything and keeps this phone’s own setting
   ]);
 });
 
+test('backups made before the wishlist existed still restore', async () => {
+  const { db } = await setup();
+  const header = await backupHeader(db, T0);
+  const old = JSON.parse(JSON.stringify(header));
+  delete old.tables.wish;
+  old.format = 1;
+  const parsed = parseBackupHeader(JSON.stringify(old));
+  expect(parsed.tables.wish).toEqual([]);
+  await restoreTables(openTestDatabase(), parsed);
+});
+
 test('backup parsing rejects other files and unsafe photo names', () => {
   expect(() => parseBackupHeader('hello')).toThrow('isn’t a Plantaloon backup');
   expect(() => parseBackupHeader('{"app":"Plantaloon","format":99,"tables":{}}')).toThrow(

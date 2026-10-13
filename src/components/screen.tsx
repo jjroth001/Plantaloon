@@ -1,5 +1,5 @@
 import type { ReactNode, Ref } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, type ScrollViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -17,6 +17,9 @@ type ScreenProps = {
   /** Pinned under the scrolling content (e.g. a Save button). */
   footer?: ReactNode;
   ref?: Ref<ScrollView>;
+  onScroll?: ScrollViewProps['onScroll'];
+  /** Children (counting the title row) that stick to the top while scrolling. */
+  stickyHeaderIndices?: number[];
 };
 
 /** Scrollable page container that respects the status bar and the phone's gesture area. */
@@ -27,6 +30,8 @@ export function Screen({
   belowHeader = false,
   footer,
   ref,
+  onScroll,
+  stickyHeaderIndices,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
@@ -35,6 +40,9 @@ export function Screen({
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView
         ref={ref}
+        onScroll={onScroll}
+        scrollEventThrottle={32}
+        stickyHeaderIndices={stickyHeaderIndices}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={[
           styles.content,

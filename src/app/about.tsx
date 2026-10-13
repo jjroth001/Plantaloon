@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { router } from 'expo-router';
 import { Linking, StyleSheet, View } from 'react-native';
 
 import { ALL_GROUPS, ALL_SPECIES } from '@/catalog';
@@ -13,6 +14,12 @@ const SOURCES = [
     detail:
       'Species names and light levels, and the lux bands the light meter uses. CC BY 4.0 — attribution: GrowSpot, growspotapp.com.',
     url: 'https://growspotapp.com/data/',
+  },
+  {
+    title: 'NASA POWER climate data',
+    detail:
+      'Monthly night temperatures for outdoor months, from NASA’s POWER project (power.larc.nasa.gov), built into the app.',
+    url: 'https://power.larc.nasa.gov',
   },
   {
     title: 'ASPCA toxic and non-toxic plant lists',
@@ -54,6 +61,14 @@ export default function AboutScreen() {
             />
           </View>
         ))}
+      </Card>
+      <Card>
+        <ListRow
+          icon="image"
+          title="Plant photos"
+          subtitle="From Wikimedia Commons, by many photographers under free licences. See every credit."
+          onPress={() => router.push('/credits')}
+        />
       </Card>
       <ThemedText type="caption" color="textSecondary">
         Plantaloon is free software under the GNU General Public License, version 3 or later.

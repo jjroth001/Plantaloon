@@ -30,6 +30,7 @@ export default function PlantsScreen() {
 
   const header = (
     <View style={styles.headerButtons}>
+      <IconButton icon="heart" label="Wishlist" onPress={() => router.push('/wishlist')} />
       <IconButton icon="house" label="Rooms" onPress={() => router.push('/rooms')} />
       <IconButton
         icon="plus"
@@ -100,6 +101,7 @@ export default function PlantsScreen() {
                     <PlantAvatar
                       photo={garden.data!.covers.get(plant.id)}
                       groupId={plant.groupId}
+ speciesId={plant.speciesId}
                       size={cardWidth}
                       radius={0}
                     />

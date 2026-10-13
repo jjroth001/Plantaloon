@@ -67,6 +67,113 @@ export type CareGroup = {
   tips: string[];
 };
 
+// --- Fuller care details (the plant page's About, Growing and Problems sections) ----------
+
+export type Habit =
+  | 'trailing'
+  | 'climbing'
+  | 'upright'
+  | 'bushy'
+  | 'rosette'
+  | 'clumping'
+  | 'tree'
+  | 'columnar'
+  | 'spreading';
+
+export type Lifecycle = 'perennial' | 'annual' | 'bulb' | 'monocarpic';
+
+export type PestId =
+  | 'mealybugs'
+  | 'spider-mites'
+  | 'fungus-gnats'
+  | 'thrips'
+  | 'scale'
+  | 'aphids'
+  | 'whitefly';
+
+export type SignId =
+  | 'yellow-leaves'
+  | 'brown-tips'
+  | 'brown-spots'
+  | 'drooping'
+  | 'root-rot'
+  | 'leggy-growth'
+  | 'leaf-drop'
+  | 'curling-leaves'
+  | 'pale-leaves'
+  | 'shrivelled-leaves'
+  | 'sunburn'
+  | 'no-flowers';
+
+export type PropagationId =
+  | 'stem-cuttings-water'
+  | 'stem-cuttings-soil'
+  | 'leaf-cuttings'
+  | 'division'
+  | 'offsets'
+  | 'plantlets'
+  | 'air-layering'
+  | 'seed';
+
+export type HowToId =
+  | 'watering'
+  | 'repotting'
+  | 'feeding'
+  | 'humidity'
+  | 'cleaning-leaves'
+  | 'winter-rest'
+  | 'light'
+  | 'outdoors';
+
+export type GuideId = PestId | SignId | PropagationId | HowToId;
+
+/** Everything beyond the basics, per care group. Our own words throughout. */
+export type CareDetails = {
+  /** One short line under the watering rule: how to tell it's thirsty, or a warning. */
+  waterTip: string;
+  /** 1–3 short chips: what food to use ("Balanced liquid feed", "Half strength"). */
+  food: string[];
+  soil: {
+    /** 2–4 short chips: what goes in the mix ("Potting soil", "Orchid bark", "Perlite"). */
+    mix: string[];
+    /** Repot every N–M years. */
+    repotYears: [number, number];
+    /** One short line: when or how to tell it's time. */
+    repotNote: string;
+  };
+  /** One short line about humidity: what to do if the air is too dry, or that it doesn't mind. */
+  humidityTip: string;
+  /** One short line about cleaning leaves, or null for plants that shouldn't be wiped (fuzzy, waxy, cacti). */
+  cleaning: string | null;
+  habit: Habit;
+  /** One short line: what that means at home ("Great for hanging pots, shelves or a moss pole"). */
+  habitNote: string;
+  /** One short line about the leaves ("Evergreen, solid green or marbled"). */
+  leaves: string;
+  lifecycle: Lifecycle;
+  /** Comfortable range indoors, °C. */
+  idealTempC: [number, number];
+  /** Ways to make new plants, easiest first. */
+  propagation: PropagationId[];
+  /** The 3–5 most common warning signs for this group. */
+  signs: SignId[];
+  /** The 2–4 most common pests for this group. */
+  pests: PestId[];
+};
+
+export type GuideKind = 'pest' | 'sign' | 'propagation' | 'howto';
+
+/** A short "learn more" article, our own words. */
+export type Guide = {
+  id: GuideId;
+  kind: GuideKind;
+  title: string;
+  icon: IconName;
+  /** One or two sentences. */
+  summary: string;
+  sections: { heading: string; points: string[] }[];
+};
+
 /** Per-species differences from its group (e.g. a non-toxic member of a toxic genus). */
 export type SpeciesOverride = Partial<Pick<CareGroup, 'pets' | 'humidity' | 'difficulty'>> & {
   water?: Partial<CareGroup['water']>;

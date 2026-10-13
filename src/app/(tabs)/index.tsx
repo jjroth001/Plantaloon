@@ -201,7 +201,8 @@ function UpcomingRow({ task }: { task: CareTask }) {
   const color = task.task === 'water' ? theme.water : theme.fertilize;
   return (
     <View style={styles.upcoming}>
-      <PlantAvatar photo={task.cover} groupId={task.plant.groupId} size={36} />
+      <PlantAvatar photo={task.cover} groupId={task.plant.groupId}
+ speciesId={task.plant.speciesId} size={36} />
       <View style={styles.flex}>
         <ThemedText numberOfLines={1}>{task.name}</ThemedText>
         <View style={styles.meta}>

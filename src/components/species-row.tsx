@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { getGroup, type Species } from '@/catalog';
+import { CatalogImage } from '@/components/catalog-photo';
 import { Icon } from '@/components/icons/icon';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
@@ -14,9 +15,7 @@ export function SpeciesRow({ species, onPress }: { species: Species; onPress: ()
       accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}>
-      <View style={[styles.icon, { backgroundColor: theme.tintSoft }]}>
-        <Icon name={group.icon} size={22} color={theme.tint} />
-      </View>
+      <CatalogImage speciesId={species.id} groupId={species.groupId} size={48} radius={14} />
       <View style={styles.text}>
         <ThemedText type="default" numberOfLines={1}>
           {species.common[0] ?? species.scientific}

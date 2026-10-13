@@ -6,6 +6,7 @@ import type { IconName } from '@/components/icons/icon';
 import { entryTypeFor, kindOf, taskForEntry } from '@/lib/tasks';
 
 import { newId } from './ids';
+import { HEALTH } from './types';
 import { transaction } from './transaction';
 import type {
   Entry,
@@ -67,6 +68,7 @@ type ScheduleRow = {
   interval_days: number;
   enabled: number;
   hint_dismissed_at: number | null;
+  started_at: number | null;
 };
 
 type EntryRow = {
@@ -132,6 +134,7 @@ const toSchedule = (r: ScheduleRow): Schedule => ({
   intervalDays: r.interval_days,
   enabled: r.enabled === 1,
   hintDismissedAt: r.hint_dismissed_at,
+  startedAt: r.started_at,
 });
 
 function parseData(json: string): Record<string, unknown> {
@@ -349,13 +352,15 @@ export async function createPlant(
     ];
     for (const s of schedules) {
       await db.runAsync(
-        `INSERT INTO schedule (plant_id, task, label, interval_days, enabled, hint_dismissed_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, NULL, ?)`,
+        `INSERT INTO schedule (plant_id, task, label, interval_days, enabled, hint_dismissed_at,
+           updated_at, started_at)
+         VALUES (?, ?, ?, ?, ?, NULL, ?, ?)`,
         id,
         s.task,
-        s.label,
+        s.label?.trim() || null,
         Math.max(1, Math.round(s.intervalDays)),
         s.enabled ? 1 : 0,
+        now,
         now,
       );
     }
@@ -465,16 +470,21 @@ export async function setSchedule(
   now = Date.now(),
 ): Promise<void> {
   await db.runAsync(
-    `INSERT INTO schedule (plant_id, task, label, interval_days, enabled, hint_dismissed_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, NULL, ?)
+    `INSERT INTO schedule (plant_id, task, label, interval_days, enabled, hint_dismissed_at,
+       updated_at, started_at)
+     VALUES (?, ?, ?, ?, ?, NULL, ?, ?)
      ON CONFLICT (plant_id, task) DO UPDATE SET label = excluded.label,
        interval_days = excluded.interval_days, enabled = excluded.enabled,
-       updated_at = excluded.updated_at`,
+       updated_at = excluded.updated_at,
+       -- Turning a reminder back on starts it afresh, so it isn't instantly overdue.
+       started_at = CASE WHEN schedule.enabled = 0 AND excluded.enabled = 1
+         THEN excluded.started_at ELSE schedule.started_at END`,
     plantId,
     task,
     input.label?.trim() || null,
     Math.max(1, Math.round(input.intervalDays)),
     input.enabled ? 1 : 0,
+    now,
     now,
   );
 }
@@ -544,11 +554,12 @@ export async function completeTask(
   plantIds: readonly string[],
   task: Task,
   at = Date.now(),
+  label: string | null = null,
 ): Promise<string[]> {
   const ids: string[] = [];
   await transaction(db, async () => {
     for (const plantId of plantIds) {
-      const data = kindOf(task) === 'custom' ? { task } : {};
+      const data = kindOf(task) === 'custom' ? { task, label } : {};
       ids.push(
         await insertEntry(db, { plantId, type: entryTypeFor(task), at, note: null, data }, at),
       );
@@ -564,8 +575,10 @@ export async function skipTask(
   task: Task,
   days: number,
   at = Date.now(),
+  label: string | null = null,
 ): Promise<string> {
-  return insertEntry(db, { plantId, type: 'skip', at, note: null, data: { task, days } }, at);
+  const data = label ? { task, days, label } : { task, days };
+  return insertEntry(db, { plantId, type: 'skip', at, note: null, data }, at);
 }
 
 /** Records how the plant is doing; the latest one shows on its page. */
@@ -578,6 +591,54 @@ export async function setHealth(
   return insertEntry(db, { plantId, type: 'health', at, note: null, data: { status } }, at);
 }
 
+/**
+ * Pots up a cutting: it becomes an ordinary plant in a small plastic pot with normal watering
+ * and feeding, and loses its cutting-only reminders. Does nothing if it isn't a cutting any more.
+ */
+export async function potUpCutting(
+  db: SQLiteDatabase,
+  plantId: string,
+  care: { waterDays: number; feedDays: number | null; dropTasks: Task[] },
+  at = Date.now(),
+): Promise<void> {
+  await transaction(db, async () => {
+    const result = await db.runAsync(
+      `UPDATE plant SET prop_stage = NULL, pot_material = 'plastic', pot_drainage = 1,
+         pot_size = 's', updated_at = ? WHERE id = ? AND prop_stage IS NOT NULL`,
+      at,
+      plantId,
+    );
+    if (result.changes === 0) return;
+    await insertEntry(
+      db,
+      { plantId, type: 'propagation', at, note: null, data: { stage: 'potted' } },
+      at,
+    );
+    for (const task of care.dropTasks) {
+      await db.runAsync('DELETE FROM schedule WHERE plant_id = ? AND task = ?', plantId, task);
+    }
+    for (const [task, days, enabled] of [
+      ['water', care.waterDays, true],
+      ['fertilize', care.feedDays ?? 30, care.feedDays != null],
+    ] as const) {
+      await db.runAsync(
+        `INSERT INTO schedule (plant_id, task, label, interval_days, enabled, hint_dismissed_at,
+           updated_at, started_at)
+         VALUES (?, ?, NULL, ?, ?, NULL, ?, ?)
+         ON CONFLICT (plant_id, task) DO UPDATE SET interval_days = excluded.interval_days,
+           enabled = excluded.enabled, updated_at = excluded.updated_at,
+           started_at = excluded.started_at`,
+        plantId,
+        task,
+        Math.max(1, Math.round(days)),
+        enabled ? 1 : 0,
+        at,
+        at,
+      );
+    }
+  });
+}
+
 /** Moves a cutting on: rooted, or potted up (it becomes an ordinary plant). */
 export async function advanceCutting(
   db: SQLiteDatabase,
@@ -586,12 +647,15 @@ export async function advanceCutting(
   at = Date.now(),
 ): Promise<void> {
   await transaction(db, async () => {
-    await db.runAsync(
-      'UPDATE plant SET prop_stage = ?, updated_at = ? WHERE id = ?',
+    // Only from the stage before, so a double tap can't log the step twice.
+    const result = await db.runAsync(
+      'UPDATE plant SET prop_stage = ?, updated_at = ? WHERE id = ? AND prop_stage = ?',
       stage === 'rooted' ? 'rooted' : null,
       at,
       plantId,
+      stage === 'rooted' ? 'rooting' : 'rooted',
     );
+    if (result.changes === 0) return;
     await insertEntry(db, { plantId, type: 'propagation', at, note: null, data: { stage } }, at);
   });
 }
@@ -784,7 +848,7 @@ export async function loadGarden(db: SQLiteDatabase): Promise<Garden> {
        GROUP BY plant_id, type
        UNION ALL
        SELECT plant_id, type, data, MAX(at) AS at FROM entry WHERE type = 'custom'
-       GROUP BY plant_id, json_extract(data, '$.task')`,
+       GROUP BY plant_id, CASE WHEN json_valid(data) THEN json_extract(data, '$.task') END`,
     ),
     db.getAllAsync<{ plant_id: string; at: number; data: string }>(
       "SELECT plant_id, at, data FROM entry WHERE type = 'skip' ORDER BY at",
@@ -798,7 +862,8 @@ export async function loadGarden(db: SQLiteDatabase): Promise<Garden> {
   const health = new Map<string, HealthStatus>();
   for (const row of healthRows) {
     const status = parseData(row.data).status;
-    if (typeof status === 'string') health.set(row.plant_id, status as HealthStatus);
+    if (typeof status === 'string' && status in HEALTH)
+      health.set(row.plant_id, status as HealthStatus);
   }
 
   const history = new Map<string, TaskHistory>();

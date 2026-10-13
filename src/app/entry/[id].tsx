@@ -63,6 +63,9 @@ export default function EditEntry() {
           back.
         </ThemedText>
       )}
+      {e.type === 'custom' && typeof e.data.label === 'string' && (
+        <ThemedText type="subheading">Done: {e.data.label}</ThemedText>
+      )}
       <EntryForm value={value} onChange={setForm} types={types} />
       <Button title="Delete entry" icon="trash" variant="ghost" onPress={remove} />
     </Screen>

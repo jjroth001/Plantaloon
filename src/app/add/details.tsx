@@ -6,7 +6,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { careFor, getGroup, getSpecies } from '@/catalog';
 import { Icon } from '@/components/icons/icon';
-import { PlantForm, type PlantFormValue } from '@/components/plant-form';
+import { namedExtras, PlantForm, type PlantFormValue } from '@/components/plant-form';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Chip, Field } from '@/components/ui';
@@ -110,7 +110,7 @@ export default function AddPlantDetails() {
         potSize: form.potSize,
         potDrainage: form.potDrainage,
         potMaterial: form.potMaterial,
-        extraTasks: form.extras,
+        extraTasks: namedExtras(form.extras),
         water: form.water,
         fertilize: form.fertilize,
         lastWatered: watered,

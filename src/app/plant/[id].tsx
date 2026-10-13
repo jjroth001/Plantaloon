@@ -149,6 +149,7 @@ export default function PlantScreen() {
       intervalDays: 0,
       enabled: false,
       hintDismissedAt: null,
+      startedAt: null,
     };
   const shownSchedules = [
     builtIn('water'),
@@ -522,11 +523,14 @@ function JournalRow({
     entry.type === 'skip' && typeof entry.data.days === 'number' ? entry.data.days : null;
   const skipTask = typeof entry.data.task === 'string' ? (entry.data.task as Task) : 'water';
   const customTask = taskForEntry(entry.type, entry.data);
+  // Entries keep their task's name, so it survives the reminder being removed.
+  const savedLabel = typeof entry.data.label === 'string' ? entry.data.label : null;
+  const nameOf = (task: Task) => labels.get(task) ?? savedLabel;
   const label =
     entry.type === 'skip'
-      ? `Not yet${skipTask !== 'water' ? ` (${taskLabel(skipTask, labels.get(skipTask)).toLowerCase()})` : ''}${skipDays ? ` · check in ${skipDays} ${skipDays === 1 ? 'day' : 'days'}` : ''}`
+      ? `Not yet${skipTask !== 'water' ? ` (${taskLabel(skipTask, nameOf(skipTask)).toLowerCase()})` : ''}${skipDays ? ` · check in ${skipDays} ${skipDays === 1 ? 'day' : 'days'}` : ''}`
       : entry.type === 'custom' && customTask
-        ? `Done: ${taskLabel(customTask, labels.get(customTask))}`
+        ? `Done: ${taskLabel(customTask, nameOf(customTask))}`
         : entry.type === 'health' && typeof entry.data.status === 'string'
           ? `Health: ${HEALTH[entry.data.status as HealthStatus]?.label ?? entry.data.status}`
           : entry.type === 'propagation'

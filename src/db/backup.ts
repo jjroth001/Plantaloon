@@ -6,7 +6,8 @@ import { transaction } from './transaction';
  * Backups are JSON Lines: the first line holds every database row; each following line holds
  * one photo, base64-encoded. One line per photo keeps memory use down while writing.
  */
-export const BACKUP_FORMAT = 1;
+/** 2: custom tasks, pot material, room conditions, health, cuttings. */
+export const BACKUP_FORMAT = 2;
 
 const TABLES = ['room', 'plant', 'schedule', 'entry', 'photo', 'setting', 'wish'] as const;
 /** Tables older backups may not have (added after the first release). */
@@ -78,6 +79,7 @@ const COLUMNS: Record<TableName, readonly string[]> = {
     'enabled',
     'hint_dismissed_at',
     'updated_at',
+    'started_at',
   ],
   entry: ['id', 'plant_id', 'type', 'at', 'note', 'data', 'created_at', 'updated_at'],
   photo: ['id', 'entry_id', 'plant_id', 'file', 'width', 'height', 'taken_at', 'created_at'],

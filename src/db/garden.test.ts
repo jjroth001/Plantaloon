@@ -11,6 +11,7 @@ import {
   addPhoto,
   advanceCutting,
   newCustomTask,
+  potUpCutting,
   setHealth,
   completeTask,
   createPlant,
@@ -301,4 +302,68 @@ test('backups from before custom tasks and room conditions restore with defaults
   const garden = await loadGarden(fresh);
   expect(garden.plants[0].potMaterial).toBe('plastic');
   expect(garden.rooms[0]).toMatchObject({ growLight: false, outdoor: false });
+});
+
+test('a reminder added to an older plant counts from when it was added, not overdue', async () => {
+  const { db, roomId } = await setup();
+  const plantId = await createPlant(
+    db,
+    pothos(roomId, { fertilize: { intervalDays: 30, enabled: false } }),
+    T0,
+  );
+  await setSchedule(db, plantId, 'mist', { intervalDays: 3, enabled: true }, T0 + 180 * DAY);
+  // Feeding switched on months later starts counting then.
+  await setSchedule(db, plantId, 'fertilize', { intervalDays: 30, enabled: true }, T0 + 180 * DAY);
+  const tasks = buildTasks(await loadGarden(db), 'north', today(180));
+  expect(tasks.find((t) => t.task === 'mist')?.days).toBe(3);
+  // Day 180 + 30 lands in the winter feeding pause, which ends on 1 March.
+  expect(tasks.find((t) => t.task === 'fertilize')!.days).toBeGreaterThan(0);
+});
+
+test('custom task names stay with their journal entries after the reminder is removed', async () => {
+  const { db, roomId } = await setup();
+  const task = newCustomTask();
+  const plantId = await createPlant(
+    db,
+    pothos(roomId, { extraTasks: [{ task, label: '  Check for pests ', intervalDays: 7 }] }),
+    T0,
+  );
+  expect((await loadGarden(db)).schedules.find((x) => x.task === task)?.label).toBe(
+    'Check for pests',
+  );
+  await completeTask(db, [plantId], task, T0, 'Check for pests');
+  const [entry] = await listJournal(db, plantId);
+  expect(entry.data).toEqual({ task, label: 'Check for pests' });
+});
+
+test('potting up a cutting: normal pot and schedules, cutting-only reminders gone, once', async () => {
+  const { db, roomId } = await setup();
+  const parentId = await createPlant(db, pothos(roomId), T0);
+  const changeWater = newCustomTask();
+  const childId = await createPlant(
+    db,
+    pothos(roomId, {
+      potMaterial: 'glass',
+      potDrainage: false,
+      water: { intervalDays: 3, enabled: false },
+      fertilize: { intervalDays: 30, enabled: false },
+      extraTasks: [{ task: changeWater, label: 'Change the water', intervalDays: 7 }],
+      cutting: { parentId, method: 'stem-cuttings-water' },
+    }),
+    T0,
+  );
+  await advanceCutting(db, childId, 'rooted', T0 + 20 * DAY);
+  const care = { waterDays: 6, feedDays: 30, dropTasks: [changeWater] };
+  await potUpCutting(db, childId, care, T0 + 40 * DAY);
+  await potUpCutting(db, childId, care, T0 + 40 * DAY);
+  const garden = await loadGarden(db);
+  const child = garden.plants.find((p) => p.id === childId)!;
+  expect(child).toMatchObject({ propStage: null, potMaterial: 'plastic', potDrainage: true });
+  const schedules = garden.schedules.filter((x) => x.plantId === childId);
+  expect(schedules.map((x) => [x.task, x.enabled, x.intervalDays]).sort()).toEqual([
+    ['fertilize', true, 30],
+    ['water', true, 6],
+  ]);
+  const potted = (await listJournal(db, childId)).filter((e) => e.data.stage === 'potted');
+  expect(potted).toHaveLength(1);
 });

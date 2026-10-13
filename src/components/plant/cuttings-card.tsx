@@ -1,5 +1,6 @@
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { careFor, displayName } from '@/catalog';
@@ -9,7 +10,7 @@ import { PlantAvatar } from '@/components/plant-avatar';
 import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Divider } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
-import { advanceCutting, removeSchedule, setSchedule, type Garden } from '@/db/garden';
+import { advanceCutting, potUpCutting, type Garden } from '@/db/garden';
 import type { Plant } from '@/db/types';
 import { formatRelativeDay, dateOf } from '@/lib/dates';
 import { successFeedback } from '@/lib/haptics';
@@ -46,6 +47,7 @@ export function CuttingsCard({
 }) {
   const db = useSQLiteContext();
   const theme = useTheme();
+  const [busy, setBusy] = useState(false);
   const parent = plant.parentId ? garden.plants.find((p) => p.id === plant.parentId) : undefined;
   const children = garden.plants.filter((p) => p.parentId === plant.id);
 
@@ -54,25 +56,25 @@ export function CuttingsCard({
     const method = plant.propMethod ? getGuide(plant.propMethod) : undefined;
 
     const next = async () => {
+      if (busy) return;
+      setBusy(true);
       successFeedback();
-      if (plant.propStage === 'rooting') {
-        await advanceCutting(db, plant.id, 'rooted');
-        return;
-      }
-      await advanceCutting(db, plant.id, 'potted');
-      // A potted cutting gets the normal care schedule for its kind.
-      const care = careFor(plant.groupId, plant.speciesId);
-      await setSchedule(db, plant.id, 'water', {
-        intervalDays: suggestedWaterDays(care.water.days, 's', plant.potMaterial),
-        enabled: true,
-      });
-      await setSchedule(db, plant.id, 'fertilize', {
-        intervalDays: care.fertilize?.days ?? 30,
-        enabled: care.fertilize != null,
-      });
-      for (const s of garden.schedules) {
-        if (s.plantId === plant.id && s.label === CHANGE_WATER)
-          await removeSchedule(db, plant.id, s.task);
+      try {
+        if (plant.propStage === 'rooting') {
+          await advanceCutting(db, plant.id, 'rooted');
+          return;
+        }
+        // Potted up: a small plastic pot with the normal care schedule for its kind.
+        const care = careFor(plant.groupId, plant.speciesId);
+        await potUpCutting(db, plant.id, {
+          waterDays: suggestedWaterDays(care.water.days, 's', 'plastic'),
+          feedDays: care.fertilize?.days ?? null,
+          dropTasks: garden.schedules
+            .filter((s) => s.plantId === plant.id && s.label === CHANGE_WATER)
+            .map((s) => s.task),
+        });
+      } finally {
+        setBusy(false);
       }
     };
 
@@ -98,7 +100,7 @@ export function CuttingsCard({
               onPress={() => router.push({ pathname: '/guide/[id]', params: { id: method.id } })}
             />
           )}
-          <Button title={stage.next} icon="check" size="small" onPress={next} />
+          <Button title={stage.next} icon="check" size="small" onPress={next} busy={busy} />
         </View>
         {parent && (
           <ThemedText type="caption" color="textSecondary">

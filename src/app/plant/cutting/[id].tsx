@@ -64,8 +64,7 @@ export default function StartCutting() {
         cutting: { parentId: parent.id, method: chosen },
       });
       successFeedback();
-      router.dismiss();
-      router.push({ pathname: '/plant/[id]', params: { id: childId } });
+      router.replace({ pathname: '/plant/[id]', params: { id: childId } });
     } finally {
       setBusy(false);
     }

@@ -60,6 +60,8 @@ export type Schedule = {
   intervalDays: number;
   enabled: boolean;
   hintDismissedAt: number | null;
+  /** When the reminder was set up or last turned back on (unix ms); null for older ones. */
+  startedAt: number | null;
 };
 
 export type HealthStatus = 'thriving' | 'fine' | 'struggling' | 'sick';

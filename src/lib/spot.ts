@@ -35,13 +35,15 @@ export function checkSpot(
   const checks: SpotCheck[] = [];
   const min = formatTemp(care.minTempC, unit);
 
-  if (room.humidity === 'dry' && care.humidity === 'high') {
+  // Air, warmth and draughts are indoor settings; outdoors the weather decides.
+  const indoor = !room.outdoor;
+  if (indoor && room.humidity === 'dry' && care.humidity === 'high') {
     checks.push({
       icon: 'drop-half',
       tone: 'warn',
       text: `${room.name} is dry, and this plant likes humid air. Group plants or use a pebble tray.`,
     });
-  } else if (room.humidity === 'humid' && care.humidity === 'low') {
+  } else if (indoor && room.humidity === 'humid' && care.humidity === 'low') {
     checks.push({
       icon: 'drop-half',
       tone: 'warn',
@@ -49,13 +51,18 @@ export function checkSpot(
     });
   }
 
-  if (room.warmth === 'cool' && care.minTempC >= 15) {
+  if (indoor && room.warmth === 'cool' && care.minTempC >= 15) {
     checks.push({
       icon: 'thermometer-cold',
       tone: 'warn',
       text: `${room.name} runs cool for this plant. It wants to stay above ${min}.`,
     });
-  } else if (room.warmth === 'warm' && options.idealMaxC != null && options.idealMaxC <= 20) {
+  } else if (
+    indoor &&
+    room.warmth === 'warm' &&
+    options.idealMaxC != null &&
+    options.idealMaxC <= 20
+  ) {
     checks.push({
       icon: 'thermometer-hot',
       tone: 'warn',
@@ -63,7 +70,7 @@ export function checkSpot(
     });
   }
 
-  if (room.draught && care.minTempC >= 10) {
+  if (indoor && room.draught && care.minTempC >= 10) {
     checks.push({
       icon: 'wind',
       tone: 'warn',

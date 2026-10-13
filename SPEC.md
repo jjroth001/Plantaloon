@@ -141,6 +141,22 @@ Modelled on the depth of Planta's plant pages, in our own words and look
   1° grid, `scripts/build-climate.js`). A month counts when nights stay above the plant's
   minimum. Without an area, a general rule is shown.
 
+## v1.2 — free versions of Planta's premium extras (2026-10-13)
+
+- **Pet safety from ASPCA's lists** for the 755 plants they cover (`data/aspca/`,
+  `scripts/build-aspca.js`); others are inferred from related plants and labelled so.
+- **Custom tasks**: mist, turn, clean leaves, prune, repot or a named task, each with its own
+  interval (`schedule.task` = kind or `custom-<id>`, `schedule.label`). They count from when
+  they were added (`schedule.started_at`), not from when the plant arrived.
+- **Pot material** (plastic, terracotta, glazed, glass, other) nudges the watering suggestion.
+- **Room conditions**: grow light (counts as bright light), air, warmth, draughts, outdoors.
+  A "This spot" card lists mismatches; Today says when outdoor plants should come in, using the
+  local climate.
+- **Health status** (Thriving / Doing fine / Struggling / Unwell) as journal entries.
+- **Cuttings**: start one from a plant (`plant.parent_id`, `prop_stage`, `prop_method`), follow
+  it rooting → rooted → potted; potting gives it normal reminders.
+- Migration 3; backup format 2 (older backups restore with defaults).
+
 ## v2 and later
 - More scheduled tasks (mist, rotate, repot reminders).
 - Home-screen widget ("3 plants need water").

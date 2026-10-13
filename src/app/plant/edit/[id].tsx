@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Alert } from 'react-native';
 
 import { careFor, displayName } from '@/catalog';
-import { PlantForm, type PlantFormValue } from '@/components/plant-form';
+import { namedExtras, PlantForm, type PlantFormValue } from '@/components/plant-form';
 import { Screen } from '@/components/screen';
 import { Button } from '@/components/ui';
 import {
@@ -69,14 +69,14 @@ export default function EditPlant() {
       });
       await setSchedule(db, plant.id, 'water', value.water);
       await setSchedule(db, plant.id, 'fertilize', value.fertilize);
-      for (const extra of value.extras) {
+      for (const extra of namedExtras(value.extras)) {
         await setSchedule(db, plant.id, extra.task, {
           intervalDays: extra.intervalDays,
           enabled: true,
           label: extra.label,
         });
       }
-      const kept = new Set(value.extras.map((e) => e.task));
+      const kept = new Set(namedExtras(value.extras).map((e) => e.task));
       for (const old of initialExtras) {
         if (!kept.has(old.task)) await removeSchedule(db, plant.id, old.task);
       }

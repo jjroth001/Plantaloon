@@ -59,8 +59,12 @@ export default function RoomScreen() {
     if (!value.name.trim()) return;
     setBusy(true);
     try {
-      if (isNew) await createRoom(db, value);
-      else await updateRoom(db, id, value);
+      // Air, warmth and draughts are indoor settings; clear them for an outdoor spot.
+      const input = value.outdoor
+        ? { ...value, humidity: null, warmth: null, draught: false }
+        : value;
+      if (isNew) await createRoom(db, input);
+      else await updateRoom(db, id, input);
       successFeedback();
       router.back();
     } finally {

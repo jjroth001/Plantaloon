@@ -72,6 +72,8 @@ export default function TodayScreen() {
       db,
       list.map((t) => t.plant.id),
       list[0].task,
+      undefined,
+      list[0].label,
     );
     const first = list[0];
     setUndo({
@@ -85,7 +87,7 @@ export default function TodayScreen() {
 
   const skip = async (task: CareTask, days: number) => {
     tapFeedback();
-    const id = await skipTask(db, task.plant.id, task.task, days);
+    const id = await skipTask(db, task.plant.id, task.task, days, undefined, task.label);
     setUndo({
       message: `${task.name}: check again ${days === 1 ? 'tomorrow' : `in ${days} days`}`,
       entryIds: [id],

@@ -48,7 +48,8 @@ export function buildTasks(garden: Garden, hemisphere: Hemisphere, today: string
       hemisphere,
       lastDone: lastDoneAt == null ? null : dateOf(lastDoneAt),
       lastSkip: lastSkip ? { on: dateOf(lastSkip.at), days: lastSkip.days } : null,
-      addedOn: dateOf(plant.createdAt),
+      // A reminder added later starts counting from then, not from when the plant arrived.
+      addedOn: dateOf(Math.max(plant.createdAt, schedule.startedAt ?? 0)),
     });
     const dismissed = schedule.hintDismissedAt ?? 0;
     const skipsInARow = skips.filter((s) => s.at > dismissed).length;

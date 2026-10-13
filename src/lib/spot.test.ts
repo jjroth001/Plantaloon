@@ -64,3 +64,9 @@ test('outdoor plants follow the local season', () => {
   // Without a shared area: a general rule.
   expect(checkSpot(fern, patio, opts)[0].text).toMatch(/Settings/);
 });
+
+test('indoor settings left on an outdoor room are ignored', () => {
+  const patio = { ...room, name: 'Patio', outdoor: true, draught: true, humidity: 'dry' } as Room;
+  const icons = checkSpot(fern, patio, { ...opts, lows: Array(12).fill(20) }).map((c) => c.icon);
+  expect(icons).toEqual(['sun-horizon']);
+});

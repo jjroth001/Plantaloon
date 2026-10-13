@@ -88,6 +88,7 @@ const MIGRATIONS: string[] = [
   // 3: custom tasks, pot material, room conditions, cuttings
   `
   ALTER TABLE schedule ADD COLUMN label TEXT; -- name of a custom task (task = 'custom-<id>')
+  ALTER TABLE schedule ADD COLUMN started_at INTEGER; -- when the reminder was set up or turned on
 
   ALTER TABLE plant ADD COLUMN pot_material TEXT NOT NULL DEFAULT 'plastic';
   ALTER TABLE plant ADD COLUMN parent_id TEXT;   -- grown here from a cutting of this plant

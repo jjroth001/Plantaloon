@@ -38,6 +38,13 @@ export type PlantFormValue = {
   extras: ExtraTask[];
 };
 
+/** Extra reminders worth saving: custom ones need a name. */
+export function namedExtras(extras: ExtraTask[]): ExtraTask[] {
+  return extras
+    .map((e) => ({ ...e, label: e.label?.trim() || null }))
+    .filter((e) => kindOf(e.task) !== 'custom' || e.label);
+}
+
 const days = (n: number) =>
   n === 1
     ? 'Every day'

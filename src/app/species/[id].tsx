@@ -37,7 +37,8 @@ export default function SpeciesScreen() {
   const settings = useSettings();
   const wishes = useDbQuery(['wish'], listWishes);
   const lows = useClimateLows();
-  const { scrollRef, register, scrollTo, onScroll, active } = useSections(SECTIONS);
+  const { scrollRef, register, scrollTo, onScroll, onScrollBeginDrag, onTabsLayout, active } =
+    useSections(SECTIONS);
   const species = getSpecies(id);
   if (!species) return <Screen belowHeader>{null}</Screen>;
 
@@ -87,6 +88,7 @@ export default function SpeciesScreen() {
       sections={SECTIONS}
       active={active}
       onPress={scrollTo}
+      onLayout={onTabsLayout}
     />,
     <Section key="care" onLayout={register('care')}>
       <CareSection
@@ -126,6 +128,7 @@ export default function SpeciesScreen() {
         belowHeader
         ref={scrollRef}
         onScroll={onScroll}
+        onScrollBeginDrag={onScrollBeginDrag}
         stickyHeaderIndices={[3]}
         footer={
           <Button

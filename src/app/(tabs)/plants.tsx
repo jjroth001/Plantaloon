@@ -101,7 +101,7 @@ export default function PlantsScreen() {
                     <PlantAvatar
                       photo={garden.data!.covers.get(plant.id)}
                       groupId={plant.groupId}
- speciesId={plant.speciesId}
+                      speciesId={plant.speciesId}
                       size={cardWidth}
                       radius={0}
                     />

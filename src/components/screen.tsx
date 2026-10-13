@@ -18,6 +18,7 @@ type ScreenProps = {
   footer?: ReactNode;
   ref?: Ref<ScrollView>;
   onScroll?: ScrollViewProps['onScroll'];
+  onScrollBeginDrag?: ScrollViewProps['onScrollBeginDrag'];
   /** Children (counting the title row) that stick to the top while scrolling. */
   stickyHeaderIndices?: number[];
 };
@@ -31,6 +32,7 @@ export function Screen({
   footer,
   ref,
   onScroll,
+  onScrollBeginDrag,
   stickyHeaderIndices,
 }: ScreenProps) {
   const insets = useSafeAreaInsets();
@@ -41,6 +43,7 @@ export function Screen({
       <ScrollView
         ref={ref}
         onScroll={onScroll}
+        onScrollBeginDrag={onScrollBeginDrag}
         scrollEventThrottle={32}
         stickyHeaderIndices={stickyHeaderIndices}
         keyboardShouldPersistTaps="handled"

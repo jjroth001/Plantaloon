@@ -24,16 +24,15 @@ export function decodeBase64(text: string): Uint8Array {
   return out.subarray(0, o);
 }
 
-let grid: Uint8Array | null = null;
-
 /** The 12 monthly average lows (°C) near a place, or null if there's no data there. */
 export function monthlyLows(lat: number, lon: number): number[] | null {
   if (!CLIMATE.rows) return null;
-  grid ??= decodeBase64(CLIMATE.data);
   const row = Math.min(CLIMATE.rows - 1, Math.max(0, Math.floor(lat + 90)));
   const col = (((Math.floor(lon + 180) % 360) + 360) % 360) % CLIMATE.cols;
-  const start = (row * CLIMATE.cols + col) * 12;
-  const values = Array.from(grid.subarray(start, start + 12));
+  // Each cell is 12 bytes, a multiple of 3, so its bytes are exactly 16 base64 characters:
+  // decode just those instead of the whole 1 MB grid.
+  const start = ((row * CLIMATE.cols + col) * 12 * 4) / 3;
+  const values = Array.from(decodeBase64(CLIMATE.data.slice(start, start + 16)));
   if (values.length < 12 || values.some((v) => v === 255)) return null;
   return values.map((v) => v - 100);
 }

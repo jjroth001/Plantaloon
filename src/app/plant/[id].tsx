@@ -62,7 +62,8 @@ export default function PlantScreen() {
   const today = useToday();
   const journal = useDbQuery(['entry', 'photo'], (d) => listJournal(d, id), [id]);
   const [undo, setUndo] = useState<Undo | null>(null);
-  const { scrollRef, register, scrollTo, onScroll, active } = useSections(SECTIONS);
+  const { scrollRef, register, scrollTo, onScroll, onScrollBeginDrag, onTabsLayout, active } =
+    useSections(SECTIONS);
   const lows = useClimateLows();
   const hideUndo = useCallback(() => setUndo(null), []);
 
@@ -124,6 +125,7 @@ export default function PlantScreen() {
       sections={SECTIONS}
       active={active}
       onPress={scrollTo}
+      onLayout={onTabsLayout}
     />
   );
   const children = [
@@ -352,6 +354,7 @@ export default function PlantScreen() {
         belowHeader
         ref={scrollRef}
         onScroll={onScroll}
+        onScrollBeginDrag={onScrollBeginDrag}
         stickyHeaderIndices={[stickyIndex]}>
         {children}
       </Screen>

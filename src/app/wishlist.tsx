@@ -14,9 +14,10 @@ export default function WishlistScreen() {
   const wishes = useDbQuery(['wish'], listWishes);
   const species = (wishes.data ?? []).map((id) => getSpecies(id)).filter((s) => s != null);
 
+  if (wishes.status === 'loading') return <Screen belowHeader>{null}</Screen>;
   return (
     <Screen belowHeader>
-      {wishes.data && species.length === 0 ? (
+      {species.length === 0 ? (
         <EmptyState
           icon="heart"
           title="Nothing saved yet"

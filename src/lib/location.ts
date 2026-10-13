@@ -14,7 +14,7 @@ export async function requestClimatePlace(): Promise<ClimatePlace | null> {
   if (status !== 'granted') return null;
   const position =
     (await Location.getLastKnownPositionAsync({ maxAge: 30 * 86_400_000 })) ??
-    (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Lowest }));
+    (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }));
   if (!position) return null;
   return {
     lat: round(position.coords.latitude),

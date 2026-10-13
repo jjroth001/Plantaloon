@@ -172,7 +172,7 @@ export default function LightScreen() {
                     <PlantAvatar
                       photo={garden.data?.covers.get(plant.id)}
                       groupId={plant.groupId}
- speciesId={plant.speciesId}
+                      speciesId={plant.speciesId}
                       size={36}
                     />
                     <ThemedText style={styles.flex} numberOfLines={1}>

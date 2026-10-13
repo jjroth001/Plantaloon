@@ -83,13 +83,7 @@ export type Habit =
 export type Lifecycle = 'perennial' | 'annual' | 'bulb' | 'monocarpic';
 
 export type PestId =
-  | 'mealybugs'
-  | 'spider-mites'
-  | 'fungus-gnats'
-  | 'thrips'
-  | 'scale'
-  | 'aphids'
-  | 'whitefly';
+  'mealybugs' | 'spider-mites' | 'fungus-gnats' | 'thrips' | 'scale' | 'aphids' | 'whitefly';
 
 export type SignId =
   | 'yellow-leaves'

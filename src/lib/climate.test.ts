@@ -15,3 +15,12 @@ test('outdoor months and their description', () => {
   const south = [16, 16, 14, 10, 7, 4, 3, 4, 6, 9, 12, 15];
   expect(describeMonths(outdoorMonths(south, 12))).toBe('Nov – Mar');
 });
+
+test('the bundled climate grid is built and gives sensible seasons', () => {
+  const { monthlyLows } = jest.requireActual('./climate') as typeof import('./climate');
+  const london = monthlyLows(51.5, -0.1)!;
+  expect(london).toHaveLength(12);
+  expect(london[6]).toBeGreaterThan(london[0]);
+  const sydney = monthlyLows(-33.9, 151.2)!;
+  expect(sydney[0]).toBeGreaterThan(sydney[6]);
+});

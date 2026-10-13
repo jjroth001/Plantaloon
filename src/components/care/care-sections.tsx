@@ -47,45 +47,70 @@ export function useSections(sections: readonly SectionName[]) {
   const scrollRef = useRef<ScrollView>(null);
   const positions = useRef(new Map<SectionName, number>());
   const [active, setActive] = useState<SectionName>(sections[0]);
-  const tabsHeight = 64;
+  // Measured, so large system font sizes don't hide headings under the sticky tabs.
+  const tabsHeight = useRef(56);
+  // While a tab tap is scrolling the page, keep that tab lit instead of following the scroll.
+  const target = useRef<{ name: SectionName; y: number } | null>(null);
 
   const register = (name: SectionName) => (e: LayoutChangeEvent) => {
     positions.current.set(name, e.nativeEvent.layout.y);
   };
 
+  const onTabsLayout = (e: LayoutChangeEvent) => {
+    tabsHeight.current = e.nativeEvent.layout.height;
+  };
+
   const scrollTo = (name: SectionName) => {
-    const y = positions.current.get(name);
-    if (y == null) return;
+    const top = positions.current.get(name);
+    if (top == null) return;
     tapFeedback();
+    const y = Math.max(0, top - tabsHeight.current);
+    target.current = { name, y };
     setActive(name);
-    scrollRef.current?.scrollTo({ y: Math.max(0, y - tabsHeight), animated: true });
+    scrollRef.current?.scrollTo({ y, animated: true });
   };
 
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const y = e.nativeEvent.contentOffset.y + tabsHeight + 8;
+    const { contentOffset, layoutMeasurement, contentSize } = e.nativeEvent;
+    const atBottom = contentOffset.y + layoutMeasurement.height >= contentSize.height - 2;
+    if (target.current) {
+      // Arrived (or the page can't scroll any further): hand back to following the scroll.
+      if (Math.abs(contentOffset.y - target.current.y) < 4 || atBottom) target.current = null;
+      return;
+    }
+    const y = contentOffset.y + tabsHeight.current + 8;
     let current = sections[0];
     for (const name of sections) {
       const top = positions.current.get(name);
       if (top != null && top <= y) current = name;
     }
+    // The last section is often too short to reach the top; at the bottom it's the one in view.
+    if (atBottom && contentOffset.y > 0) current = sections[sections.length - 1];
     if (current !== active) setActive(current);
   };
 
-  return { scrollRef, register, scrollTo, onScroll, active };
+  /** A finger on the page cancels a tab jump in progress. */
+  const onScrollBeginDrag = () => {
+    target.current = null;
+  };
+
+  return { scrollRef, register, scrollTo, onScroll, onScrollBeginDrag, onTabsLayout, active };
 }
 
 export function SectionTabs({
   sections,
   active,
   onPress,
+  onLayout,
 }: {
   sections: readonly SectionName[];
   active: SectionName;
   onPress: (name: SectionName) => void;
+  onLayout?: (e: LayoutChangeEvent) => void;
 }) {
   const theme = useTheme();
   return (
-    <View style={[styles.tabsWrap, { backgroundColor: theme.background }]}>
+    <View onLayout={onLayout} style={[styles.tabsWrap, { backgroundColor: theme.background }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

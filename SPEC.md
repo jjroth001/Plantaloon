@@ -1,0 +1,168 @@
+# Plantaloon — Product Spec
+
+A free, private, open-source houseplant care app. Inspired by the feature set of apps like Planta,
+built clean-room: no decompiled code, copied assets, or copied text.
+
+**Phase 1 audience:** our family (Android only, sideloaded APK).
+**Later:** public open-source release (GPL-3.0-or-later).
+
+## Principles
+
+1. **Calm, not naggy.** One gentle daily summary, not a notification per plant. Nothing turns red
+   and shouts; overdue plants just float to the top.
+2. **Offline-first.** All data, photos and the plant catalog live on the phone. The app never needs
+   a network to work.
+3. **Private by default.** No accounts, analytics, ads, or third-party services. No location.
+4. **Care log is the source of truth.** Watering, fertilizing, repotting, notes and photos are
+   timestamped entries; "next due" dates are derived from the log plus the plant's schedule.
+5. **Our own words.** Care advice is written by us. Borrowed data (names, light tiers) is openly
+   licensed and credited in the app.
+
+## MVP (v1) — scope
+
+### Rooms
+- Name, icon, and a light level (Low / Medium / Bright indirect / Direct sun), set by hand or by
+  the light meter.
+- Plants are grouped by room everywhere in the app. One default room ("Living room") on first run;
+  rename or delete freely.
+
+### Plants
+| Field | Notes |
+|---|---|
+| Nickname | Optional; defaults to the common name |
+| Species | Picked from the catalog, or "Unlisted plant" + closest care group |
+| Room | Required |
+| Photo | Cover photo; defaults to the newest journal photo |
+| Pot | Size (small / medium / large) and drainage (yes / no) — nudges the watering interval |
+| Schedules | Water and fertilize intervals, prefilled from the care profile, editable |
+| Acquired on | Optional date |
+
+### Care tasks and reminders
+- Tasks: **Water**, **Fertilize** (v1). Mist, rotate, repot and prune are journal entries, not
+  scheduled tasks, until v2.
+- Interval comes from the care profile, adjusted for pot size and season (winter = longer for
+  watering, fertilizing paused Nov–Feb by default for plants whose profile says so).
+- On a due task: **Done** (logs it), **Skip** (soil still moist; check again in N days, default 2),
+  or **Snooze to tomorrow**.
+- Gentle learning: if a plant is skipped 3 times in a row, offer to lengthen its interval. Never
+  changes the schedule without asking.
+- **One daily notification** at a chosen time (default 9:00): "4 plants need water today."
+  Off-able. Not available in Expo Go, only in installed builds.
+
+### Care journal
+- Per-plant timeline of entries: watered, fertilized, repotted, pruned, misted, rotated, note,
+  photo. Each entry can carry a note and photos.
+- Photos are taken or picked with the system picker and copied into the app's own storage (no
+  media-library permission). Shown as a photo strip on the plant page; tap for full screen and
+  swipe through time to see growth.
+- All entries editable and deletable.
+
+### Care profiles (the catalog)
+Bundled, offline, read-only. Two layers:
+1. **Care groups (~80)** — e.g. *Philodendron*, prayer plants (*Calathea*, *Goeppertia*,
+   *Maranta*), *Hoya*, *Peperomia*, desert cacti, *Echeveria*-type succulents, ferns, *Phalaenopsis*
+   orchids. Written by us. Fields: light range, watering style (let dry fully / top inch dry / keep
+   lightly moist), base water interval (growing season and winter), fertilize interval and season,
+   humidity, minimum temperature, pet safety (cats / dogs, with source), difficulty, and a few short
+   care tips.
+2. **Species (~600–1,000)** — scientific name, common names, and a link to a care group. About 100
+   popular plants that break their group's rules get their own overrides (e.g. snake plant,
+   fiddle-leaf fig, ZZ plant).
+
+Sources, credited on an About screen:
+- **Wikidata / GBIF** (CC0) — scientific and common names.
+- **GrowSpot light dataset** (CC BY 4.0) — per-species light tier and the lux boundaries between
+  tiers. Attribution line kept with the bundled file.
+- **ASPCA toxic and non-toxic plant lists** — pet safety facts, cited per plant (facts only, no
+  copied text).
+
+Search matches common names, scientific names and cultivar names, typo-tolerant.
+
+Care text is general guidance, not professional advice; the About screen says so.
+
+### Light meter
+- Uses the phone's **ambient light sensor** (expo-sensors `LightSensor`, Android). No camera, no
+  permission.
+- Live lux reading with a smoothed needle, plus the tier it falls in (using GrowSpot's boundaries).
+- Instructions: hold the phone where the plant sits, screen facing the window, around midday.
+- **Save to room** sets that room's light level. **Check a plant** shows whether a plant's profile
+  fits that light ("A bit dark for a Fiddle-leaf fig — try closer to the window").
+- If the phone has no light sensor, the screen says so and lets you set the room's light by hand.
+
+### Screens
+1. **Today** — tasks due today and overdue, grouped by room, with Done / Skip on each row and a
+   "Water all in this room" shortcut. Below: "Coming up this week". An empty, friendly state when
+   nothing is due.
+2. **Plants** — all plants grouped by room, as photo cards. Add plant (+) and manage rooms from
+   here.
+3. **Plant page** — cover photo, name and species, next water / fertilize, care profile summary
+   (light, water, humidity, pet safety), photo strip, journal timeline, schedule settings.
+4. **Add plant** — search the catalog → pick room → optional photo → confirm schedule.
+5. **Light meter** — as above.
+6. **Settings** — reminder time, units (°F/°C), seasons (hemisphere), theme, backup and restore,
+   About and credits.
+
+Navigation: bottom tabs **Today · Plants · Light · Settings**.
+
+### Backup
+- **Export backup**: one file with all data and photos, saved where you choose (e.g. Drive).
+- **Import backup**: replaces or merges.
+- **Erase all data**: type DELETE to confirm.
+
+## v2 and later
+- More scheduled tasks (mist, rotate, repot reminders).
+- Home-screen widget ("3 plants need water").
+- Sharing a plant collection between two phones.
+- Photo identification (would need an on-device model; online services are out).
+- Plant health diagnosis guides ("yellow leaves", "brown tips").
+- Public release: F-Droid listing.
+
+## Data model (v1)
+
+```
+room
+  id, name, icon, light_tier ('low'|'medium'|'bright_indirect'|'direct'|null),
+  light_lux (last measured, nullable), sort_order, created_at, updated_at, deleted_at
+
+plant
+  id, room_id → room.id, nickname, species_id (catalog id, nullable),
+  care_group_id (catalog id), pot_size ('s'|'m'|'l'), pot_drainage (bool),
+  cover_photo_id (nullable), acquired_on (local YYYY-MM-DD, nullable),
+  created_at, updated_at, deleted_at
+
+schedule
+  id, plant_id → plant.id, task ('water'|'fertilize'),
+  interval_days, winter_interval_days (nullable = same), paused (bool),
+  next_due_on (local YYYY-MM-DD; recomputed from the log), snoozed_until (nullable)
+
+entry  (the care journal)
+  id, plant_id → plant.id,
+  type ('water'|'fertilize'|'skip'|'repot'|'prune'|'mist'|'rotate'|'note'|'photo'),
+  at (unix ms), note, data (JSON, type-specific), created_at, updated_at, deleted_at
+
+photo
+  id, entry_id → entry.id, file (relative path in app storage), width, height, taken_at
+
+setting
+  key, value
+```
+
+The catalog ships as JSON in the app bundle (`assets/catalog/`), versioned separately from user
+data. Plants store catalog ids, so catalog updates improve care advice for existing plants.
+
+## Tech
+- Expo SDK 57, Expo Router, React Compiler, New Architecture. Android only.
+- expo-sqlite (WAL, busy_timeout), expo-notifications (lazy, installed builds only),
+  expo-image-picker, expo-file-system, expo-sensors (LightSensor), expo-image.
+- Every native-only module gated on `Constants.executionEnvironment` so Expo Go keeps working.
+- Jest via jest-expo for schedule maths, catalog search and migrations.
+
+## Milestones
+- **M1 — Rooms and plants:** database, rooms, add/edit plants, Plants tab. Catalog with ~20 groups
+  to start.
+- **M2 — Care tasks:** schedules, Today tab, Done / Skip / Snooze, season adjustment.
+- **M3 — Journal and photos:** entries, photo capture and storage, plant page timeline.
+- **M4 — Light meter:** sensor screen, room light, plant fit check.
+- **M5 — Full catalog:** all ~80 groups, species list from Wikidata/GBIF, GrowSpot light tiers,
+  pet safety, credits screen.
+- **M6 — Reminders and backup:** daily notification, export/import, first APK.

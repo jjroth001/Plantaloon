@@ -114,6 +114,33 @@ one of six accent colors (Leaf, Moss, Teal, Ocean, Plum, Clay). Contrast is test
 - Format: JSON Lines — line 1 is every database row, then one line per photo (base64).
 - **Erase all data**: type DELETE to confirm.
 
+## v1.1 — fuller plant pages (2026-10-13)
+
+Modelled on the depth of Planta's plant pages, in our own words and look
+(mockup: `docs/mockups/plant-page.png`).
+
+- **Care sheet** shared by a plant's page and the catalog page: quick facts (difficulty, light,
+  watering, pets), then sticky tabs **Care · About · Growing · Problems** (+ **Journal** on your
+  own plants) that jump to and follow each section.
+  - Care: water, light (with the room's measured light), food and what to use, soil & repotting,
+    humidity & cleaning, good-to-know tips.
+  - About: pet safety (ASPCA), growth habit, leaves, lifecycle, care level.
+  - Growing: ideal and minimum warmth, outdoor months, ways to propagate.
+  - Problems: common warning signs and pests, each opening a guide.
+- **Content** (`src/catalog/`): `details.ts` (per care group), `guides.ts` (35 learn-more guides),
+  `descriptions.ts` (180 popular plants; cultivars borrow their species' text).
+- **Catalog browsing**: search opens a plant's full page first; "Add to my plants" from there.
+- **Wishlist**: heart on catalog pages; list under Plants › heart. New `wish` table (migration 2;
+  older backups without it still restore).
+- **Photos**: one Wikimedia Commons photo per species (from Wikidata), 320 px WebP, bundled;
+  cultivars show their species' photo, labelled. Free licences only (PD, CC0, CC BY, CC BY-SA,
+  GFDL); each credited on the page and in About › Plant photos. Built by
+  `scripts/build-photos.js`.
+- **Outdoor months**: opt-in rough area (approximate location once, rounded to ~50 km, not in
+  backups, never sent anywhere) + bundled NASA POWER climatology (monthly average night lows,
+  1° grid, `scripts/build-climate.js`). A month counts when nights stay above the plant's
+  minimum. Without an area, a general rule is shown.
+
 ## v2 and later
 - More scheduled tasks (mist, rotate, repot reminders).
 - Home-screen widget ("3 plants need water").

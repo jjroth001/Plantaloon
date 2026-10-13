@@ -82,3 +82,13 @@ test('descriptions are keyed by real species and cultivars fall back to their sp
     );
   }
 });
+
+test('bundled photos: popular plants have one, cultivars borrow their species photo', () => {
+  const { catalogPhoto } = jest.requireActual('./media') as typeof import('./media');
+  const pothos = catalogPhoto(speciesId('Epipremnum aureum'));
+  expect(pothos?.ofSpecies).toBe(false);
+  expect(pothos?.licence).toMatch(/CC|Public domain/i);
+  const jade = catalogPhoto(speciesId("Epipremnum aureum 'Jade'"));
+  expect(jade?.ofSpecies).toBe(true);
+  expect(jade?.page).toBe(pothos?.page);
+});

@@ -126,8 +126,8 @@ export default function WelcomeScreen() {
         </ThemedText>
         <Segmented
           options={[
-            { value: 'north', label: 'Northern half' },
-            { value: 'south', label: 'Southern half' },
+            { value: 'north', label: 'Northern hemisphere' },
+            { value: 'south', label: 'Southern hemisphere' },
           ]}
           value={chosenHemisphere}
           onChange={setHemisphere}

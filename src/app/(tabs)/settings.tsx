@@ -199,8 +199,8 @@ export default function SettingsScreen() {
           <Field label="Seasons">
             <Segmented
               options={[
-                { value: 'north', label: 'Northern half' },
-                { value: 'south', label: 'Southern half' },
+                { value: 'north', label: 'Northern hemisphere' },
+                { value: 'south', label: 'Southern hemisphere' },
               ]}
               value={s.hemisphere}
               onChange={(v) => setSetting(db, 'hemisphere', v)}

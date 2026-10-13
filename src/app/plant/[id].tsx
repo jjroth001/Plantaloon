@@ -34,7 +34,14 @@ import {
   setSchedule,
   type JournalItem,
 } from '@/db/garden';
-import { ENTRY_ICON, ENTRY_LABEL, TASK_LABEL, type Task } from '@/db/types';
+import {
+  ENTRY_ICON,
+  ENTRY_LABEL,
+  HEALTH,
+  type HealthStatus,
+  type Schedule,
+  type Task,
+} from '@/db/types';
 import { useDbQuery } from '@/db/use-db-query';
 import { useSettings } from '@/db/use-settings';
 import { useClimateLows } from '@/hooks/use-climate';
@@ -45,6 +52,11 @@ import { buildTasks, type CareTask } from '@/lib/care-tasks';
 import { dateOf, formatRelativeDay, formatTime } from '@/lib/dates';
 import { successFeedback } from '@/lib/haptics';
 import { lightFit } from '@/lib/light';
+import { checkSpot, effectiveLight } from '@/lib/spot';
+import { doneMessage, taskForEntry, taskIcon, taskLabel } from '@/lib/tasks';
+import { useTaskColors } from '@/hooks/use-task-colors';
+import { CuttingsCard } from '@/components/plant/cuttings-card';
+import { HealthChip } from '@/components/plant/health-chip';
 import { photoUri } from '@/lib/photos';
 import { describeDue, endOfWinter, isWinter } from '@/lib/schedule';
 import { useTheme } from '@/theme/theme-provider';
@@ -90,7 +102,7 @@ export default function PlantScreen() {
   const log = async (task: Task) => {
     successFeedback();
     const ids = await completeTask(db, [plant.id], task);
-    setUndo({ message: `${task === 'water' ? 'Watered' : 'Fed'} ${name}`, entryIds: ids });
+    setUndo({ message: doneMessage(task, null, name), entryIds: ids });
   };
 
   const undoLast = async () => {
@@ -112,11 +124,38 @@ export default function PlantScreen() {
     feedDays: schedules.find((x) => x.task === 'fertilize')?.intervalDays,
     nextFeed: feedTask ? `next: ${describeDue(feedTask.days).toLowerCase()}` : undefined,
     roomFit:
-      room?.lightTier != null
-        ? { room: room.name, fit: lightFit(room.lightTier, care.light) }
+      room && effectiveLight(room) != null
+        ? {
+            room: room.growLight ? `${room.name} (with its grow light)` : room.name,
+            fit: lightFit(effectiveLight(room)!, care.light),
+          }
         : undefined,
+    spotChecks: room
+      ? checkSpot(care, room, {
+          lows,
+          month: new Date().getMonth(),
+          unit: settings.data.temperatureUnit,
+          idealMaxC: details?.idealTempC[1],
+        })
+      : [],
   };
   const description = descriptionFor(plant.speciesId);
+  // Watering and feeding always show (even when off); other reminders only while set.
+  const builtIn = (task: Task): Schedule =>
+    schedules.find((x) => x.task === task) ?? {
+      plantId: plant.id,
+      task,
+      label: null,
+      intervalDays: 0,
+      enabled: false,
+      hintDismissedAt: null,
+    };
+  const shownSchedules = [
+    builtIn('water'),
+    builtIn('fertilize'),
+    ...schedules.filter((x) => x.task !== 'water' && x.task !== 'fertilize' && x.enabled),
+  ];
+  const labels = new Map(schedules.map((x) => [x.task, x.label]));
   const suggestions = tasks.filter((t) => t.suggestion != null);
 
   const tabs = (
@@ -167,9 +206,11 @@ export default function PlantScreen() {
             <Icon name={room.icon} size={16} color={theme.textSecondary} />
             <ThemedText type="caption" color="textSecondary">
               {room.name}
+              {room.outdoor ? ' · outdoors' : ''}
             </ThemedText>
           </View>
         )}
+        <HealthChip plantId={plant.id} status={garden.data.health.get(plant.id)} />
       </View>
     </View>,
     <View key="actions" style={styles.actions}>
@@ -235,13 +276,12 @@ export default function PlantScreen() {
       </View>
     ) : null,
     <Card key="schedule">
-      {(['water', 'fertilize'] as const).map((task, i) => (
-        <View key={task} style={styles.gap}>
+      {shownSchedules.map((schedule, i) => (
+        <View key={schedule.task} style={styles.gap}>
           {i > 0 && <Divider />}
           <ScheduleLine
-            task={task}
-            due={tasks.find((t) => t.task === task)}
-            intervalDays={schedules.find((s) => s.task === task)?.intervalDays}
+            schedule={schedule}
+            due={tasks.find((t) => t.task === schedule.task)}
             care={care}
             hemisphere={settings.data!.hemisphere}
             today={today}
@@ -250,6 +290,7 @@ export default function PlantScreen() {
         </View>
       ))}
     </Card>,
+    <CuttingsCard key="cuttings" plant={plant} garden={garden.data} today={today} />,
     photos.length > 0 ? (
       <View key="photos" style={styles.section}>
         <SectionTitle
@@ -325,7 +366,7 @@ export default function PlantScreen() {
               layout={LinearTransition.duration(200)}
               style={styles.gap}>
               {i > 0 && <Divider />}
-              <JournalRow entry={entry} today={today} />
+              <JournalRow entry={entry} today={today} labels={labels} />
             </Animated.View>
           ))
         )}
@@ -397,24 +438,23 @@ function QuickAction({
 }
 
 function ScheduleLine({
-  task,
+  schedule,
   due,
-  intervalDays,
   care,
   hemisphere,
   today,
   onEdit,
 }: {
-  task: Task;
+  schedule: Schedule;
   due: CareTask | undefined;
-  intervalDays: number | undefined;
   care: Care;
   hemisphere: 'north' | 'south';
   today: string;
   onEdit: () => void;
 }) {
-  const theme = useTheme();
-  const color = task === 'water' ? theme.water : theme.fertilize;
+  const { task } = schedule;
+  const intervalDays = schedule.enabled ? schedule.intervalDays : undefined;
+  const { color, soft } = useTaskColors(task);
   let status: string;
   let detail: string;
   if (!due || intervalDays == null) {
@@ -432,16 +472,12 @@ function ScheduleLine({
   }
   return (
     <Pressable accessibilityRole="button" onPress={onEdit} style={styles.schedule}>
-      <View
-        style={[
-          styles.scheduleIcon,
-          { backgroundColor: task === 'water' ? theme.waterSoft : theme.fertilizeSoft },
-        ]}>
-        <Icon name={task === 'water' ? 'drop' : 'flask'} size={22} color={color} />
+      <View style={[styles.scheduleIcon, { backgroundColor: soft }]}>
+        <Icon name={taskIcon(task)} size={22} color={color} />
       </View>
       <View style={styles.flex}>
         <ThemedText type="label" color="textSecondary">
-          {TASK_LABEL[task]}
+          {taskLabel(task, schedule.label)}
         </ThemedText>
         <ThemedText type="subheading" style={due && due.days <= 0 ? { color } : undefined}>
           {status}
@@ -454,7 +490,21 @@ function ScheduleLine({
   );
 }
 
-function JournalRow({ entry, today }: { entry: JournalItem; today: string }) {
+const PROPAGATION_STAGE: Record<string, string> = {
+  started: 'Cutting started',
+  rooted: 'Cutting rooted',
+  potted: 'Potted up',
+};
+
+function JournalRow({
+  entry,
+  today,
+  labels,
+}: {
+  entry: JournalItem;
+  today: string;
+  labels: Map<Task, string | null>;
+}) {
   const theme = useTheme();
   const color =
     entry.type === 'water'
@@ -470,10 +520,18 @@ function JournalRow({ entry, today }: { entry: JournalItem; today: string }) {
         : theme.tintSoft;
   const skipDays =
     entry.type === 'skip' && typeof entry.data.days === 'number' ? entry.data.days : null;
+  const skipTask = typeof entry.data.task === 'string' ? (entry.data.task as Task) : 'water';
+  const customTask = taskForEntry(entry.type, entry.data);
   const label =
     entry.type === 'skip'
-      ? `Not yet${entry.data.task === 'fertilize' ? ' (feed)' : ''}${skipDays ? ` · check in ${skipDays} ${skipDays === 1 ? 'day' : 'days'}` : ''}`
-      : ENTRY_LABEL[entry.type];
+      ? `Not yet${skipTask !== 'water' ? ` (${taskLabel(skipTask, labels.get(skipTask)).toLowerCase()})` : ''}${skipDays ? ` · check in ${skipDays} ${skipDays === 1 ? 'day' : 'days'}` : ''}`
+      : entry.type === 'custom' && customTask
+        ? `Done: ${taskLabel(customTask, labels.get(customTask))}`
+        : entry.type === 'health' && typeof entry.data.status === 'string'
+          ? `Health: ${HEALTH[entry.data.status as HealthStatus]?.label ?? entry.data.status}`
+          : entry.type === 'propagation'
+            ? (PROPAGATION_STAGE[String(entry.data.stage)] ?? 'Cutting')
+            : ENTRY_LABEL[entry.type];
   return (
     <Pressable
       accessibilityRole="button"

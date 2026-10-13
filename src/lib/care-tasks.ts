@@ -10,6 +10,8 @@ export type CareTask = {
   name: string;
   room: Room | undefined;
   task: Task;
+  /** A custom task's name. */
+  label: string | null;
   /** Local date it's due. */
   due: string;
   /** Days from today: 0 = today, negative = late. */
@@ -55,11 +57,16 @@ export function buildTasks(garden: Garden, hemisphere: Hemisphere, today: string
       name: displayName(plant),
       room: rooms.get(plant.roomId),
       task: schedule.task,
+      label: schedule.label,
       due,
       days: daysUntil(due, today),
       intervalDays: schedule.intervalDays,
       lastDoneAt,
-      suggestion: suggestLongerInterval(schedule.intervalDays, skipsInARow),
+      // Only watering and feeding depend on the soil, so only they learn from "not yet".
+      suggestion:
+        schedule.task === 'water' || schedule.task === 'fertilize'
+          ? suggestLongerInterval(schedule.intervalDays, skipsInARow)
+          : null,
       cover: garden.covers.get(plant.id),
     });
   }
@@ -69,8 +76,12 @@ export function buildTasks(garden: Garden, hemisphere: Hemisphere, today: string
       a.days - b.days ||
       (a.room?.sortOrder ?? 0) - (b.room?.sortOrder ?? 0) ||
       a.name.localeCompare(b.name) ||
-      (a.task === b.task ? 0 : a.task === 'water' ? -1 : 1),
+      taskOrder(a.task) - taskOrder(b.task),
   );
+}
+
+function taskOrder(task: Task): number {
+  return task === 'water' ? 0 : task === 'fertilize' ? 1 : 2;
 }
 
 export type RoomGroup<T> = { room: Room | undefined; items: T[] };

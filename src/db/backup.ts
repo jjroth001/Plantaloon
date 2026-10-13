@@ -37,7 +37,21 @@ export async function backupHeader(db: SQLiteDatabase, now = Date.now()): Promis
 }
 
 const COLUMNS: Record<TableName, readonly string[]> = {
-  room: ['id', 'name', 'icon', 'light_tier', 'light_lux', 'sort_order', 'created_at', 'updated_at'],
+  room: [
+    'id',
+    'name',
+    'icon',
+    'light_tier',
+    'light_lux',
+    'grow_light',
+    'humidity',
+    'warmth',
+    'draught',
+    'outdoor',
+    'sort_order',
+    'created_at',
+    'updated_at',
+  ],
   plant: [
     'id',
     'room_id',
@@ -46,17 +60,37 @@ const COLUMNS: Record<TableName, readonly string[]> = {
     'group_id',
     'pot_size',
     'pot_drainage',
+    'pot_material',
     'cover_photo_id',
     'acquired_on',
     'notes',
+    'parent_id',
+    'prop_stage',
+    'prop_method',
     'created_at',
     'updated_at',
   ],
-  schedule: ['plant_id', 'task', 'interval_days', 'enabled', 'hint_dismissed_at', 'updated_at'],
+  schedule: [
+    'plant_id',
+    'task',
+    'label',
+    'interval_days',
+    'enabled',
+    'hint_dismissed_at',
+    'updated_at',
+  ],
   entry: ['id', 'plant_id', 'type', 'at', 'note', 'data', 'created_at', 'updated_at'],
   photo: ['id', 'entry_id', 'plant_id', 'file', 'width', 'height', 'taken_at', 'created_at'],
   setting: ['key', 'value'],
   wish: ['species_id', 'added_at'],
+};
+
+/** Values for columns added after the first release, when an older backup lacks them. */
+const COLUMN_DEFAULTS: Record<string, string | number> = {
+  pot_material: 'plastic',
+  grow_light: 0,
+  draught: 0,
+  outdoor: 0,
 };
 
 /** Parses and checks the first line. Throws an Error with a user-facing message. */
@@ -120,7 +154,7 @@ export async function restoreTables(db: SQLiteDatabase, backup: BackupHeader): P
       const sql = `INSERT OR REPLACE INTO ${table} (${columns.join(', ')}) VALUES (${columns.map(() => '?').join(', ')})`;
       for (const row of backup.tables[table]) {
         if (table === 'setting' && LOCAL_SETTINGS.has(String(row.key))) continue;
-        await db.runAsync(sql, ...columns.map((c) => row[c] ?? null));
+        await db.runAsync(sql, ...columns.map((c) => row[c] ?? COLUMN_DEFAULTS[c] ?? null));
       }
     }
   });

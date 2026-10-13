@@ -25,6 +25,7 @@ import { DIFFICULTY_TEXT, formatTemp, HUMIDITY_TEXT, petText } from '@/lib/care-
 import { describeMonths, MONTH_INITIALS, outdoorMonths } from '@/lib/climate';
 import { tapFeedback } from '@/lib/haptics';
 import { LIGHT_LABEL, LIGHT_TIERS, type LightFit } from '@/lib/light';
+import type { SpotCheck } from '@/lib/spot';
 import { useTheme } from '@/theme/theme-provider';
 
 // --- Section tabs that follow the scroll ----------------------------------------------------
@@ -166,6 +167,7 @@ function Row({
   title,
   subtitle,
   onPress,
+  plain,
 }: {
   icon: IconName;
   color: string;
@@ -173,13 +175,15 @@ function Row({
   title: string;
   subtitle?: string;
   onPress?: () => void;
+  /** Title as ordinary body text (for sentences rather than headings). */
+  plain?: boolean;
 }) {
   const theme = useTheme();
   const body = (
     <>
       <IconBadge icon={icon} color={color} background={background} size={40} />
       <View style={styles.flex}>
-        <ThemedText type="subheading">{title}</ThemedText>
+        <ThemedText type={plain ? 'body' : 'subheading'}>{title}</ThemedText>
         {subtitle ? (
           <ThemedText type="caption" color="textSecondary">
             {subtitle}
@@ -414,6 +418,8 @@ export type CareContext = {
   nextFeed?: string;
   /** How the plant's room light suits it. */
   roomFit?: { room: string; fit: LightFit };
+  /** Humidity, warmth, draughts and outdoor season checks for its room. */
+  spotChecks?: SpotCheck[];
 };
 
 export function CareSection({
@@ -495,6 +501,22 @@ export function CareSection({
         )}
         <GuideLink id="light" label="Reading the light" />
       </Card>
+
+      {context.spotChecks && context.spotChecks.length > 0 && (
+        <Card>
+          <CardTitle>This spot</CardTitle>
+          {context.spotChecks.map((check) => (
+            <Row
+              key={check.text}
+              icon={check.icon}
+              color={check.tone === 'warn' ? theme.danger : theme.tint}
+              background={check.tone === 'warn' ? theme.dangerSoft : theme.tintSoft}
+              title={check.text}
+              plain
+            />
+          ))}
+        </Card>
+      )}
 
       <Card>
         <CardTitle>Food</CardTitle>

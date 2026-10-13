@@ -1,5 +1,6 @@
 import type { CareTask } from './care-tasks';
 import { addDays, parseLocalDate } from './dates';
+import { taskLabel } from './tasks';
 
 const DAYS_AHEAD = 14;
 
@@ -35,10 +36,16 @@ export function planReminders(
     if (!newToday && offset > 0) continue;
     const water = due.filter((t) => t.task === 'water');
     const feed = due.filter((t) => t.task === 'fertilize');
+    const other = due.filter((t) => t.task !== 'water' && t.task !== 'fertilize');
     const plants = new Set(due.map((t) => t.plant.id)).size;
     const parts = [
       water.length ? `Water: ${names(water)}` : '',
       feed.length ? `Feed: ${names(feed)}` : '',
+      other.length === 1
+        ? `${taskLabel(other[0].task, other[0].label)}: ${other[0].name}`
+        : other.length > 1
+          ? `${other.length} other tasks`
+          : '',
     ].filter(Boolean);
     plans.push({
       date,

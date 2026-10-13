@@ -84,6 +84,22 @@ const MIGRATIONS: string[] = [
     added_at    INTEGER NOT NULL
   );
   `,
+
+  // 3: custom tasks, pot material, room conditions, cuttings
+  `
+  ALTER TABLE schedule ADD COLUMN label TEXT; -- name of a custom task (task = 'custom-<id>')
+
+  ALTER TABLE plant ADD COLUMN pot_material TEXT NOT NULL DEFAULT 'plastic';
+  ALTER TABLE plant ADD COLUMN parent_id TEXT;   -- grown here from a cutting of this plant
+  ALTER TABLE plant ADD COLUMN prop_stage TEXT;  -- 'rooting' | 'rooted' while still a cutting
+  ALTER TABLE plant ADD COLUMN prop_method TEXT; -- e.g. 'stem-cuttings-water'
+
+  ALTER TABLE room ADD COLUMN grow_light INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE room ADD COLUMN humidity TEXT;     -- 'dry' | 'normal' | 'humid' | NULL
+  ALTER TABLE room ADD COLUMN warmth TEXT;       -- 'cool' | 'normal' | 'warm' | NULL
+  ALTER TABLE room ADD COLUMN draught INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE room ADD COLUMN outdoor INTEGER NOT NULL DEFAULT 0;
+  `,
 ];
 
 /** The migration SQL in order (for tests that build a database from scratch). */

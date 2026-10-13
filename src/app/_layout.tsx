@@ -93,6 +93,10 @@ function RootNavigator() {
           <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
           <Stack.Screen name="plant/[id]" options={{ headerShown: true, title: '' }} />
           <Stack.Screen name="plant/edit/[id]" options={{ ...sheet, title: 'Edit plant' }} />
+          <Stack.Screen
+            name="plant/cutting/[id]"
+            options={{ ...sheet, title: 'Start a cutting' }}
+          />
           <Stack.Screen name="plant/log/[id]" options={{ ...sheet, title: 'Add to journal' }} />
           <Stack.Screen
             name="plant/photos/[id]"

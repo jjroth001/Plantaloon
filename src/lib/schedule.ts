@@ -1,6 +1,8 @@
 import { addDays, daysBetween, monthOf } from './dates';
 
-export type Task = 'water' | 'fertilize';
+/** A reminder's key: a built-in kind, or `custom-<id>` for a task the user named. */
+export type Task =
+  'water' | 'fertilize' | 'mist' | 'rotate' | 'clean' | 'prune' | 'repot' | `custom-${string}`;
 export type Hemisphere = 'north' | 'south';
 
 /** What a plant's care group says about the seasons. */
@@ -77,12 +79,19 @@ export function daysUntil(due: string, today: string): number {
 export type PotSize = 's' | 'm' | 'l';
 
 /**
- * Starting watering interval for a new plant: small pots dry out faster, large ones slower.
- * Care profiles assume a medium pot.
+ * Starting watering interval for a new plant: small pots and terracotta dry out faster, large
+ * pots slower. Care profiles assume a medium plastic pot.
  */
-export function suggestedWaterDays(groupDays: number, pot: PotSize): number {
-  const factor = pot === 's' ? 0.8 : pot === 'l' ? 1.25 : 1;
-  return Math.max(1, Math.round(groupDays * factor));
+export function suggestedWaterDays(
+  groupDays: number,
+  pot: PotSize,
+  material: 'plastic' | 'terracotta' | 'glazed' | 'glass' | 'other' = 'plastic',
+): number {
+  const size = pot === 's' ? 0.8 : pot === 'l' ? 1.25 : 1;
+  // Terracotta breathes and dries faster; glass and glazed pots hold water a little longer.
+  const walls =
+    material === 'terracotta' ? 0.85 : material === 'glass' || material === 'glazed' ? 1.1 : 1;
+  return Math.max(1, Math.round(groupDays * size * walls));
 }
 
 /**

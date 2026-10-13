@@ -1,11 +1,27 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-import type { LightTier } from '@/catalog/types';
+import type { LightTier, PropagationId } from '@/catalog/types';
 import type { IconName } from '@/components/icons/icon';
+
+import { entryTypeFor, kindOf, taskForEntry } from '@/lib/tasks';
 
 import { newId } from './ids';
 import { transaction } from './transaction';
-import type { Entry, EntryType, Photo, Plant, PotSize, Room, Schedule, Task } from './types';
+import type {
+  Entry,
+  EntryType,
+  HealthStatus,
+  Photo,
+  Plant,
+  PotMaterial,
+  PotSize,
+  PropStage,
+  Room,
+  RoomHumidity,
+  RoomWarmth,
+  Schedule,
+  Task,
+} from './types';
 
 // --- Row mapping ------------------------------------------------------------
 
@@ -15,6 +31,11 @@ type RoomRow = {
   icon: string;
   light_tier: string | null;
   light_lux: number | null;
+  grow_light: number;
+  humidity: string | null;
+  warmth: string | null;
+  draught: number;
+  outdoor: number;
   sort_order: number;
   created_at: number;
   updated_at: number;
@@ -28,9 +49,13 @@ type PlantRow = {
   group_id: string;
   pot_size: string;
   pot_drainage: number;
+  pot_material: string;
   cover_photo_id: string | null;
   acquired_on: string | null;
   notes: string | null;
+  parent_id: string | null;
+  prop_stage: string | null;
+  prop_method: string | null;
   created_at: number;
   updated_at: number;
 };
@@ -38,6 +63,7 @@ type PlantRow = {
 type ScheduleRow = {
   plant_id: string;
   task: string;
+  label: string | null;
   interval_days: number;
   enabled: number;
   hint_dismissed_at: number | null;
@@ -70,6 +96,11 @@ const toRoom = (r: RoomRow): Room => ({
   icon: r.icon as IconName,
   lightTier: r.light_tier as LightTier | null,
   lightLux: r.light_lux,
+  growLight: r.grow_light === 1,
+  humidity: r.humidity as RoomHumidity | null,
+  warmth: r.warmth as RoomWarmth | null,
+  draught: r.draught === 1,
+  outdoor: r.outdoor === 1,
   sortOrder: r.sort_order,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
@@ -83,9 +114,13 @@ const toPlant = (r: PlantRow): Plant => ({
   groupId: r.group_id,
   potSize: r.pot_size as PotSize,
   potDrainage: r.pot_drainage === 1,
+  potMaterial: (r.pot_material ?? 'plastic') as PotMaterial,
   coverPhotoId: r.cover_photo_id,
   acquiredOn: r.acquired_on,
   notes: r.notes,
+  parentId: r.parent_id,
+  propStage: r.prop_stage as PropStage | null,
+  propMethod: r.prop_method as PropagationId | null,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
 });
@@ -93,6 +128,7 @@ const toPlant = (r: PlantRow): Plant => ({
 const toSchedule = (r: ScheduleRow): Schedule => ({
   plantId: r.plant_id,
   task: r.task as Task,
+  label: r.label,
   intervalDays: r.interval_days,
   enabled: r.enabled === 1,
   hintDismissedAt: r.hint_dismissed_at,
@@ -140,20 +176,37 @@ export async function getRoom(db: SQLiteDatabase, id: string): Promise<Room | nu
   return row ? toRoom(row) : null;
 }
 
+export type RoomInput = {
+  name: string;
+  icon: IconName;
+  lightTier?: LightTier | null;
+  growLight?: boolean;
+  humidity?: RoomHumidity | null;
+  warmth?: RoomWarmth | null;
+  draught?: boolean;
+  outdoor?: boolean;
+};
+
 export async function createRoom(
   db: SQLiteDatabase,
-  input: { name: string; icon: IconName; lightTier?: LightTier | null },
+  input: RoomInput,
   now = Date.now(),
 ): Promise<string> {
   const id = newId();
   const max = await db.getFirstAsync<{ n: number | null }>('SELECT MAX(sort_order) AS n FROM room');
   await db.runAsync(
-    `INSERT INTO room (id, name, icon, light_tier, light_lux, sort_order, created_at, updated_at)
-     VALUES (?, ?, ?, ?, NULL, ?, ?, ?)`,
+    `INSERT INTO room (id, name, icon, light_tier, light_lux, grow_light, humidity, warmth, draught,
+       outdoor, sort_order, created_at, updated_at)
+     VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)`,
     id,
     input.name.trim(),
     input.icon,
     input.lightTier ?? null,
+    input.growLight ? 1 : 0,
+    input.humidity ?? null,
+    input.warmth ?? null,
+    input.draught ? 1 : 0,
+    input.outdoor ? 1 : 0,
     (max?.n ?? -1) + 1,
     now,
     now,
@@ -164,14 +217,20 @@ export async function createRoom(
 export async function updateRoom(
   db: SQLiteDatabase,
   id: string,
-  input: { name: string; icon: IconName; lightTier: LightTier | null },
+  input: RoomInput,
   now = Date.now(),
 ): Promise<void> {
   await db.runAsync(
-    'UPDATE room SET name = ?, icon = ?, light_tier = ?, updated_at = ? WHERE id = ?',
+    `UPDATE room SET name = ?, icon = ?, light_tier = ?, grow_light = ?, humidity = ?, warmth = ?,
+       draught = ?, outdoor = ?, updated_at = ? WHERE id = ?`,
     input.name.trim(),
     input.icon,
-    input.lightTier,
+    input.lightTier ?? null,
+    input.growLight ? 1 : 0,
+    input.humidity ?? null,
+    input.warmth ?? null,
+    input.draught ? 1 : 0,
+    input.outdoor ? 1 : 0,
     now,
     id,
   );
@@ -246,10 +305,15 @@ export type NewPlant = {
   groupId: string;
   potSize: PotSize;
   potDrainage: boolean;
+  potMaterial?: PotMaterial;
   water: { intervalDays: number; enabled: boolean };
   fertilize: { intervalDays: number; enabled: boolean };
+  /** More reminders (mist, turn, custom…). */
+  extraTasks?: { task: Task; label: string | null; intervalDays: number }[];
   /** When it was last watered, if known (local YYYY-MM-DD); logged as a journal entry. */
   lastWatered: string | null;
+  /** For a new cutting: the plant it came from, and how it's being rooted. */
+  cutting?: { parentId: string; method: PropagationId };
 };
 
 export async function createPlant(
@@ -261,8 +325,9 @@ export async function createPlant(
   await transaction(db, async () => {
     await db.runAsync(
       `INSERT INTO plant (id, room_id, nickname, species_id, group_id, pot_size, pot_drainage,
-         cover_photo_id, acquired_on, notes, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, ?, ?)`,
+         pot_material, cover_photo_id, acquired_on, notes, parent_id, prop_stage, prop_method,
+         created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, ?, ?, ?, ?, ?)`,
       id,
       input.roomId,
       input.nickname?.trim() || null,
@@ -270,17 +335,40 @@ export async function createPlant(
       input.groupId,
       input.potSize,
       input.potDrainage ? 1 : 0,
+      input.potMaterial ?? 'plastic',
+      input.cutting?.parentId ?? null,
+      input.cutting ? 'rooting' : null,
+      input.cutting?.method ?? null,
       now,
       now,
     );
-    for (const task of ['water', 'fertilize'] as const) {
+    const schedules = [
+      { task: 'water' as Task, label: null, ...input.water },
+      { task: 'fertilize' as Task, label: null, ...input.fertilize },
+      ...(input.extraTasks ?? []).map((t) => ({ ...t, enabled: true })),
+    ];
+    for (const s of schedules) {
       await db.runAsync(
-        `INSERT INTO schedule (plant_id, task, interval_days, enabled, hint_dismissed_at, updated_at)
-         VALUES (?, ?, ?, ?, NULL, ?)`,
+        `INSERT INTO schedule (plant_id, task, label, interval_days, enabled, hint_dismissed_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, NULL, ?)`,
         id,
-        task,
-        input[task].intervalDays,
-        input[task].enabled ? 1 : 0,
+        s.task,
+        s.label,
+        Math.max(1, Math.round(s.intervalDays)),
+        s.enabled ? 1 : 0,
+        now,
+      );
+    }
+    if (input.cutting) {
+      await insertEntry(
+        db,
+        {
+          plantId: id,
+          type: 'propagation',
+          at: now,
+          note: null,
+          data: { stage: 'started', method: input.cutting.method },
+        },
         now,
       );
     }
@@ -302,6 +390,8 @@ export type PlantPatch = Partial<
     | 'groupId'
     | 'potSize'
     | 'potDrainage'
+    | 'potMaterial'
+    | 'propStage'
     | 'acquiredOn'
     | 'notes'
     | 'coverPhotoId'
@@ -315,6 +405,8 @@ const PLANT_COLUMNS: Record<keyof PlantPatch, string> = {
   groupId: 'group_id',
   potSize: 'pot_size',
   potDrainage: 'pot_drainage',
+  potMaterial: 'pot_material',
+  propStage: 'prop_stage',
   acquiredOn: 'acquired_on',
   notes: 'notes',
   coverPhotoId: 'cover_photo_id',
@@ -348,7 +440,10 @@ export async function deletePlant(db: SQLiteDatabase, id: string): Promise<strin
     'SELECT file FROM photo WHERE plant_id = ?',
     id,
   );
-  await db.runAsync('DELETE FROM plant WHERE id = ?', id);
+  await transaction(db, async () => {
+    await db.runAsync('UPDATE plant SET parent_id = NULL WHERE parent_id = ?', id);
+    await db.runAsync('DELETE FROM plant WHERE id = ?', id);
+  });
   return photos.map((p) => p.file);
 }
 
@@ -356,7 +451,7 @@ export async function deletePlant(db: SQLiteDatabase, id: string): Promise<strin
 
 export async function getSchedules(db: SQLiteDatabase, plantId: string): Promise<Schedule[]> {
   const rows = await db.getAllAsync<ScheduleRow>(
-    'SELECT * FROM schedule WHERE plant_id = ? ORDER BY task DESC',
+    "SELECT * FROM schedule WHERE plant_id = ? ORDER BY task = 'water' DESC, task = 'fertilize' DESC, task",
     plantId,
   );
   return rows.map(toSchedule);
@@ -366,20 +461,36 @@ export async function setSchedule(
   db: SQLiteDatabase,
   plantId: string,
   task: Task,
-  input: { intervalDays: number; enabled: boolean },
+  input: { intervalDays: number; enabled: boolean; label?: string | null },
   now = Date.now(),
 ): Promise<void> {
   await db.runAsync(
-    `INSERT INTO schedule (plant_id, task, interval_days, enabled, hint_dismissed_at, updated_at)
-     VALUES (?, ?, ?, ?, NULL, ?)
-     ON CONFLICT (plant_id, task) DO UPDATE SET interval_days = excluded.interval_days,
-       enabled = excluded.enabled, updated_at = excluded.updated_at`,
+    `INSERT INTO schedule (plant_id, task, label, interval_days, enabled, hint_dismissed_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, NULL, ?)
+     ON CONFLICT (plant_id, task) DO UPDATE SET label = excluded.label,
+       interval_days = excluded.interval_days, enabled = excluded.enabled,
+       updated_at = excluded.updated_at`,
     plantId,
     task,
+    input.label?.trim() || null,
     Math.max(1, Math.round(input.intervalDays)),
     input.enabled ? 1 : 0,
     now,
   );
+}
+
+/** Removes an extra reminder (watering and feeding are switched off instead). */
+export async function removeSchedule(
+  db: SQLiteDatabase,
+  plantId: string,
+  task: Task,
+): Promise<void> {
+  await db.runAsync('DELETE FROM schedule WHERE plant_id = ? AND task = ?', plantId, task);
+}
+
+/** A new key for a task the user names themselves. */
+export function newCustomTask(): Task {
+  return `custom-${newId().slice(0, 8)}`;
 }
 
 export async function dismissIntervalHint(
@@ -437,7 +548,10 @@ export async function completeTask(
   const ids: string[] = [];
   await transaction(db, async () => {
     for (const plantId of plantIds) {
-      ids.push(await insertEntry(db, { plantId, type: task, at, note: null, data: {} }, at));
+      const data = kindOf(task) === 'custom' ? { task } : {};
+      ids.push(
+        await insertEntry(db, { plantId, type: entryTypeFor(task), at, note: null, data }, at),
+      );
     }
   });
   return ids;
@@ -452,6 +566,34 @@ export async function skipTask(
   at = Date.now(),
 ): Promise<string> {
   return insertEntry(db, { plantId, type: 'skip', at, note: null, data: { task, days } }, at);
+}
+
+/** Records how the plant is doing; the latest one shows on its page. */
+export async function setHealth(
+  db: SQLiteDatabase,
+  plantId: string,
+  status: HealthStatus,
+  at = Date.now(),
+): Promise<string> {
+  return insertEntry(db, { plantId, type: 'health', at, note: null, data: { status } }, at);
+}
+
+/** Moves a cutting on: rooted, or potted up (it becomes an ordinary plant). */
+export async function advanceCutting(
+  db: SQLiteDatabase,
+  plantId: string,
+  stage: 'rooted' | 'potted',
+  at = Date.now(),
+): Promise<void> {
+  await transaction(db, async () => {
+    await db.runAsync(
+      'UPDATE plant SET prop_stage = ?, updated_at = ? WHERE id = ?',
+      stage === 'rooted' ? 'rooted' : null,
+      at,
+      plantId,
+    );
+    await insertEntry(db, { plantId, type: 'propagation', at, note: null, data: { stage } }, at);
+  });
 }
 
 export async function getEntry(db: SQLiteDatabase, id: string): Promise<Entry | null> {
@@ -625,24 +767,39 @@ export type Garden = {
   /** Keyed by `${plantId}:${task}`. */
   history: Map<string, TaskHistory>;
   covers: Map<string, Photo>;
+  /** Latest health status per plant, if ever set. */
+  health: Map<string, HealthStatus>;
 };
 
 export const historyKey = (plantId: string, task: Task) => `${plantId}:${task}`;
 
 export async function loadGarden(db: SQLiteDatabase): Promise<Garden> {
-  const [rooms, plants, scheduleRows, doneRows, skipRows, covers] = await Promise.all([
+  const [rooms, plants, scheduleRows, doneRows, skipRows, covers, healthRows] = await Promise.all([
     listRooms(db),
     listPlants(db),
     db.getAllAsync<ScheduleRow>('SELECT * FROM schedule'),
-    db.getAllAsync<{ plant_id: string; type: string; at: number }>(
-      `SELECT plant_id, type, MAX(at) AS at FROM entry
-       WHERE type IN ('water', 'fertilize') GROUP BY plant_id, type`,
+    db.getAllAsync<{ plant_id: string; type: string; data: string; at: number }>(
+      `SELECT plant_id, type, data, MAX(at) AS at FROM entry
+       WHERE type IN ('water', 'fertilize', 'mist', 'rotate', 'clean', 'prune', 'repot')
+       GROUP BY plant_id, type
+       UNION ALL
+       SELECT plant_id, type, data, MAX(at) AS at FROM entry WHERE type = 'custom'
+       GROUP BY plant_id, json_extract(data, '$.task')`,
     ),
     db.getAllAsync<{ plant_id: string; at: number; data: string }>(
       "SELECT plant_id, at, data FROM entry WHERE type = 'skip' ORDER BY at",
     ),
     coverPhotos(db),
+    db.getAllAsync<{ plant_id: string; data: string }>(
+      "SELECT plant_id, data FROM entry WHERE type = 'health' ORDER BY at",
+    ),
   ]);
+
+  const health = new Map<string, HealthStatus>();
+  for (const row of healthRows) {
+    const status = parseData(row.data).status;
+    if (typeof status === 'string') health.set(row.plant_id, status as HealthStatus);
+  }
 
   const history = new Map<string, TaskHistory>();
   const get = (key: string) => {
@@ -650,14 +807,17 @@ export async function loadGarden(db: SQLiteDatabase): Promise<Garden> {
     if (!h) history.set(key, (h = { lastDoneAt: null, skips: [] }));
     return h;
   };
-  for (const row of doneRows) get(historyKey(row.plant_id, row.type as Task)).lastDoneAt = row.at;
+  for (const row of doneRows) {
+    const task = taskForEntry(row.type, parseData(row.data));
+    if (task) get(historyKey(row.plant_id, task)).lastDoneAt = row.at;
+  }
   for (const row of skipRows) {
     const data = parseData(row.data);
-    const task = data.task === 'fertilize' ? 'fertilize' : 'water';
+    const task = (typeof data.task === 'string' ? data.task : 'water') as Task;
     const days = typeof data.days === 'number' ? data.days : 1;
     const h = get(historyKey(row.plant_id, task));
     if (h.lastDoneAt == null || row.at > h.lastDoneAt) h.skips.push({ at: row.at, days });
   }
 
-  return { rooms, plants, schedules: scheduleRows.map(toSchedule), history, covers };
+  return { rooms, plants, schedules: scheduleRows.map(toSchedule), history, covers, health };
 }

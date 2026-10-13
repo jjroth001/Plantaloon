@@ -7,9 +7,10 @@ import { Icon } from '@/components/icons/icon';
 import { PlantAvatar } from '@/components/plant-avatar';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
-import { TASK_ICON, TASK_LABEL } from '@/db/types';
+import { useTaskColors } from '@/hooks/use-task-colors';
 import type { CareTask } from '@/lib/care-tasks';
 import { describeDue } from '@/lib/schedule';
+import { taskIcon, taskLabel } from '@/lib/tasks';
 import { tapFeedback } from '@/lib/haptics';
 import { useTheme } from '@/theme/theme-provider';
 
@@ -32,8 +33,8 @@ export function TaskRow({
 }) {
   const theme = useTheme();
   const [choosing, setChoosing] = useState(false);
-  const color = task.task === 'water' ? theme.water : theme.fertilize;
-  const soft = task.task === 'water' ? theme.waterSoft : theme.fertilizeSoft;
+  const { color, soft } = useTaskColors(task.task);
+  const label = taskLabel(task.task, task.label);
   const late = task.days < 0;
 
   return (
@@ -55,9 +56,9 @@ export function TaskRow({
               {task.name}
             </ThemedText>
             <View style={styles.meta}>
-              <Icon name={TASK_ICON[task.task]} size={15} color={color} duotone={false} />
+              <Icon name={taskIcon(task.task)} size={15} color={color} duotone={false} />
               <ThemedText type="caption" style={{ color }}>
-                {TASK_LABEL[task.task]}
+                {label}
               </ThemedText>
               {late && (
                 <ThemedText type="caption" color="textSecondary">
@@ -89,7 +90,7 @@ export function TaskRow({
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`${TASK_LABEL[task.task]} ${task.name}: done`}
+          accessibilityLabel={`${label} ${task.name}: done`}
           hitSlop={4}
           onPress={() => onDone(task)}
           style={({ pressed }) => [
@@ -106,7 +107,9 @@ export function TaskRow({
           exiting={FadeOut.duration(120)}
           style={styles.skip}>
           <ThemedText type="caption" color="textSecondary">
-            Soil still damp? Check again…
+            {task.task === 'water' || task.task === 'fertilize'
+              ? 'Soil still damp? Check again…'
+              : 'Not today? Remind me again…'}
           </ThemedText>
           <View style={styles.skipChoices}>
             {SKIP_CHOICES.map((choice) => (

@@ -47,6 +47,8 @@ export default function AddPlantDetails() {
     roomId: null,
     potSize: 'm',
     potDrainage: true,
+    potMaterial: 'plastic',
+    extras: [],
     water: { enabled: true, intervalDays: care.water.days },
     fertilize: { enabled: care.fertilize != null, intervalDays: care.fertilize?.days ?? 30 },
   }));
@@ -70,15 +72,11 @@ export default function AddPlantDetails() {
   const roomId = form.roomId ?? roomList[0]?.id ?? null;
 
   const update = (next: PlantFormValue) => {
-    // A new pot size re-suggests the watering interval, unless it was set by hand.
-    if (
-      next.potSize !== form.potSize &&
-      form.water.intervalDays === suggestedWaterDays(care.water.days, form.potSize)
-    ) {
-      next = {
-        ...next,
-        water: { ...next.water, intervalDays: suggestedWaterDays(care.water.days, next.potSize) },
-      };
+    // A new pot size or material re-suggests the watering interval, unless it was set by hand.
+    const before = suggestedWaterDays(care.water.days, form.potSize, form.potMaterial);
+    const after = suggestedWaterDays(care.water.days, next.potSize, next.potMaterial);
+    if (before !== after && form.water.intervalDays === before) {
+      next = { ...next, water: { ...next.water, intervalDays: after } };
     }
     setForm(next);
   };
@@ -111,6 +109,8 @@ export default function AddPlantDetails() {
         groupId: group.id,
         potSize: form.potSize,
         potDrainage: form.potDrainage,
+        potMaterial: form.potMaterial,
+        extraTasks: form.extras,
         water: form.water,
         fertilize: form.fertilize,
         lastWatered: watered,

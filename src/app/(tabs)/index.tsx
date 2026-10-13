@@ -19,7 +19,11 @@ import {
   setSchedule,
   skipTask,
 } from '@/db/garden';
-import { TASK_ICON, TASK_LABEL } from '@/db/types';
+import { careFor, displayName } from '@/catalog';
+import { useClimateLows } from '@/hooks/use-climate';
+import { useTaskColors } from '@/hooks/use-task-colors';
+import { checkSpot } from '@/lib/spot';
+import { doneMessage, kindOf, TASK_INFO, taskIcon, taskLabel } from '@/lib/tasks';
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { useToday } from '@/hooks/use-today';
@@ -39,6 +43,7 @@ export default function TodayScreen() {
   const today = useToday();
   const [undo, setUndo] = useState<Undo | null>(null);
   const hideUndo = useCallback(() => setUndo(null), []);
+  const lows = useClimateLows();
 
   if (!garden.data || !settings.data) return <Screen title="Today">{null}</Screen>;
 
@@ -47,6 +52,19 @@ export default function TodayScreen() {
   const upcoming = tasks.filter((t) => t.days > 0 && t.days <= 7);
   const suggestions = tasks.filter((t) => t.suggestion != null && t.days <= 0).slice(0, 2);
   const hasPlants = garden.data.plants.length > 0;
+  // Outdoor plants that should come inside now, by the local climate.
+  const month = new Date().getMonth();
+  const bringIn = garden.data.plants.flatMap((plant) => {
+    const room = garden.data!.rooms.find((r) => r.id === plant.roomId);
+    if (!room?.outdoor || !lows) return [];
+    const care = careFor(plant.groupId, plant.speciesId);
+    const urgent = checkSpot(care, room, {
+      lows,
+      month,
+      unit: settings.data!.temperatureUnit,
+    }).find((c) => c.urgent);
+    return urgent ? [{ plant, room, care }] : [];
+  });
 
   const done = async (list: CareTask[]) => {
     successFeedback();
@@ -55,9 +73,12 @@ export default function TodayScreen() {
       list.map((t) => t.plant.id),
       list[0].task,
     );
-    const verb = list[0].task === 'water' ? 'Watered' : 'Fed';
+    const first = list[0];
     setUndo({
-      message: list.length === 1 ? `${verb} ${list[0].name}` : `${verb} ${list.length} plants`,
+      message:
+        list.length === 1
+          ? doneMessage(first.task, first.label, first.name)
+          : `${TASK_INFO[kindOf(first.task)].done} ${list.length} plants`,
       entryIds: ids,
     });
   };
@@ -95,6 +116,23 @@ export default function TodayScreen() {
         <ThemedText type="body" color="textSecondary" style={styles.date}>
           {formatLongDate(today)}
         </ThemedText>
+
+        {bringIn.length > 0 && (
+          <Card style={{ backgroundColor: theme.dangerSoft, borderColor: 'transparent' }}>
+            <View style={styles.suggestion}>
+              <Icon name="snowflake" size={24} color={theme.danger} />
+              <View style={styles.flex}>
+                <ThemedText type="subheading">Time to bring inside</ThemedText>
+                <ThemedText type="body">
+                  Nights near you are now too cold for{' '}
+                  {bringIn.map((b) => `${displayName(b.plant)} (${b.room.name})`).join(', ')}. Move{' '}
+                  {bringIn.length === 1 ? 'it' : 'them'} indoors, then change the room on the
+                  plant’s page.
+                </ThemedText>
+              </View>
+            </View>
+          </Card>
+        )}
 
         {!hasPlants ? (
           <EmptyState
@@ -197,8 +235,7 @@ export default function TodayScreen() {
 }
 
 function UpcomingRow({ task }: { task: CareTask }) {
-  const theme = useTheme();
-  const color = task.task === 'water' ? theme.water : theme.fertilize;
+  const { color } = useTaskColors(task.task);
   return (
     <View style={styles.upcoming}>
       <PlantAvatar
@@ -210,9 +247,9 @@ function UpcomingRow({ task }: { task: CareTask }) {
       <View style={styles.flex}>
         <ThemedText numberOfLines={1}>{task.name}</ThemedText>
         <View style={styles.meta}>
-          <Icon name={TASK_ICON[task.task]} size={14} color={color} duotone={false} />
+          <Icon name={taskIcon(task.task)} size={14} color={color} duotone={false} />
           <ThemedText type="caption" style={{ color }}>
-            {TASK_LABEL[task.task]}
+            {taskLabel(task.task, task.label)}
           </ThemedText>
         </View>
       </View>

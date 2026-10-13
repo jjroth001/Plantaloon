@@ -114,7 +114,17 @@ export default function PlantsScreen() {
                           ? (getSpecies(plant.speciesId)?.common[0] ?? ' ')
                           : (getSpecies(plant.speciesId)?.scientific ?? ' ')}
                       </ThemedText>
-                      {task && (
+                      {plant.propStage && (
+                        <View style={styles.due}>
+                          <Icon name="scissors" size={13} color={theme.tint} duotone={false} />
+                          <ThemedText type="caption" style={{ color: theme.tint }}>
+                            {plant.propStage === 'rooting'
+                              ? 'Cutting · rooting'
+                              : 'Cutting · rooted'}
+                          </ThemedText>
+                        </View>
+                      )}
+                      {!plant.propStage && task && (
                         <View style={styles.due}>
                           <Icon
                             name="drop"

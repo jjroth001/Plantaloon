@@ -9,6 +9,9 @@ import { openTestDatabase } from '@/test-utils/node-sqlite';
 import { backupHeader, parseBackupHeader, parsePhotoLine, restoreTables } from './backup';
 import {
   addPhoto,
+  advanceCutting,
+  newCustomTask,
+  setHealth,
   completeTask,
   createPlant,
   createRoom,
@@ -217,4 +220,85 @@ test('backup parsing rejects other files and unsafe photo names', () => {
   });
   expect(parsePhotoLine('{"photo":"../evil.jpg","data":"AAAA"}')).toBeNull();
   expect(parsePhotoLine('not json')).toBeNull();
+});
+
+test('custom tasks: due after their interval, ticked off and skipped like watering', async () => {
+  const { db, roomId } = await setup();
+  const pests = newCustomTask();
+  const plantId = await createPlant(
+    db,
+    pothos(roomId, {
+      extraTasks: [
+        { task: 'rotate', label: null, intervalDays: 14 },
+        { task: pests, label: 'Check for pests', intervalDays: 10 },
+      ],
+    }),
+    T0,
+  );
+  const days = async (task: string, day = 0) =>
+    buildTasks(await loadGarden(db), 'north', today(day)).find((t) => t.task === task);
+  expect((await days('rotate'))?.days).toBe(14);
+  expect((await days(pests))?.label).toBe('Check for pests');
+  expect((await days(pests))?.days).toBe(10);
+
+  await completeTask(db, [plantId], pests, T0 + 10 * DAY);
+  expect((await days(pests, 10))?.days).toBe(10);
+  await completeTask(db, [plantId], 'rotate', T0 + 14 * DAY);
+  expect((await days('rotate', 14))?.days).toBe(14);
+  await skipTask(db, plantId, pests, 3, T0 + 20 * DAY);
+  expect((await days(pests, 20))?.days).toBe(3);
+  // Only watering and feeding learn from repeated "not yet".
+  expect((await days(pests, 20))?.suggestion).toBeNull();
+});
+
+test('health: the latest status wins', async () => {
+  const { db, roomId } = await setup();
+  const plantId = await createPlant(db, pothos(roomId), T0);
+  await setHealth(db, plantId, 'struggling', T0);
+  await setHealth(db, plantId, 'thriving', T0 + DAY);
+  expect((await loadGarden(db)).health.get(plantId)).toBe('thriving');
+});
+
+test('cuttings: linked to the parent, then potted up; deleting the parent keeps them', async () => {
+  const { db, roomId } = await setup();
+  const parentId = await createPlant(db, pothos(roomId), T0);
+  const childId = await createPlant(
+    db,
+    pothos(roomId, { nickname: 'Baby', cutting: { parentId, method: 'stem-cuttings-water' } }),
+    T0,
+  );
+  let child = (await loadGarden(db)).plants.find((p) => p.id === childId)!;
+  expect(child).toMatchObject({
+    parentId,
+    propStage: 'rooting',
+    propMethod: 'stem-cuttings-water',
+  });
+  await advanceCutting(db, childId, 'rooted', T0 + DAY);
+  await advanceCutting(db, childId, 'potted', T0 + 2 * DAY);
+  child = (await loadGarden(db)).plants.find((p) => p.id === childId)!;
+  expect(child.propStage).toBeNull();
+  const stages = (await listJournal(db, childId)).map((e) => e.data.stage);
+  expect(stages).toEqual(['potted', 'rooted', 'started']);
+  await deletePlant(db, parentId);
+  child = (await loadGarden(db)).plants.find((p) => p.id === childId)!;
+  expect(child.parentId).toBeNull();
+});
+
+test('backups from before custom tasks and room conditions restore with defaults', async () => {
+  const { db, roomId } = await setup();
+  await createPlant(db, pothos(roomId), T0);
+  const old = JSON.parse(JSON.stringify(await backupHeader(db, T0)));
+  for (const row of old.tables.plant) {
+    delete row.pot_material;
+    delete row.parent_id;
+  }
+  for (const row of old.tables.room) {
+    delete row.grow_light;
+    delete row.outdoor;
+  }
+  const fresh = openTestDatabase();
+  await restoreTables(fresh, parseBackupHeader(JSON.stringify(old)));
+  const garden = await loadGarden(fresh);
+  expect(garden.plants[0].potMaterial).toBe('plastic');
+  expect(garden.rooms[0]).toMatchObject({ growLight: false, outdoor: false });
 });

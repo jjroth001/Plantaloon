@@ -12,6 +12,7 @@ import {
   getPlant,
   getSchedules,
   listRooms,
+  removeSchedule,
   setSchedule,
   updatePlant,
 } from '@/db/garden';
@@ -38,6 +39,9 @@ export default function EditPlant() {
   const plant = loaded.data?.plant;
   if (!plant || !rooms.data) return <Screen belowHeader>{null}</Screen>;
   const care = careFor(plant.groupId, plant.speciesId);
+  const initialExtras = loaded
+    .data!.schedules.filter((x) => x.task !== 'water' && x.task !== 'fertilize' && x.enabled)
+    .map((x) => ({ task: x.task, label: x.label, intervalDays: x.intervalDays }));
   const schedule = (task: 'water' | 'fertilize') => {
     const s = loaded.data!.schedules.find((x) => x.task === task);
     return { enabled: s?.enabled ?? false, intervalDays: s?.intervalDays ?? 7 };
@@ -47,8 +51,10 @@ export default function EditPlant() {
     roomId: plant.roomId,
     potSize: plant.potSize,
     potDrainage: plant.potDrainage,
+    potMaterial: plant.potMaterial,
     water: schedule('water'),
     fertilize: schedule('fertilize'),
+    extras: initialExtras,
   };
 
   const save = async () => {
@@ -59,9 +65,21 @@ export default function EditPlant() {
         roomId: value.roomId ?? plant.roomId,
         potSize: value.potSize,
         potDrainage: value.potDrainage,
+        potMaterial: value.potMaterial,
       });
       await setSchedule(db, plant.id, 'water', value.water);
       await setSchedule(db, plant.id, 'fertilize', value.fertilize);
+      for (const extra of value.extras) {
+        await setSchedule(db, plant.id, extra.task, {
+          intervalDays: extra.intervalDays,
+          enabled: true,
+          label: extra.label,
+        });
+      }
+      const kept = new Set(value.extras.map((e) => e.task));
+      for (const old of initialExtras) {
+        if (!kept.has(old.task)) await removeSchedule(db, plant.id, old.task);
+      }
       successFeedback();
       router.back();
     } finally {

@@ -42,8 +42,8 @@ built clean-room: no decompiled code, copied assets, or copied text.
   scheduled tasks, until v2.
 - Interval comes from the care profile, adjusted for pot size and season (winter = longer for
   watering, fertilizing paused Nov–Feb by default for plants whose profile says so).
-- On a due task: **Done** (logs it), **Skip** (soil still moist; check again in N days, default 2),
-  or **Snooze to tomorrow**.
+- On a due task: **Done** (logs it, with Undo) or **Not yet** (soil still damp; check again
+  tomorrow, in 2, 3 or 7 days). "Water all" ticks off a whole room.
 - Gentle learning: if a plant is skipped 3 times in a row, offer to lengthen its interval. Never
   changes the schedule without asking.
 - **One daily notification** at a chosen time (default 9:00): "4 plants need water today."
@@ -59,20 +59,21 @@ built clean-room: no decompiled code, copied assets, or copied text.
 
 ### Care profiles (the catalog)
 Bundled, offline, read-only. Two layers:
-1. **Care groups (~80)** — e.g. *Philodendron*, prayer plants (*Calathea*, *Goeppertia*,
+1. **Care groups (99)** — e.g. *Philodendron*, prayer plants (*Calathea*, *Goeppertia*,
    *Maranta*), *Hoya*, *Peperomia*, desert cacti, *Echeveria*-type succulents, ferns, *Phalaenopsis*
    orchids. Written by us. Fields: light range, watering style (let dry fully / top inch dry / keep
    lightly moist), base water interval (growing season and winter), fertilize interval and season,
    humidity, minimum temperature, pet safety (cats / dogs, with source), difficulty, and a few short
    care tips.
-2. **Species (~600–1,000)** — scientific name, common names, and a link to a care group. About 100
-   popular plants that break their group's rules get their own overrides (e.g. snake plant,
-   fiddle-leaf fig, ZZ plant).
+2. **Species (2,229)** — GrowSpot's species list (scientific name, common name, light tier), each
+   linked to a care group by genus. About 180 species that break their group's rules have
+   overrides (`src/catalog/overrides.ts`), and ~50 popular plants get extra everyday names
+   (`src/catalog/extra-names.ts`) and rank first in search.
 
 Sources, credited on an About screen:
-- **Wikidata / GBIF** (CC0) — scientific and common names.
-- **GrowSpot light dataset** (CC BY 4.0) — per-species light tier and the lux boundaries between
-  tiers. Attribution line kept with the bundled file.
+- **GrowSpot light datasets** (CC BY 4.0) — the species list (scientific and common names),
+  per-species light tier, and the lux bands. Attribution kept with the bundled file
+  (`data/growspot/`, `src/catalog/growspot-species.ts`).
 - **ASPCA toxic and non-toxic plant lists** — pet safety facts, cited per plant (facts only, no
   copied text).
 
@@ -104,9 +105,13 @@ Care text is general guidance, not professional advice; the About screen says so
 
 Navigation: bottom tabs **Today · Plants · Light · Settings**.
 
+Appearance: plain solid surfaces; Settings › Appearance picks light / dark / follow the phone and
+one of six accent colors (Leaf, Moss, Teal, Ocean, Plum, Clay). Contrast is tested.
+
 ### Backup
 - **Export backup**: one file with all data and photos, saved where you choose (e.g. Drive).
-- **Import backup**: replaces or merges.
+- **Restore backup**: replaces everything on the phone (also offered on the welcome screen).
+- Format: JSON Lines — line 1 is every database row, then one line per photo (base64).
 - **Erase all data**: type DELETE to confirm.
 
 ## v2 and later
@@ -121,27 +126,31 @@ Navigation: bottom tabs **Today · Plants · Light · Settings**.
 
 ```
 room
-  id, name, icon, light_tier ('low'|'medium'|'bright_indirect'|'direct'|null),
-  light_lux (last measured, nullable), sort_order, created_at, updated_at, deleted_at
+  id, name, icon, light_tier ('low'|'medium'|'high'|'very_high'|null),
+  light_lux (last measured, nullable), sort_order, created_at, updated_at
 
 plant
   id, room_id → room.id, nickname, species_id (catalog id, nullable),
   care_group_id (catalog id), pot_size ('s'|'m'|'l'), pot_drainage (bool),
-  cover_photo_id (nullable), acquired_on (local YYYY-MM-DD, nullable),
-  created_at, updated_at, deleted_at
+  cover_photo_id (nullable), acquired_on (local YYYY-MM-DD, nullable), notes,
+  created_at, updated_at
 
-schedule
-  id, plant_id → plant.id, task ('water'|'fertilize'),
-  interval_days, winter_interval_days (nullable = same), paused (bool),
-  next_due_on (local YYYY-MM-DD; recomputed from the log), snoozed_until (nullable)
+schedule  (primary key: plant_id + task)
+  plant_id → plant.id, task ('water'|'fertilize'), interval_days, enabled,
+  hint_dismissed_at ("water less often?" suggestion dismissed), updated_at
+  -- Due dates aren't stored: lib/schedule.ts works them out from the journal (last done,
+  -- latest "not yet" since), the interval and the season, so they can never go stale.
 
 entry  (the care journal)
   id, plant_id → plant.id,
   type ('water'|'fertilize'|'skip'|'repot'|'prune'|'mist'|'rotate'|'note'|'photo'),
-  at (unix ms), note, data (JSON, type-specific), created_at, updated_at, deleted_at
+  at (unix ms), note, data (JSON; 'skip': { task, days }), created_at, updated_at
 
 photo
-  id, entry_id → entry.id, file (relative path in app storage), width, height, taken_at
+  id, entry_id → entry.id, plant_id → plant.id, file (name in the app's photos folder),
+  width, height, taken_at, created_at
+
+Deletes are real deletes (no sync yet, so no soft deletes); photo files are removed with them.
 
 setting
   key, value
@@ -158,6 +167,9 @@ data. Plants store catalog ids, so catalog updates improve care advice for exist
 - Jest via jest-expo for schedule maths, catalog search and migrations.
 
 ## Milestones
+
+All six were built in one pass on 2026-10-12; none has been tried on a phone yet.
+
 - **M1 — Rooms and plants:** database, rooms, add/edit plants, Plants tab. Catalog with ~20 groups
   to start.
 - **M2 — Care tasks:** schedules, Today tab, Done / Skip / Snooze, season adjustment.

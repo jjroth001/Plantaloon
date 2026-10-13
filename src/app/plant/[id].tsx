@@ -1,0 +1,630 @@
+import { Image } from 'expo-image';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useCallback, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+
+import { careFor, displayName, getSpecies, type Care } from '@/catalog';
+import { Icon, type IconName } from '@/components/icons/icon';
+import { PlantAvatar } from '@/components/plant-avatar';
+import { Screen } from '@/components/screen';
+import { ThemedText } from '@/components/themed-text';
+import { Button, Card, Divider, IconButton, SectionTitle } from '@/components/ui';
+import { UndoBar } from '@/components/undo-bar';
+import { Radius, Spacing } from '@/constants/theme';
+import {
+  completeTask,
+  deleteEntries,
+  dismissIntervalHint,
+  listJournal,
+  setSchedule,
+  type JournalItem,
+} from '@/db/garden';
+import { ENTRY_ICON, ENTRY_LABEL, TASK_LABEL, type Plant, type Room, type Task } from '@/db/types';
+import { useDbQuery } from '@/db/use-db-query';
+import { useSettings } from '@/db/use-settings';
+import { useGarden } from '@/hooks/use-garden';
+import { useToday } from '@/hooks/use-today';
+import { addPlantPhoto } from '@/lib/add-photo';
+import { buildTasks, type CareTask } from '@/lib/care-tasks';
+import {
+  DIFFICULTY_TEXT,
+  formatTemp,
+  HUMIDITY_TEXT,
+  petText,
+  WATER_STYLE_TEXT,
+} from '@/lib/care-text';
+import { dateOf, formatRelativeDay, formatTime } from '@/lib/dates';
+import { successFeedback } from '@/lib/haptics';
+import { LIGHT_LABEL, lightFit } from '@/lib/light';
+import { photoUri } from '@/lib/photos';
+import { describeDue, endOfWinter, isWinter } from '@/lib/schedule';
+import { useTheme } from '@/theme/theme-provider';
+
+type Undo = { message: string; entryIds: string[] };
+
+export default function PlantScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const db = useSQLiteContext();
+  const theme = useTheme();
+  const garden = useGarden();
+  const settings = useSettings();
+  const today = useToday();
+  const journal = useDbQuery(['entry', 'photo'], (d) => listJournal(d, id), [id]);
+  const [undo, setUndo] = useState<Undo | null>(null);
+  const hideUndo = useCallback(() => setUndo(null), []);
+
+  const plant = garden.data?.plants.find((p) => p.id === id);
+  if (!garden.data || !settings.data) return <Screen belowHeader>{null}</Screen>;
+  if (!plant) {
+    // Deleted: leave quietly.
+    return <Screen belowHeader>{null}</Screen>;
+  }
+  const room = garden.data.rooms.find((r) => r.id === plant.roomId);
+  const care = careFor(plant.groupId, plant.speciesId);
+  const species = getSpecies(plant.speciesId);
+  const name = displayName(plant);
+  const cover = garden.data.covers.get(plant.id);
+  const tasks = buildTasks(garden.data, settings.data.hemisphere, today).filter(
+    (t) => t.plant.id === plant.id,
+  );
+  const schedules = garden.data.schedules.filter((s) => s.plantId === plant.id);
+  const photos = (journal.data ?? [])
+    .flatMap((e) => e.photos)
+    .sort((a, b) => b.takenAt - a.takenAt);
+
+  const log = async (task: Task) => {
+    successFeedback();
+    const ids = await completeTask(db, [plant.id], task);
+    setUndo({ message: `${task === 'water' ? 'Watered' : 'Fed'} ${name}`, entryIds: ids });
+  };
+
+  const undoLast = async () => {
+    if (!undo) return;
+    setUndo(null);
+    await deleteEntries(db, undo.entryIds);
+  };
+
+  const openPhotos = (photoId?: string) =>
+    router.push({ pathname: '/plant/photos/[id]', params: { id: plant.id, photo: photoId ?? '' } });
+
+  return (
+    <View style={styles.fill}>
+      <Stack.Screen
+        options={{
+          title: '',
+          headerRight: () => (
+            <IconButton
+              icon="pencil-simple"
+              label="Edit plant"
+              onPress={() =>
+                router.push({ pathname: '/plant/edit/[id]', params: { id: plant.id } })
+              }
+            />
+          ),
+        }}
+      />
+      <Screen belowHeader>
+        <View style={styles.hero}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={cover ? 'Open photos' : 'Add a photo'}
+            onPress={() => (cover ? openPhotos(cover.id) : addPlantPhoto(db, plant.id))}>
+            <PlantAvatar
+              photo={cover}
+              groupId={plant.groupId}
+              size={132}
+              radius={Radius.large + 10}
+            />
+            {!cover && (
+              <View style={[styles.cameraBadge, { backgroundColor: theme.tint }]}>
+                <Icon name="camera" size={18} color={theme.onTint} />
+              </View>
+            )}
+          </Pressable>
+          <View style={styles.heroText}>
+            <ThemedText type="title" style={styles.center}>
+              {name}
+            </ThemedText>
+            {species && (
+              <ThemedText type="body" color="textSecondary" style={[styles.center, styles.italic]}>
+                {plant.nickname ? `${species.common[0]} · ` : ''}
+                {species.scientific}
+              </ThemedText>
+            )}
+            {!species && (
+              <ThemedText type="body" color="textSecondary" style={styles.center}>
+                Cared for like: {care.name}
+              </ThemedText>
+            )}
+            {room && (
+              <View style={[styles.roomChip, { backgroundColor: theme.element }]}>
+                <Icon name={room.icon} size={16} color={theme.textSecondary} />
+                <ThemedText type="caption" color="textSecondary">
+                  {room.name}
+                </ThemedText>
+              </View>
+            )}
+          </View>
+        </View>
+
+        <View style={styles.actions}>
+          <QuickAction
+            icon="drop"
+            label="Watered"
+            color={theme.water}
+            background={theme.waterSoft}
+            onPress={() => log('water')}
+          />
+          <QuickAction
+            icon="flask"
+            label="Fed"
+            color={theme.fertilize}
+            background={theme.fertilizeSoft}
+            onPress={() => log('fertilize')}
+          />
+          <QuickAction
+            icon="camera"
+            label="Photo"
+            color={theme.tint}
+            background={theme.tintSoft}
+            onPress={() => addPlantPhoto(db, plant.id)}
+          />
+          <QuickAction
+            icon="note-pencil"
+            label="Journal"
+            color={theme.tint}
+            background={theme.tintSoft}
+            onPress={() => router.push({ pathname: '/plant/log/[id]', params: { id: plant.id } })}
+          />
+        </View>
+
+        {tasks
+          .filter((t) => t.suggestion != null)
+          .map((t) => (
+            <Card
+              key={t.task}
+              style={{ backgroundColor: theme.tintSoft, borderColor: 'transparent' }}>
+              <View style={styles.suggestion}>
+                <Icon name="lightbulb" size={24} color={theme.tint} />
+                <ThemedText type="body" style={styles.flex}>
+                  The soil has been too damp to {t.task === 'water' ? 'water' : 'feed'} three times
+                  in a row. Change to every {t.suggestion} days?
+                </ThemedText>
+              </View>
+              <View style={styles.suggestionButtons}>
+                <Button
+                  title="Keep as is"
+                  size="small"
+                  variant="ghost"
+                  onPress={() => dismissIntervalHint(db, plant.id, t.task)}
+                />
+                <Button
+                  title={`Every ${t.suggestion} days`}
+                  size="small"
+                  onPress={() =>
+                    setSchedule(db, plant.id, t.task, {
+                      intervalDays: t.suggestion!,
+                      enabled: true,
+                    })
+                  }
+                />
+              </View>
+            </Card>
+          ))}
+
+        <Card>
+          {(['water', 'fertilize'] as const).map((task, i) => (
+            <View key={task} style={styles.gap}>
+              {i > 0 && <Divider />}
+              <ScheduleLine
+                task={task}
+                due={tasks.find((t) => t.task === task)}
+                intervalDays={schedules.find((s) => s.task === task)?.intervalDays}
+                care={care}
+                hemisphere={settings.data!.hemisphere}
+                today={today}
+                onEdit={() =>
+                  router.push({ pathname: '/plant/edit/[id]', params: { id: plant.id } })
+                }
+              />
+            </View>
+          ))}
+        </Card>
+
+        {photos.length > 0 && (
+          <View style={styles.section}>
+            <SectionTitle
+              right={
+                <Pressable accessibilityRole="button" hitSlop={8} onPress={() => openPhotos()}>
+                  <ThemedText type="label" color="tint">
+                    See all
+                  </ThemedText>
+                </Pressable>
+              }>
+              {`Photos (${photos.length})`}
+            </SectionTitle>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.strip}>
+              {photos.slice(0, 12).map((photo) => (
+                <Pressable
+                  key={photo.id}
+                  accessibilityRole="imagebutton"
+                  accessibilityLabel={`Photo from ${formatRelativeDay(dateOf(photo.takenAt), today)}`}
+                  onPress={() => openPhotos(photo.id)}>
+                  <Image
+                    source={{ uri: photoUri(photo.file) }}
+                    style={[styles.thumb, { backgroundColor: theme.element }]}
+                    contentFit="cover"
+                    transition={150}
+                  />
+                  <ThemedText type="caption" color="textSecondary" style={styles.thumbDate}>
+                    {formatRelativeDay(dateOf(photo.takenAt), today)}
+                  </ThemedText>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+
+        <CareCard care={care} plant={plant} room={room} unit={settings.data.temperatureUnit} />
+
+        <View style={styles.section}>
+          <SectionTitle>Journal</SectionTitle>
+          <Card>
+            {(journal.data ?? []).length === 0 ? (
+              <ThemedText type="body" color="textSecondary">
+                Waterings, feeds, photos and notes will collect here.
+              </ThemedText>
+            ) : (
+              (journal.data ?? []).slice(0, 40).map((entry, i) => (
+                <Animated.View
+                  key={entry.id}
+                  entering={FadeIn.duration(200)}
+                  exiting={FadeOut.duration(150)}
+                  layout={LinearTransition.duration(200)}
+                  style={styles.gap}>
+                  {i > 0 && <Divider />}
+                  <JournalRow entry={entry} today={today} />
+                </Animated.View>
+              ))
+            )}
+          </Card>
+        </View>
+      </Screen>
+      {undo && <UndoBar message={undo.message} onUndo={undoLast} onHide={hideUndo} />}
+    </View>
+  );
+}
+
+function QuickAction({
+  icon,
+  label,
+  color,
+  background,
+  onPress,
+}: {
+  icon: IconName;
+  label: string;
+  color: string;
+  background: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
+      <View style={[styles.actionIcon, { backgroundColor: background }]}>
+        <Icon name={icon} size={26} color={color} />
+      </View>
+      <ThemedText type="caption">{label}</ThemedText>
+    </Pressable>
+  );
+}
+
+function ScheduleLine({
+  task,
+  due,
+  intervalDays,
+  care,
+  hemisphere,
+  today,
+  onEdit,
+}: {
+  task: Task;
+  due: CareTask | undefined;
+  intervalDays: number | undefined;
+  care: Care;
+  hemisphere: 'north' | 'south';
+  today: string;
+  onEdit: () => void;
+}) {
+  const theme = useTheme();
+  const color = task === 'water' ? theme.water : theme.fertilize;
+  let status: string;
+  let detail: string;
+  if (!due || intervalDays == null) {
+    status = 'No reminders';
+    detail = task === 'fertilize' && !care.fertilize ? 'Rarely needs feeding' : 'Turned off';
+  } else {
+    status = describeDue(due.days);
+    const winterPause =
+      task === 'fertilize' && !(care.fertilize?.winter ?? false) && isWinter(today, hemisphere);
+    detail = winterPause
+      ? `Resting for winter until ${formatRelativeDay(endOfWinter(today, hemisphere), today)}`
+      : `Every ${intervalDays} days${task === 'water' && isWinter(today, hemisphere) && care.water.winterFactor > 1 ? ' (longer in winter)' : ''}`;
+    if (due.lastDoneAt)
+      detail += ` · last ${formatRelativeDay(dateOf(due.lastDoneAt), today).toLowerCase()}`;
+  }
+  return (
+    <Pressable accessibilityRole="button" onPress={onEdit} style={styles.schedule}>
+      <View
+        style={[
+          styles.scheduleIcon,
+          { backgroundColor: task === 'water' ? theme.waterSoft : theme.fertilizeSoft },
+        ]}>
+        <Icon name={task === 'water' ? 'drop' : 'flask'} size={22} color={color} />
+      </View>
+      <View style={styles.flex}>
+        <ThemedText type="label" color="textSecondary">
+          {TASK_LABEL[task]}
+        </ThemedText>
+        <ThemedText type="subheading" style={due && due.days <= 0 ? { color } : undefined}>
+          {status}
+        </ThemedText>
+        <ThemedText type="caption" color="textSecondary">
+          {detail}
+        </ThemedText>
+      </View>
+    </Pressable>
+  );
+}
+
+function CareFact({ icon, label, value }: { icon: IconName; label: string; value: string }) {
+  const theme = useTheme();
+  return (
+    <View style={styles.fact}>
+      <Icon name={icon} size={22} color={theme.tint} />
+      <View style={styles.flex}>
+        <ThemedText type="caption" color="textSecondary">
+          {label}
+        </ThemedText>
+        <ThemedText type="body">{value}</ThemedText>
+      </View>
+    </View>
+  );
+}
+
+function CareCard({
+  care,
+  plant,
+  room,
+  unit,
+}: {
+  care: Care;
+  plant: Plant;
+  room: Room | undefined;
+  unit: 'C' | 'F';
+}) {
+  const theme = useTheme();
+  const fit = room?.lightTier ? lightFit(room.lightTier, care.light) : null;
+  const fitText =
+    fit === 'too_dark'
+      ? `${room!.name} is probably too dark. Try a brighter spot.`
+      : fit === 'too_bright'
+        ? `${room!.name} may be too sunny. Filter the light or move it back a little.`
+        : fit === 'ideal'
+          ? `${room!.name} has just the right light.`
+          : fit === 'ok'
+            ? `${room!.name}’s light is fine.`
+            : null;
+  const range =
+    care.light.min === care.light.max
+      ? LIGHT_LABEL[care.light.best]
+      : `${LIGHT_LABEL[care.light.best]} is best (copes with ${LIGHT_LABEL[care.light.min].toLowerCase()} to ${LIGHT_LABEL[care.light.max].toLowerCase()})`;
+
+  return (
+    <View style={styles.section}>
+      <SectionTitle>Care guide</SectionTitle>
+      <Card>
+        <ThemedText type="body">{care.summary}</ThemedText>
+        {care.note ? (
+          <ThemedText type="body" color="textSecondary">
+            {care.note}
+          </ThemedText>
+        ) : null}
+        <Divider />
+        <CareFact icon="sun" label="Light" value={range} />
+        {fitText && (
+          <View
+            style={[
+              styles.fit,
+              {
+                backgroundColor:
+                  fit === 'too_dark' || fit === 'too_bright' ? theme.dangerSoft : theme.tintSoft,
+              },
+            ]}>
+            <ThemedText
+              type="caption"
+              style={{
+                color: fit === 'too_dark' || fit === 'too_bright' ? theme.danger : theme.tint,
+              }}>
+              {fitText}
+            </ThemedText>
+          </View>
+        )}
+        <CareFact icon="drop" label="Water" value={WATER_STYLE_TEXT[care.water.style]} />
+        <CareFact
+          icon="flask"
+          label="Food"
+          value={
+            care.fertilize
+              ? `Every ${care.fertilize.days} days or so in spring and summer${care.fertilize.winter ? ', and lightly in winter' : ''}.`
+              : 'Rarely needs feeding.'
+          }
+        />
+        <CareFact icon="drop-half" label="Humidity" value={HUMIDITY_TEXT[care.humidity]} />
+        <CareFact
+          icon="thermometer"
+          label="Warmth"
+          value={`Keep above ${formatTemp(care.minTempC, unit)}`}
+        />
+        <CareFact icon="paw-print" label="Pets" value={petText(care.pets)} />
+        <CareFact icon="leaf" label="Care level" value={DIFFICULTY_TEXT[care.difficulty]} />
+        {!plant.potDrainage && (
+          <View style={[styles.fit, { backgroundColor: theme.dangerSoft }]}>
+            <ThemedText type="caption" style={{ color: theme.danger }}>
+              Its pot has no drainage hole. Water sparingly, or move it to a pot with one so the
+              roots don’t sit in water.
+            </ThemedText>
+          </View>
+        )}
+        {care.tips.length > 0 && <Divider />}
+        {care.tips.map((tip) => (
+          <View key={tip} style={styles.tip}>
+            <View style={[styles.bullet, { backgroundColor: theme.tint }]} />
+            <ThemedText type="body" style={styles.flex}>
+              {tip}
+            </ThemedText>
+          </View>
+        ))}
+        <ThemedText type="caption" color="textSecondary">
+          General guidance for {care.name.toLowerCase()}. Every home is different, so let the plant
+          and its soil be your guide.
+        </ThemedText>
+      </Card>
+    </View>
+  );
+}
+
+function JournalRow({ entry, today }: { entry: JournalItem; today: string }) {
+  const theme = useTheme();
+  const color =
+    entry.type === 'water'
+      ? theme.water
+      : entry.type === 'fertilize'
+        ? theme.fertilize
+        : theme.tint;
+  const background =
+    entry.type === 'water'
+      ? theme.waterSoft
+      : entry.type === 'fertilize'
+        ? theme.fertilizeSoft
+        : theme.tintSoft;
+  const skipDays =
+    entry.type === 'skip' && typeof entry.data.days === 'number' ? entry.data.days : null;
+  const label =
+    entry.type === 'skip'
+      ? `Not yet${entry.data.task === 'fertilize' ? ' (feed)' : ''}${skipDays ? ` · check in ${skipDays} ${skipDays === 1 ? 'day' : 'days'}` : ''}`
+      : ENTRY_LABEL[entry.type];
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => router.push({ pathname: '/entry/[id]', params: { id: entry.id } })}
+      style={({ pressed }) => [styles.journalRow, pressed && styles.pressed]}>
+      <View style={[styles.journalIcon, { backgroundColor: background }]}>
+        <Icon name={ENTRY_ICON[entry.type]} size={18} color={color} />
+      </View>
+      <View style={styles.flex}>
+        <View style={styles.journalTop}>
+          <ThemedText type="label" style={styles.flex}>
+            {label}
+          </ThemedText>
+          <ThemedText type="caption" color="textSecondary">
+            {formatRelativeDay(dateOf(entry.at), today)}, {formatTime(entry.at)}
+          </ThemedText>
+        </View>
+        {entry.note ? <ThemedText type="body">{entry.note}</ThemedText> : null}
+        {entry.photos.length > 0 && (
+          <View style={styles.journalPhotos}>
+            {entry.photos.map((photo) => (
+              <Image
+                key={photo.id}
+                source={{ uri: photoUri(photo.file) }}
+                style={[styles.journalThumb, { backgroundColor: theme.element }]}
+                contentFit="cover"
+              />
+            ))}
+          </View>
+        )}
+      </View>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  fill: { flex: 1 },
+  flex: { flex: 1 },
+  center: { textAlign: 'center' },
+  italic: { fontStyle: 'italic' },
+  gap: { gap: Spacing.three },
+  pressed: { opacity: 0.7 },
+  hero: { alignItems: 'center', gap: Spacing.three },
+  heroText: { alignItems: 'center', gap: Spacing.one },
+  cameraBadge: {
+    position: 'absolute',
+    right: -4,
+    bottom: -4,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  roomChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 14,
+    marginTop: Spacing.one,
+  },
+  actions: { flexDirection: 'row', justifyContent: 'space-around' },
+  action: { alignItems: 'center', gap: 6, minWidth: 72 },
+  actionIcon: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  suggestion: { flexDirection: 'row', gap: Spacing.three, alignItems: 'flex-start' },
+  suggestionButtons: { flexDirection: 'row', justifyContent: 'flex-end', gap: Spacing.two },
+  schedule: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
+  scheduleIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  section: { gap: Spacing.three },
+  strip: { gap: Spacing.two + 2 },
+  thumb: { width: 112, height: 112, borderRadius: Radius.medium },
+  thumbDate: { marginTop: 4 },
+  fact: { flexDirection: 'row', gap: Spacing.three, alignItems: 'flex-start' },
+  fit: { borderRadius: Radius.small, padding: Spacing.two + 2, marginLeft: 22 + Spacing.three },
+  tip: { flexDirection: 'row', gap: Spacing.three, alignItems: 'flex-start' },
+  bullet: { width: 6, height: 6, borderRadius: 3, marginTop: 9, marginLeft: 8 },
+  journalRow: { flexDirection: 'row', gap: Spacing.three },
+  journalIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  journalTop: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, minHeight: 34 },
+  journalPhotos: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.two,
+    marginTop: Spacing.one,
+  },
+  journalThumb: { width: 84, height: 84, borderRadius: Radius.small },
+});

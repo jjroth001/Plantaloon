@@ -1,0 +1,104 @@
+import { router, useLocalSearchParams } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useState } from 'react';
+import { Alert } from 'react-native';
+
+import { careFor, displayName } from '@/catalog';
+import { PlantForm, type PlantFormValue } from '@/components/plant-form';
+import { Screen } from '@/components/screen';
+import { Button } from '@/components/ui';
+import {
+  deletePlant,
+  getPlant,
+  getSchedules,
+  listRooms,
+  setSchedule,
+  updatePlant,
+} from '@/db/garden';
+import { useDbQuery } from '@/db/use-db-query';
+import { successFeedback } from '@/lib/haptics';
+import { deletePhotoFiles } from '@/lib/photos';
+
+export default function EditPlant() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const db = useSQLiteContext();
+  const rooms = useDbQuery(['room'], listRooms);
+  const loaded = useDbQuery(
+    [],
+    async (d) => {
+      const plant = await getPlant(d, id);
+      const schedules = await getSchedules(d, id);
+      return { plant, schedules };
+    },
+    [id],
+  );
+  const [form, setForm] = useState<PlantFormValue | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const plant = loaded.data?.plant;
+  if (!plant || !rooms.data) return <Screen belowHeader>{null}</Screen>;
+  const care = careFor(plant.groupId, plant.speciesId);
+  const schedule = (task: 'water' | 'fertilize') => {
+    const s = loaded.data!.schedules.find((x) => x.task === task);
+    return { enabled: s?.enabled ?? false, intervalDays: s?.intervalDays ?? 7 };
+  };
+  const value: PlantFormValue = form ?? {
+    nickname: plant.nickname ?? '',
+    roomId: plant.roomId,
+    potSize: plant.potSize,
+    potDrainage: plant.potDrainage,
+    water: schedule('water'),
+    fertilize: schedule('fertilize'),
+  };
+
+  const save = async () => {
+    setBusy(true);
+    try {
+      await updatePlant(db, plant.id, {
+        nickname: value.nickname,
+        roomId: value.roomId ?? plant.roomId,
+        potSize: value.potSize,
+        potDrainage: value.potDrainage,
+      });
+      await setSchedule(db, plant.id, 'water', value.water);
+      await setSchedule(db, plant.id, 'fertilize', value.fertilize);
+      successFeedback();
+      router.back();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const remove = () => {
+    const name = displayName(plant);
+    Alert.alert(
+      `Delete ${name}?`,
+      'Its journal and photos are deleted too. This can’t be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            const files = await deletePlant(db, plant.id);
+            deletePhotoFiles(files);
+            router.dismissAll();
+          },
+        },
+      ],
+    );
+  };
+
+  return (
+    <Screen belowHeader footer={<Button title="Save" icon="check" onPress={save} busy={busy} />}>
+      <PlantForm
+        value={value}
+        onChange={setForm}
+        rooms={rooms.data}
+        namePlaceholder={displayName({ ...plant, nickname: null })}
+        pausedInWinter={!(care.fertilize?.winter ?? false)}
+      />
+      <Button title="Delete plant" icon="trash" variant="ghost" onPress={remove} />
+    </Screen>
+  );
+}

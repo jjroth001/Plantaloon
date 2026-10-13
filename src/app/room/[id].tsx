@@ -1,0 +1,180 @@
+import { router, useLocalSearchParams } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useState } from 'react';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
+
+import type { LightTier } from '@/catalog/types';
+import { Icon, type IconName } from '@/components/icons/icon';
+import { Screen } from '@/components/screen';
+import { ThemedText } from '@/components/themed-text';
+import { Button, Chip, Field, TextField } from '@/components/ui';
+import { Radius, Spacing } from '@/constants/theme';
+import { createRoom, deleteRoom, updateRoom } from '@/db/garden';
+import { ROOM_ICONS } from '@/db/types';
+import { useGarden } from '@/hooks/use-garden';
+import { successFeedback, tapFeedback } from '@/lib/haptics';
+import { formatLux, LIGHT_LABEL, LIGHT_TIERS } from '@/lib/light';
+import { useTheme } from '@/theme/theme-provider';
+
+type Form = { name: string; icon: IconName; lightTier: LightTier | null };
+
+/** Add a room (id "new") or edit one. */
+export default function RoomScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const db = useSQLiteContext();
+  const theme = useTheme();
+  const garden = useGarden();
+  const isNew = id === 'new';
+  const room = garden.data?.rooms.find((r) => r.id === id);
+  const [form, setForm] = useState<Form | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  if (!garden.data || (!isNew && !room)) return <Screen belowHeader>{null}</Screen>;
+  const value: Form = form ?? {
+    name: room?.name ?? '',
+    icon: room?.icon ?? 'couch',
+    lightTier: room?.lightTier ?? null,
+  };
+  const set = (patch: Partial<Form>) => setForm({ ...value, ...patch });
+  const others = garden.data.rooms.filter((r) => r.id !== id);
+  const plantCount = garden.data.plants.filter((p) => p.roomId === id).length;
+
+  const save = async () => {
+    if (!value.name.trim()) return;
+    setBusy(true);
+    try {
+      if (isNew) await createRoom(db, value);
+      else await updateRoom(db, id, value);
+      successFeedback();
+      router.back();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const remove = () => {
+    if (!room) return;
+    if (others.length === 0) {
+      Alert.alert(
+        'This is your only room',
+        'Add another room first, so its plants have somewhere to go.',
+      );
+      return;
+    }
+    if (plantCount === 0) {
+      Alert.alert(`Delete ${room.name}?`, undefined, [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            await deleteRoom(db, room.id, null);
+            router.back();
+          },
+        },
+      ]);
+      return;
+    }
+    // Android shows up to three buttons; offer the first two other rooms.
+    Alert.alert(
+      `Move ${plantCount === 1 ? 'its plant' : `its ${plantCount} plants`} where?`,
+      `${room.name} will be deleted and its plants moved.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        ...others.slice(0, 2).map((target) => ({
+          text: target.name,
+          onPress: async () => {
+            await deleteRoom(db, room.id, target.id);
+            router.back();
+          },
+        })),
+      ],
+    );
+  };
+
+  return (
+    <Screen
+      belowHeader
+      footer={
+        <Button
+          title={isNew ? 'Add room' : 'Save'}
+          icon="check"
+          onPress={save}
+          busy={busy}
+          disabled={!value.name.trim()}
+        />
+      }>
+      <TextField
+        label="Name"
+        value={value.name}
+        onChangeText={(name) => set({ name })}
+        placeholder="e.g. Sunroom"
+        autoFocus={isNew}
+        maxLength={30}
+      />
+      <Field label="Icon">
+        <View style={styles.icons}>
+          {ROOM_ICONS.map((icon) => {
+            const selected = value.icon === icon;
+            return (
+              <Pressable
+                key={icon}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                accessibilityLabel={icon}
+                onPress={() => {
+                  tapFeedback();
+                  set({ icon });
+                }}
+                style={[
+                  styles.iconCell,
+                  {
+                    backgroundColor: selected ? theme.tintSoft : theme.element,
+                    borderColor: selected ? theme.tint : 'transparent',
+                  },
+                ]}>
+                <Icon name={icon} size={26} color={selected ? theme.tint : theme.textSecondary} />
+              </Pressable>
+            );
+          })}
+        </View>
+      </Field>
+      <Field label="Light">
+        <View style={styles.chips}>
+          <Chip
+            label="Not set"
+            selected={value.lightTier == null}
+            onPress={() => set({ lightTier: null })}
+          />
+          {LIGHT_TIERS.map((tier) => (
+            <Chip
+              key={tier}
+              label={LIGHT_LABEL[tier]}
+              selected={value.lightTier === tier}
+              onPress={() => set({ lightTier: tier })}
+            />
+          ))}
+        </View>
+        {room?.lightLux != null && (
+          <ThemedText type="caption" color="textSecondary">
+            Last measured: {formatLux(room.lightLux)} lux
+          </ThemedText>
+        )}
+      </Field>
+      {!isNew && <Button title="Delete room" icon="trash" variant="ghost" onPress={remove} />}
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  icons: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+  iconCell: {
+    width: 56,
+    height: 56,
+    borderRadius: Radius.medium,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+});

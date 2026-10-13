@@ -7,19 +7,28 @@
     "icon": "./assets/images/icon.png",
     "scheme": "plantaloon",
     "userInterfaceStyle": "automatic",
-    "ios": {
-      "icon": "./assets/expo.icon"
-    },
     "android": {
       "package": "org.plantaloon.app",
       "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#2E6B48",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "com.google.android.c2dm.permission.RECEIVE",
+        "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE"
+      ]
     },
     "web": {
       "output": "static",
@@ -30,16 +39,33 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#2E6B48",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 200
         }
       ],
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#2E6B48"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Plantaloon uses the camera only to take photos of your plants.",
+          "microphonePermission": false
+        }
+      ],
+      "expo-sharing",
       "./plugins/with-release-signing"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "description": "Free, private houseplant care: reminders, a care journal with photos, care guides and a light meter."
   }
 }

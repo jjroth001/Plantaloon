@@ -1,0 +1,60 @@
+import type { SQLiteDatabase } from 'expo-sqlite';
+
+import type { AccentName, ThemeMode } from '@/constants/theme';
+
+export type Settings = {
+  /** Light, dark, or follow the phone. */
+  themeMode: ThemeMode;
+  accent: AccentName;
+  temperatureUnit: 'C' | 'F';
+  /** Which months count as winter (slower watering, no feeding). */
+  hemisphere: 'north' | 'south';
+  /** One daily "plants need care" notification. */
+  reminders: boolean;
+  /** Minutes after midnight for the daily reminder. */
+  reminderMinute: number;
+  /** Small vibrations when ticking off a task. */
+  haptics: boolean;
+  /** When a backup was last saved from this phone (unix ms). */
+  lastBackupAt: number | null;
+  /** First-run room setup has been done. */
+  onboarded: boolean;
+};
+
+function defaultSettings(): Settings {
+  const locale = Intl.DateTimeFormat().resolvedOptions().locale;
+  const fahrenheit = /-(US|LR|MM|BS|BZ|KY|PW)\b/.test(locale);
+  const southern = /-(AU|NZ|ZA|AR|CL|UY|PY|BR)\b/.test(locale);
+  return {
+    themeMode: 'system',
+    accent: 'leaf',
+    temperatureUnit: fahrenheit ? 'F' : 'C',
+    hemisphere: southern ? 'south' : 'north',
+    reminders: true,
+    reminderMinute: 9 * 60,
+    haptics: true,
+    lastBackupAt: null,
+    onboarded: false,
+  };
+}
+
+/** All settings, with defaults filled in for anything never set. Values are stored as JSON. */
+export async function getSettings(db: SQLiteDatabase): Promise<Settings> {
+  const rows = await db.getAllAsync<{ key: string; value: string }>(
+    'SELECT key, value FROM setting',
+  );
+  const stored = Object.fromEntries(rows.map((row) => [row.key, JSON.parse(row.value)]));
+  return { ...defaultSettings(), ...stored };
+}
+
+export async function setSetting<K extends keyof Settings>(
+  db: SQLiteDatabase,
+  key: K,
+  value: Settings[K],
+): Promise<void> {
+  await db.runAsync(
+    'INSERT INTO setting (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
+    key,
+    JSON.stringify(value),
+  );
+}

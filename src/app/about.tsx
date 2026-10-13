@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { Linking, StyleSheet, View } from 'react-native';
 
 import { ALL_GROUPS, ALL_SPECIES } from '@/catalog';
+import { ASPCA, ASPCA_RETRIEVED } from '@/catalog/aspca';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Card, Divider, ListRow } from '@/components/ui';
@@ -23,7 +24,7 @@ const SOURCES = [
   },
   {
     title: 'ASPCA toxic and non-toxic plant lists',
-    detail: 'Pet safety notes follow these lists. Plantaloon’s wording is its own.',
+    detail: `Pet safety for the ${Object.keys(ASPCA).length} plants these lists cover (checked ${ASPCA_RETRIEVED}). Other plants are judged by related plants and say so.`,
     url: 'https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants',
   },
   {

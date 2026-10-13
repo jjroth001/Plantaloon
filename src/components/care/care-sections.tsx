@@ -318,7 +318,16 @@ export function QuickFacts({ care, waterDays }: { care: Care; waterDays: number 
     },
     {
       icon: 'paw-print',
-      label: toxic ? 'Toxic to pets' : safe ? 'Pet safe' : 'Pets: unsure',
+      label:
+        care.petsSource === 'related' && (toxic || safe)
+          ? toxic
+            ? 'Likely toxic to pets'
+            : 'Likely pet safe'
+          : toxic
+            ? 'Toxic to pets'
+            : safe
+              ? 'Pet safe'
+              : 'Pets: unsure',
       color: toxic ? theme.danger : safe ? theme.tint : theme.textSecondary,
       background: toxic ? theme.dangerSoft : safe ? theme.tintSoft : theme.element,
     },
@@ -609,6 +618,13 @@ const LIFECYCLE: Record<CareDetails['lifecycle'], { title: string; subtitle: str
   },
 };
 
+const PETS_SOURCE_TEXT: Record<Care['petsSource'], string> = {
+  aspca: 'From the ASPCA’s toxic and non-toxic plant lists.',
+  partial: 'From the ASPCA’s plant lists where listed; the rest is based on related plants.',
+  related:
+    'This plant isn’t on the ASPCA’s lists, so this is based on related plants. Treat it with care.',
+};
+
 export function AboutSection({ care, details }: { care: Care; details: CareDetails | undefined }) {
   const theme = useTheme();
   const toxic = care.pets.cats === 'toxic' || care.pets.dogs === 'toxic';
@@ -634,7 +650,7 @@ export function AboutSection({ care, details }: { care: Care; details: CareDetai
         )}
         <Note
           tone="plain"
-          text="Pet safety follows the ASPCA’s plant lists. If a pet or person may have eaten a plant, call a vet, doctor or poison control."
+          text={`${PETS_SOURCE_TEXT[care.petsSource]} If a pet or person may have eaten a plant, call a vet, doctor or poison control.`}
         />
       </Card>
       {details && (

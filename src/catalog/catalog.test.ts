@@ -122,3 +122,29 @@ describe('search', () => {
     );
   });
 });
+
+describe('pet safety follows ASPCA where it lists the plant', () => {
+  const care = (name: string) => {
+    const s = getSpecies(speciesId(name))!;
+    return careFor(s.groupId, s.id);
+  };
+
+  test('listed plants use ASPCA, even against their group', () => {
+    expect(care('Alstroemeria').pets).toEqual({ cats: 'non_toxic', dogs: 'non_toxic' });
+    expect(care('Alstroemeria').petsSource).toBe('aspca');
+    expect(care('Epipremnum aureum').pets).toEqual({ cats: 'toxic', dogs: 'toxic' });
+    expect(care('Origanum vulgare').pets).toEqual({ cats: 'toxic', dogs: 'toxic' });
+  });
+
+  test('listed for one animal only: the other is inferred', () => {
+    const catnip = care('Nepeta cataria');
+    expect(catnip.pets.cats).toBe('toxic');
+    expect(catnip.petsSource).toBe('partial');
+  });
+
+  test('cultivars use their species entry; unlisted plants are marked as inferred', () => {
+    expect(care("Epipremnum aureum 'Marble Queen'").petsSource).not.toBe('related');
+    const unlisted = ALL_SPECIES.find((s) => careFor(s.groupId, s.id).petsSource === 'related');
+    expect(unlisted).toBeDefined();
+  });
+});

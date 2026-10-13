@@ -1,0 +1,13791 @@
+{
+"source": "https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants",
+"retrieved": "2026-10-13",
+"note": "Plant names and toxic/non-toxic flags only, from ASPCA Animal Poison Control Center lists for cats and dogs. Rows: [common name, scientific names, toxic].",
+"cats": [
+[
+"Adam-and-Eve",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"African Wonder Tree",
+[
+"Ricinus communis"
+],
+true
+],
+[
+"Alocasia",
+[
+"Alocasia spp."
+],
+true
+],
+[
+"Aloe",
+[
+"Aloe vera"
+],
+true
+],
+[
+"Amaryllis",
+[
+"Amaryllis spp."
+],
+true
+],
+[
+"Ambrosia Mexicana",
+[
+"Chenopodium botrys"
+],
+true
+],
+[
+"American Bittersweet",
+[
+"Celastrus scandens"
+],
+true
+],
+[
+"American Holly",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"American Mandrake",
+[
+"Podophyllum peltatum"
+],
+true
+],
+[
+"American Yew",
+[
+"Taxus canadensus"
+],
+true
+],
+[
+"Andromeda Japonica",
+[
+"Pieris japonica"
+],
+true
+],
+[
+"Angelica Tree",
+[
+"Aralia spinosa"
+],
+true
+],
+[
+"Apple",
+[
+"Malus sylvestrus"
+],
+true
+],
+[
+"Apricot",
+[
+"Prunus armeniaca"
+],
+true
+],
+[
+"Arrow-Head Vine",
+[
+"Syngonium podophyllum"
+],
+true
+],
+[
+"Arum",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Arum Lily",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Asian Lily",
+[
+"Lilium asiatica"
+],
+true
+],
+[
+"Asparagus Fern",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Australian Ivy Palm",
+[
+"Brassaia actinophylla"
+],
+true
+],
+[
+"Autumn Crocus",
+[
+"Colchicum autumnale"
+],
+true
+],
+[
+"Azalea",
+[
+"Rhododendron spp"
+],
+true
+],
+[
+"Baby Doll Ti Plant",
+[
+"Cordyline terminalis"
+],
+true
+],
+[
+"Barbados Aloe",
+[
+"Aloe barbadensis"
+],
+true
+],
+[
+"Barbados Lily",
+[
+"Hippeastrum spp."
+],
+true
+],
+[
+"Barbados Pride",
+[
+"Caesalpinia pulcherrima"
+],
+true
+],
+[
+"Barbados Pride 2",
+[
+"Poinciana gilliesii"
+],
+true
+],
+[
+"Bay Laurel",
+[
+"Laurus nobilis"
+],
+true
+],
+[
+"Bead Tree",
+[
+"Melia azedarach"
+],
+true
+],
+[
+"Begonia",
+[
+"Begonia spp."
+],
+true
+],
+[
+"Bergamot Orange",
+[
+"Citrus Aurantium"
+],
+true
+],
+[
+"Bird of Paradise",
+[
+"Caesalpinia gilliesii"
+],
+true
+],
+[
+"Bird of Paradise 2",
+[
+"Poinciana gilliesii"
+],
+true
+],
+[
+"Bird of Paradise Flower",
+[
+"Strelitzia reginae"
+],
+true
+],
+[
+"Bird's Tongue Flower",
+[
+"Strelitzia reginae"
+],
+true
+],
+[
+"Bishop’s Weed",
+[
+"Ammi majus"
+],
+true
+],
+[
+"Bitter Root",
+[
+"Apocynum androsaemifolium"
+],
+true
+],
+[
+"Black Calla",
+[
+"Arum palestinum"
+],
+true
+],
+[
+"Black Cherry",
+[
+"Prunus serotina"
+],
+true
+],
+[
+"Black Laurel",
+[
+"Leucothoe spp."
+],
+true
+],
+[
+"Black Nightshade",
+[
+"Solanum nigrum"
+],
+true
+],
+[
+"Bobbins",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Bog Laurel",
+[
+"Kalmia poliifolia"
+],
+true
+],
+[
+"Borage",
+[
+"Borage officinalis"
+],
+true
+],
+[
+"Boxwood",
+[
+"Buxus spp."
+],
+true
+],
+[
+"Branching Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Brazilwood",
+[
+"Poinciana gilliesii"
+],
+true
+],
+[
+"Bread and Butter Plant",
+[
+"Coleus ampoinicus"
+],
+true
+],
+[
+"Brunfelsia",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Buckeye",
+[
+"Aesculus spp"
+],
+true
+],
+[
+"Buckwheat",
+[
+"Fagopyrum spp."
+],
+true
+],
+[
+"Buddhist Pine",
+[
+"Podocarpus macrophylla"
+],
+true
+],
+[
+"Burning Bush",
+[
+"Euonymus atropurpurea"
+],
+true
+],
+[
+"Buttercup",
+[
+"Ranunculus spp."
+],
+true
+],
+[
+"Butterfly Iris",
+[
+"Iris spuria"
+],
+true
+],
+[
+"Caladium",
+[
+"Caladium hortulanum"
+],
+true
+],
+[
+"Calamondin Orange",
+[
+"Citrus mitis"
+],
+true
+],
+[
+"California Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Calla Lily",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Cape Jasmine",
+[
+"Gardenia jasminoides"
+],
+true
+],
+[
+"Caraway",
+[
+"Carum carvi"
+],
+true
+],
+[
+"Cardboard Cycad",
+[
+"Zamia furfuracea"
+],
+true
+],
+[
+"Cardboard Palm",
+[
+"Zamia spp."
+],
+true
+],
+[
+"Cardinal Flower",
+[
+"Lobelia cardinalis"
+],
+true
+],
+[
+"Carnation",
+[
+"Dianthus caryophyllus"
+],
+true
+],
+[
+"Castor Bean Plant",
+[
+"Ricinus communis"
+],
+true
+],
+[
+"Catnip",
+[
+"Nepeta cataria"
+],
+true
+],
+[
+"Ceriman",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Chamomile",
+[
+"Anthemis nobilis"
+],
+true
+],
+[
+"Chandelier Plant",
+[
+"Kalanchoe tubiflora"
+],
+true
+],
+[
+"Charming Dieffenbachia",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"Cherry",
+[
+"Prunus spp."
+],
+true
+],
+[
+"Chinaberry Tree",
+[
+"Melia azedarach"
+],
+true
+],
+[
+"Chinese Evergreen",
+[
+"Aglaonema modestum"
+],
+true
+],
+[
+"Chinese Jade",
+[
+"Crassula arborescens"
+],
+true
+],
+[
+"Chives",
+[
+"Allium schoenoprasum"
+],
+true
+],
+[
+"Choke Cherry",
+[
+"Prunus virginiana"
+],
+true
+],
+[
+"Christmas Rose",
+[
+"Helleborus niger"
+],
+true
+],
+[
+"Chrysanthemum",
+[
+"Chrysanthemum spp."
+],
+true
+],
+[
+"Clematis",
+[
+"Clematis spp."
+],
+true
+],
+[
+"Climbing Bittersweet",
+[
+"Celastrus scandens"
+],
+true
+],
+[
+"Climbing Lily",
+[
+"Gloriosa superba"
+],
+true
+],
+[
+"Climbing Nightshade",
+[
+"Solanum dulcamara"
+],
+true
+],
+[
+"Clivia Lily",
+[
+"Clivia spp."
+],
+true
+],
+[
+"Clusia Rosea",
+[
+"Clusia major"
+],
+true
+],
+[
+"Coffee Tree",
+[
+"Polyscias guilfoylei"
+],
+true
+],
+[
+"Coleus",
+[
+"Coleus ampoinicus"
+],
+true
+],
+[
+"Common Privet",
+[
+"Ligustrum vulgare"
+],
+true
+],
+[
+"Coontie Palm",
+[
+"Zamia pumila"
+],
+true
+],
+[
+"Copperleaf",
+[
+"Acalypha godseffiana"
+],
+true
+],
+[
+"Cordatum",
+[
+"Philodendron oxycardium"
+],
+true
+],
+[
+"Corn Plant",
+[
+"Dracaena fragrans"
+],
+true
+],
+[
+"Cornstalk Plant",
+[
+"Dracaena fragrans"
+],
+true
+],
+[
+"Cow parsnip",
+[
+"Heracleum maximum"
+],
+true
+],
+[
+"Cowbane",
+[
+"Cicuta species"
+],
+true
+],
+[
+"Cuckoo-pint",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Cutleaf Philodendron",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Cycads",
+[
+"Cycas",
+"Zamia species"
+],
+true
+],
+[
+"Cyclamen",
+[
+"Cyclamen spp"
+],
+true
+],
+[
+"Daffodil",
+[
+"Narcissus spp"
+],
+true
+],
+[
+"Dahlia",
+[
+"Dahlia species"
+],
+true
+],
+[
+"Daisy",
+[
+"Chrysanthemum species"
+],
+true
+],
+[
+"Day Lilies (many varieties)",
+[
+"Hemerocallis spp."
+],
+true
+],
+[
+"Deadly Nightshade",
+[
+"Solanum spp"
+],
+true
+],
+[
+"Desert Azalea",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Desert Rose",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Devil's Backbone",
+[
+"Kalanchoe tubiflora"
+],
+true
+],
+[
+"Devils Ivy",
+[
+"Epipremnum aureum"
+],
+true
+],
+[
+"Dieffenbachia",
+[
+"Dieffenbachia"
+],
+true
+],
+[
+"Dock",
+[
+"Rumex sp."
+],
+true
+],
+[
+"Dog Daisy",
+[
+"Achillea millefolium"
+],
+true
+],
+[
+"Dog Hobble",
+[
+"Leucothoe sp."
+],
+true
+],
+[
+"Dogbane Hemp",
+[
+"Apocynum spp."
+],
+true
+],
+[
+"Dracaena",
+[
+"Dracaena spp."
+],
+true
+],
+[
+"Dumbcane",
+[
+"Dieffenbachia"
+],
+true
+],
+[
+"Dwarf Poinciana",
+[
+"Caesalpinia pulcherrima"
+],
+true
+],
+[
+"Easter Lily",
+[
+"Lilium longiflorum"
+],
+true
+],
+[
+"Easter Rose",
+[
+"Helleborus niger"
+],
+true
+],
+[
+"Eastern Star",
+[
+"Dianthus spp."
+],
+true
+],
+[
+"Elephant Ears (Caladium hortulanum)",
+[
+"Caladium hortulanum"
+],
+true
+],
+[
+"Elephant Ears (Colocasia esculenta)",
+[
+"Colocasia esculenta"
+],
+true
+],
+[
+"Elephant-Ear Begonia",
+[
+"Begonia scharfii"
+],
+true
+],
+[
+"Emerald Feather",
+[
+"Asparagus densiflorus"
+],
+true
+],
+[
+"English Holly",
+[
+"Ilex aquifolium"
+],
+true
+],
+[
+"English Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"English Yew",
+[
+"Taxus baccata"
+],
+true
+],
+[
+"Epazote",
+[
+"Chenopodium ambrosioides"
+],
+true
+],
+[
+"Eucalyptus",
+[
+"Eucalyptus species"
+],
+true
+],
+[
+"European Bittersweet",
+[
+"Solanum dulcamara"
+],
+true
+],
+[
+"European Holly",
+[
+"Ilex aquifolium"
+],
+true
+],
+[
+"Exotica",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"False Bittersweet",
+[
+"Celastrus scandens"
+],
+true
+],
+[
+"False Queen Anne’s Lace",
+[
+"Ammi majus"
+],
+true
+],
+[
+"Feather Geranium",
+[
+"Ambrosia mexicana"
+],
+true
+],
+[
+"Fern Palm",
+[
+"Zamia spp."
+],
+true
+],
+[
+"Fetter Bush",
+[
+"Leucothoe spp."
+],
+true
+],
+[
+"Fetterbush",
+[
+"Lyonia spp."
+],
+true
+],
+[
+"Fiddle-Leaf",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Fig",
+[
+"Ficus benjamina"
+],
+true
+],
+[
+"Figwort",
+[
+"Ranunculus acris"
+],
+true
+],
+[
+"Fire Lily",
+[
+"Hippeastrum spp."
+],
+true
+],
+[
+"Flag",
+[
+"Iris species"
+],
+true
+],
+[
+"Flamingo Flower",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Fleabane",
+[
+"Erigeron speciosus"
+],
+true
+],
+[
+"Florida Beauty",
+[
+"Dracaena surculosa"
+],
+true
+],
+[
+"Florist's Calla",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Foxglove",
+[
+"Digitalis purpurea"
+],
+true
+],
+[
+"Foxtail",
+[
+"Acalypha hispida"
+],
+true
+],
+[
+"Franciscan Rain Tree",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Garden Calla",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Garden Chamomile",
+[
+"Anthemis nobilis"
+],
+true
+],
+[
+"Garden Hyacinth",
+[
+"Hyacinthus orientalis"
+],
+true
+],
+[
+"Gardenia",
+[
+"Gardenia jasminoides"
+],
+true
+],
+[
+"Garlic",
+[
+"Allium sativum"
+],
+true
+],
+[
+"Geranium",
+[
+"Pelargonium species"
+],
+true
+],
+[
+"Geranium-Leaf Aralia",
+[
+"Polyscias guilfoylei"
+],
+true
+],
+[
+"Giant Dracaena",
+[
+"Cordyline australis"
+],
+true
+],
+[
+"Giant Dumb Cane",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"Giant Hogweed",
+[
+"Heracleum maximum"
+],
+true
+],
+[
+"Glacier Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Gladiola",
+[
+"Gladiolus species"
+],
+true
+],
+[
+"Gloriosa Lily",
+[
+"Gloriosa superba"
+],
+true
+],
+[
+"Gold Dieffenbachia",
+[
+"Dieffenbachia picta"
+],
+true
+],
+[
+"Gold Dust Dracaena",
+[
+"Dracaena surculosa"
+],
+true
+],
+[
+"Golden Birds Nest",
+[
+"Sansevieria trifasciata"
+],
+true
+],
+[
+"Golden Pothos",
+[
+"Epipremnum aureum"
+],
+true
+],
+[
+"Golden Ragwort",
+[
+"Senecio species"
+],
+true
+],
+[
+"Good Luck Plant",
+[
+"Oxalis spp."
+],
+true
+],
+[
+"Grapefruit",
+[
+"Citrus paradisii"
+],
+true
+],
+[
+"Grass Palm",
+[
+"Cordyline australis"
+],
+true
+],
+[
+"Greater Ammi",
+[
+"Ammi majus"
+],
+true
+],
+[
+"Green Gold Naphthysis",
+[
+"Syngonium podophyllum"
+],
+true
+],
+[
+"Ground Apple",
+[
+"Anthemis nobilis"
+],
+true
+],
+[
+"Groundsel",
+[
+"Senecio species"
+],
+true
+],
+[
+"Hahn's Self Branching English Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Hashish",
+[
+"Cannabis sativa"
+],
+true
+],
+[
+"Hawaiian Ti",
+[
+"Giant Dracaena"
+],
+true
+],
+[
+"Heartleaf Philodendron",
+[
+"Philodendron hederaceum"
+],
+true
+],
+[
+"Heavenly Bamboo",
+[
+"Nandina domestica"
+],
+true
+],
+[
+"Hellebore",
+[
+"Helleborus niger"
+],
+true
+],
+[
+"Hercules' Club",
+[
+"Aralia spinosa"
+],
+true
+],
+[
+"Hills of Snow",
+[
+"Hydrangea arborescens"
+],
+true
+],
+[
+"Holly",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"Horse Chestnut",
+[
+"Aesculus glabra"
+],
+true
+],
+[
+"Horsehead Philodendron",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Horseweed",
+[
+"Erigeron speciosus"
+],
+true
+],
+[
+"Hortensia",
+[
+"Hydrangea arborescens"
+],
+true
+],
+[
+"Hosta",
+[
+"Hosta plataginea"
+],
+true
+],
+[
+"Hurricane Plant",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Hyacinth",
+[
+"Hyacinthus orientalis"
+],
+true
+],
+[
+"Hydrangea",
+[
+"Hydrangea arborescens"
+],
+true
+],
+[
+"Impala Lily",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Inch Plant",
+[
+"Tradescantia flumeninsis"
+],
+true
+],
+[
+"Indian Apple",
+[
+"Podophyllum peltatum"
+],
+true
+],
+[
+"Indian Borage",
+[
+"Coleus ampoinicus"
+],
+true
+],
+[
+"Indian Hemp (Apocynum androsaemifolium)",
+[
+"Apocynum androsaemifolium"
+],
+true
+],
+[
+"Indian Hemp (Cannabis sativa)",
+[
+"Cannabis sativa"
+],
+true
+],
+[
+"Indian Pink",
+[
+"Lobelia cardinalis"
+],
+true
+],
+[
+"Indian Rubber Plant",
+[
+"Ficus benjamina"
+],
+true
+],
+[
+"Inkberry",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"Iris",
+[
+"Iris species"
+],
+true
+],
+[
+"Iron Cross Begonia",
+[
+"Begonia masoniana"
+],
+true
+],
+[
+"Ivy Arum",
+[
+"Epipremnum aureum"
+],
+true
+],
+[
+"Jack-in-the-pulpit",
+[
+"Arisaema triphyllum"
+],
+true
+],
+[
+"Jade Plant",
+[
+"Crassula argentea"
+],
+true
+],
+[
+"Japanese Show Lily",
+[
+"Lilium speciosum"
+],
+true
+],
+[
+"Japanese Yew",
+[
+"Taxus sp."
+],
+true
+],
+[
+"Jerusalem Cherry",
+[
+"Solanum pseudocapsicum"
+],
+true
+],
+[
+"Jerusalem Oak",
+[
+"Ambrosia mexicana"
+],
+true
+],
+[
+"Jonquil",
+[
+"Narcissus jonquilla"
+],
+true
+],
+[
+"Kaffir Lily",
+[
+"Clivia minata"
+],
+true
+],
+[
+"Kalanchoe",
+[
+"Kalanchoe spp"
+],
+true
+],
+[
+"Kiss-me-quick",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Klamath Weed",
+[
+"Hypericum perforatum"
+],
+true
+],
+[
+"Kudu Lily",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Lace Fern",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Lacy Tree Philodendron",
+[
+"Philodendron selloum"
+],
+true
+],
+[
+"Lady-of-the-night",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Lambkill",
+[
+"Kalmia augustifolia"
+],
+true
+],
+[
+"Lantana",
+[
+"Lantana camara"
+],
+true
+],
+[
+"Larkspur",
+[
+"Delphinium species"
+],
+true
+],
+[
+"Laurel",
+[
+"Kalmia latifolia"
+],
+true
+],
+[
+"Lavender",
+[
+"Lavendula angustifolia"
+],
+true
+],
+[
+"Leatherflower",
+[
+"Clematis sp."
+],
+true
+],
+[
+"Leek",
+[
+"Allium ampeloprasum"
+],
+true
+],
+[
+"Lemon",
+[
+"Citrus limonia"
+],
+true
+],
+[
+"Lemon Grass",
+[
+"Cymbopogon citratus"
+],
+true
+],
+[
+"Lemon Verbena",
+[
+"Aloysia triphylla"
+],
+true
+],
+[
+"Lenten Rose",
+[
+"Helleborus niger"
+],
+true
+],
+[
+"Lily",
+[
+"Lilium species"
+],
+true
+],
+[
+"Lily of the Palace",
+[
+"Hippeastrum spp."
+],
+true
+],
+[
+"Lily of the Valley",
+[
+"Convallaria majalis"
+],
+true
+],
+[
+"Lily-of-the-Valley Bush",
+[
+"Pieris japonica"
+],
+true
+],
+[
+"Lime",
+[
+"Citrus aurantifolia"
+],
+true
+],
+[
+"Lobelia",
+[
+"Lobelia cardinalis"
+],
+true
+],
+[
+"Locust",
+[
+"Robinia spp."
+],
+true
+],
+[
+"Lord-and-Ladies",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Lovage",
+[
+"Levisticum officinale"
+],
+true
+],
+[
+"Madagascar Dragon Tree",
+[
+"Dracaena marginata"
+],
+true
+],
+[
+"Malanga",
+[
+"Colocasia esculenta"
+],
+true
+],
+[
+"Malaysian Dracaena",
+[
+"Dracaena reflexa"
+],
+true
+],
+[
+"Maleberry",
+[
+"Lyonia sp."
+],
+true
+],
+[
+"Mapleleaf Begonia",
+[
+"Begonia cleopatra"
+],
+true
+],
+[
+"Marble Queen",
+[
+"Scindapsus aureus"
+],
+true
+],
+[
+"Marijuana",
+[
+"Cannabis sativa"
+],
+true
+],
+[
+"Marjoram",
+[
+"Origanum majorana"
+],
+true
+],
+[
+"Mauna Loa Peace Lily",
+[
+"Spathiphyllum"
+],
+true
+],
+[
+"Mayapple",
+[
+"Podophyllum peltatum"
+],
+true
+],
+[
+"Mayweed",
+[
+"Anthemis cotula"
+],
+true
+],
+[
+"Meadow Saffron",
+[
+"Colchicum autumnale"
+],
+true
+],
+[
+"Medicine Plant",
+[],
+true
+],
+[
+"Metallic Leaf Begonia",
+[
+"Begonia metallica"
+],
+true
+],
+[
+"Mexican Breadfruit",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Milfoil",
+[
+"Achillea millefolium"
+],
+true
+],
+[
+"Milkweed",
+[
+"Asclepias species"
+],
+true
+],
+[
+"Mint",
+[
+"Mentha sp."
+],
+true
+],
+[
+"Mistletoe \"American\"",
+[
+"Phoradendron flavescens"
+],
+true
+],
+[
+"Mock Azalea",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Mole Bean Plant",
+[
+"Ricinus communis"
+],
+true
+],
+[
+"Morning Glory",
+[
+"Ipomoea spp"
+],
+true
+],
+[
+"Morning-Noon-and-Night",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Moss Rose",
+[
+"Portulaca oleracea"
+],
+true
+],
+[
+"Mother of Millions",
+[
+"Kalanchoe tubiflora"
+],
+true
+],
+[
+"Mother-in-Law",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Mother-In-Law Plant",
+[
+"Kalanchoe tubiflora"
+],
+true
+],
+[
+"Mother-in-Law’s Tongue",
+[
+"Sansevieria trifasciata"
+],
+true
+],
+[
+"Mum",
+[
+"Chrysanthemum spp."
+],
+true
+],
+[
+"Naked Lady",
+[
+"Amaryllis spp."
+],
+true
+],
+[
+"Nandina",
+[
+"Nandina domestica"
+],
+true
+],
+[
+"Narcissus",
+[
+"Narcissus spp"
+],
+true
+],
+[
+"Nasturtium (Watercress)",
+[
+"Nasturtium officinale"
+],
+true
+],
+[
+"Needlepoint Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Nephthytis",
+[
+"Syngonium podophyllum"
+],
+true
+],
+[
+"Nicotiana",
+[
+"Nicotiana glauca"
+],
+true
+],
+[
+"Nightshade",
+[
+"Solanum spp"
+],
+true
+],
+[
+"Octopus Tree",
+[
+"Schefflera or Brassia actinoplylla"
+],
+true
+],
+[
+"Oilcloth Flower",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Oleander",
+[
+"Nerium oleander"
+],
+true
+],
+[
+"Onion",
+[
+"Allium cepa"
+],
+true
+],
+[
+"Orange",
+[
+"Citrus sinensis"
+],
+true
+],
+[
+"Orange Day Lily",
+[
+"Hemerocallis graminea"
+],
+true
+],
+[
+"Oregano",
+[
+"Origanum vulgare hirtum"
+],
+true
+],
+[
+"Oregon Holly",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"Ornamental Pepper",
+[
+"Solanum pseudocapsicum"
+],
+true
+],
+[
+"Pacific Yew",
+[
+"Taxus brevifolia"
+],
+true
+],
+[
+"Painter's Pallette",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Palm Lily",
+[
+"Cordyline australis"
+],
+true
+],
+[
+"Panda Plant",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Paper White",
+[
+"Narcissus spp"
+],
+true
+],
+[
+"Paraguayan Jasmine",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Parsley",
+[
+"Petroselinum crispum"
+],
+true
+],
+[
+"Peace Begonia",
+[
+"Begonia rex 'peace'"
+],
+true
+],
+[
+"Peace Lily",
+[
+"Spathiphyllum"
+],
+true
+],
+[
+"Peach",
+[
+"Prunus persica"
+],
+true
+],
+[
+"Peacock Flower",
+[
+"Caesalpinia pulcherrima"
+],
+true
+],
+[
+"Pencil Cactus",
+[
+"Euphorbia tirucalli"
+],
+true
+],
+[
+"Peony",
+[
+"Paeonis officinalis"
+],
+true
+],
+[
+"Periwinkle",
+[
+"Vinca rosea"
+],
+true
+],
+[
+"Philodendron Pertusum",
+[
+"Philodendron spp"
+],
+true
+],
+[
+"Pie Plant",
+[
+"Rheum rhabarbarium"
+],
+true
+],
+[
+"Pieris",
+[
+"Pieris japonica"
+],
+true
+],
+[
+"Pig Lily",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Pigtail Plant",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Pink Pearl",
+[
+"Begonia semperflorens cultivar"
+],
+true
+],
+[
+"Pinks",
+[
+"Dianthus caryophyllus"
+],
+true
+],
+[
+"Plantain Lily",
+[
+"Hosta plantaginea"
+],
+true
+],
+[
+"Plum",
+[
+"Prunus domestica"
+],
+true
+],
+[
+"Plumosa Fern",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Poinciana",
+[
+"Caesalpinia gilliessi"
+],
+true
+],
+[
+"Poinsettia",
+[
+"Euphorbia pulcherrima"
+],
+true
+],
+[
+"Poison Daisy",
+[
+"Anthemis cotula"
+],
+true
+],
+[
+"Poison Hemlock",
+[
+"Conium maculatum"
+],
+true
+],
+[
+"Poison Parsnip",
+[
+"Cicuta maculata"
+],
+true
+],
+[
+"Portulaca",
+[
+"Portulaca oleracea"
+],
+true
+],
+[
+"Pride-of-India",
+[
+"Melia azedarach"
+],
+true
+],
+[
+"Primrose",
+[
+"Primula vulgaris"
+],
+true
+],
+[
+"Privet",
+[
+"Ligustrum japonicum"
+],
+true
+],
+[
+"Purslane",
+[
+"Portulaca oleracea"
+],
+true
+],
+[
+"Racemose asparagus",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Ragwort",
+[
+"Senecio species"
+],
+true
+],
+[
+"Ranger's Button",
+[
+"Sphenosciadium capitellatum"
+],
+true
+],
+[
+"Red Emerald",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Red Lily",
+[
+"Lilium umbellatum"
+],
+true
+],
+[
+"Red Princess",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Red-Marginated Dracaena",
+[
+"Dracaena marginata"
+],
+true
+],
+[
+"Rex Begonia",
+[
+"Begonia rex"
+],
+true
+],
+[
+"Rhododendron",
+[
+"Rhododendron spp"
+],
+true
+],
+[
+"Rhubarb",
+[
+"Rheum rhabarbarium"
+],
+true
+],
+[
+"Ribbon Plant",
+[
+"Dracaena spp."
+],
+true
+],
+[
+"Ridderstjerne",
+[
+"Hippeastrum spp."
+],
+true
+],
+[
+"Rock Moss",
+[
+"Portulaca oleracea"
+],
+true
+],
+[
+"Roman Chamomile",
+[
+"Anthemis nobilis"
+],
+true
+],
+[
+"Rosary Pea",
+[
+"Abrus precatorius"
+],
+true
+],
+[
+"Rosebay",
+[
+"Rhododendron spp"
+],
+true
+],
+[
+"Rubrum Lily",
+[
+"Lilium speciosum"
+],
+true
+],
+[
+"Running Myrtle",
+[
+"Vinca rosea"
+],
+true
+],
+[
+"Sabi Star",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Sacred Bamboo",
+[
+"Nandina domestica"
+],
+true
+],
+[
+"Saddle Leaf",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Sago Palm",
+[
+"Cycas revoluta",
+"zamia species"
+],
+true
+],
+[
+"Satin Pothos",
+[
+"Scindapsus pictus"
+],
+true
+],
+[
+"Scented Geranium",
+[
+"Pelargonium sp."
+],
+true
+],
+[
+"Schefflera",
+[
+"Schefflera"
+],
+true
+],
+[
+"Seaside Daisy",
+[
+"Erigeron speciosus"
+],
+true
+],
+[
+"Seven Bark",
+[
+"Hydrangea arborescens"
+],
+true
+],
+[
+"Shamrock Plant",
+[
+"Oxalis spp."
+],
+true
+],
+[
+"Shatavari",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Showy Daisy",
+[
+"Erigeron speciosus"
+],
+true
+],
+[
+"Silver Dollar",
+[
+"Crassula arborescens"
+],
+true
+],
+[
+"Silver Jade Plant",
+[
+"Crassula arborescens"
+],
+true
+],
+[
+"Skunk Cabbage",
+[
+"Symplocarpus foetidus"
+],
+true
+],
+[
+"Snake Lilly",
+[
+"Iris species"
+],
+true
+],
+[
+"Snake Plant",
+[
+"Sansevieria trifasciata"
+],
+true
+],
+[
+"Solomon’s Lily",
+[
+"Arum palestinum"
+],
+true
+],
+[
+"Sorrel",
+[
+"Rumex scutatus"
+],
+true
+],
+[
+"Sowbread",
+[
+"Cyclamen spp"
+],
+true
+],
+[
+"Spanish Thyme",
+[
+"Coleus ampoinicus"
+],
+true
+],
+[
+"Spindle Tree",
+[
+"Euonymus atropurpurea"
+],
+true
+],
+[
+"Split Leaf Philodendron",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Spotted Dumb Cane",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"Sprengeri Fern",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Spring Parsley",
+[
+"Cymopterus watsonii"
+],
+true
+],
+[
+"St. John’s Wort",
+[
+"Hypericum perforatum"
+],
+true
+],
+[
+"Staggerbush",
+[
+"Lyonia sp."
+],
+true
+],
+[
+"Starch Root",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Stargazer Lily",
+[
+"Lilium orientalis"
+],
+true
+],
+[
+"Starleaf",
+[
+"Brassaia actinophylla"
+],
+true
+],
+[
+"Stinking Chamomile",
+[
+"Anthemis cotula"
+],
+true
+],
+[
+"Straight-Margined Dracaena",
+[
+"Dracaena marginata"
+],
+true
+],
+[
+"Striped Dracaena",
+[
+"Dracaena deremensis"
+],
+true
+],
+[
+"Superb Lily",
+[
+"Gloriosa superba"
+],
+true
+],
+[
+"Sweet Cherry",
+[
+"Prunus avium"
+],
+true
+],
+[
+"Sweet William",
+[
+"Dianthus caryophyllus"
+],
+true
+],
+[
+"Sweetheart Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Swiss Cheese Plant",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Tahitian Bridal Veil",
+[
+"tradescantia multiflora"
+],
+true
+],
+[
+"Tail Flower",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Taro (Caladium hortulanum)",
+[
+"Caladium hortulanum"
+],
+true
+],
+[
+"Taro (Colocasia esculenta)",
+[
+"Colocasia esculenta"
+],
+true
+],
+[
+"Taro Vine",
+[
+"Epipremnum aureum"
+],
+true
+],
+[
+"Tarragon",
+[
+"Artemisia dracunculus"
+],
+true
+],
+[
+"Texas Umbrella Tree",
+[
+"Melia azedarach"
+],
+true
+],
+[
+"Ti-Plant",
+[
+"Cordyline terminalis"
+],
+true
+],
+[
+"Tiger Lily",
+[
+"Lilium tigrinum"
+],
+true
+],
+[
+"Tobacco",
+[
+"Nicotiana glauca"
+],
+true
+],
+[
+"Tomato Plant",
+[
+"Lycopersicon spp"
+],
+true
+],
+[
+"Tree Philodendron",
+[
+"Philodendron selloum"
+],
+true
+],
+[
+"Tree Tobacco",
+[
+"Nicotiana glauca"
+],
+true
+],
+[
+"Tropic Snow",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"True Aloe",
+[
+"Aloe barbadensis"
+],
+true
+],
+[
+"Trumpet Lily",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Tulip",
+[
+"Tulipa spp."
+],
+true
+],
+[
+"Umbrella Leaf",
+[
+"Podophyllum peltatum"
+],
+true
+],
+[
+"Umbrella Tree",
+[
+"Brassaia actinophylla"
+],
+true
+],
+[
+"Variable Dieffenbachia",
+[
+"Dieffenbachia picta"
+],
+true
+],
+[
+"Variegated Inch Plant",
+[
+"Tradescantia flumeninsis"
+],
+true
+],
+[
+"Variegated Laurel",
+[
+"Tradescantia flumeninsis"
+],
+true
+],
+[
+"Variegated Philodendron",
+[
+"Scindapsus",
+"Philodendron spp"
+],
+true
+],
+[
+"Vinca",
+[
+"Vinca rosea"
+],
+true
+],
+[
+"Virgin's Bower",
+[
+"Clematis sp."
+],
+true
+],
+[
+"Wahoo",
+[
+"Euonymus occidentalis"
+],
+true
+],
+[
+"Wake Robin",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Warneckei Dracaena",
+[
+"Dracaena deremensis"
+],
+true
+],
+[
+"Water Flag",
+[
+"Iris species"
+],
+true
+],
+[
+"Water Hemlock",
+[
+"Cicuta maculata"
+],
+true
+],
+[
+"Wax-Leaf",
+[
+"Ligustrum japonicum"
+],
+true
+],
+[
+"Weeping Fig",
+[
+"Ficus sp."
+],
+true
+],
+[
+"Western Yew",
+[
+"Taxus brevifolia"
+],
+true
+],
+[
+"White Heads",
+[
+"Sphenosciadium capitellatum"
+],
+true
+],
+[
+"Wild Arum",
+[
+"Arum palestinum"
+],
+true
+],
+[
+"Wild Calla",
+[
+"Arum palestinum"
+],
+true
+],
+[
+"Wild Carnation",
+[
+"Dianthus caryophyllus"
+],
+true
+],
+[
+"Wild Coffee",
+[
+"Polyscias guilfoylei"
+],
+true
+],
+[
+"Winter Cherry",
+[
+"Solanum pseudocapsicum"
+],
+true
+],
+[
+"Winterberry",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"Wisteria",
+[
+"Wisteria spp."
+],
+true
+],
+[
+"Wood Lily",
+[
+"Lilium umbellatum"
+],
+true
+],
+[
+"Yarrow",
+[
+"Achillea millefolium"
+],
+true
+],
+[
+"Yellow Oleander",
+[
+"Thevetia peruviana"
+],
+true
+],
+[
+"Yesterday, Today, Tomorrow",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Yew",
+[
+"Taxus spp."
+],
+true
+],
+[
+"Yew Pine",
+[
+"Podocarpus macrophylla"
+],
+true
+],
+[
+"Yucca",
+[
+"Yucca spp."
+],
+true
+],
+[
+"Acorn Squash",
+[
+"Cucurbita pepo"
+],
+false
+],
+[
+"African Daisy",
+[
+"Gerbera jamesonii"
+],
+false
+],
+[
+"African Violet",
+[
+"Saintpaulia spp."
+],
+false
+],
+[
+"Algaroba",
+[
+"Prosopis limensis"
+],
+false
+],
+[
+"Aluminum Plant",
+[
+"Pilea cadieri"
+],
+false
+],
+[
+"Alumroot",
+[
+"Heuchera sanguinea"
+],
+false
+],
+[
+"Alyssum",
+[
+"Alyssum spp."
+],
+false
+],
+[
+"American Rubber Plant",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Amur Maple",
+[
+"Acer ginnala"
+],
+false
+],
+[
+"Anthericum Comosum",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Antirrhinum Multiflorum",
+[
+"Antirrhinum multiflorum"
+],
+false
+],
+[
+"Arabian Gentian",
+[
+"Exacum affine"
+],
+false
+],
+[
+"Areca Palm",
+[
+"Dypsis lutescens"
+],
+false
+],
+[
+"Aregelia",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Artillery Plant",
+[
+"Pilea microphylla"
+],
+false
+],
+[
+"Aspidium falcatum",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Australian Pine",
+[
+"Araucaria heterophylla"
+],
+false
+],
+[
+"Autumn Olive",
+[
+"Eleagnus spp."
+],
+false
+],
+[
+"Baby Rubber Plant",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Baby’s Breath",
+[
+"Gypsophila elegans"
+],
+false
+],
+[
+"Baby’s Tears",
+[
+"Hypoestes phyllostachya"
+],
+false
+],
+[
+"Bachelors Buttons",
+[
+"Centaurea cyanus"
+],
+false
+],
+[
+"Ball Fern",
+[
+"Davallia spp."
+],
+false
+],
+[
+"Bamboo",
+[
+"Phyllostachys aurea"
+],
+false
+],
+[
+"Bamboo Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Bamboo Vine",
+[
+"Smilax laurifolia"
+],
+false
+],
+[
+"Banana",
+[
+"Musa acuminata"
+],
+false
+],
+[
+"Banana Squash",
+[
+"Cucurbita maxima var. banana"
+],
+false
+],
+[
+"Barberton Daisy",
+[
+"Gerbera jamesonii"
+],
+false
+],
+[
+"Barnaby's Thistle",
+[
+"Centaurea solstitialis"
+],
+false
+],
+[
+"Basil",
+[
+"Ocimum basilicum"
+],
+false
+],
+[
+"Beets",
+[
+"Beta vulgaris"
+],
+false
+],
+[
+"Begonia, Climbing",
+[
+"Cissus dicolor"
+],
+false
+],
+[
+"Begonia, Trailing",
+[
+"Pellionia daveauana"
+],
+false
+],
+[
+"Belmore Sentry Palm",
+[
+"Howea belmoreana"
+],
+false
+],
+[
+"Big Shagbark Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Big Shellbark Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Bitter Pecan",
+[
+"Carya aquatica"
+],
+false
+],
+[
+"Bitternut",
+[
+"Carya cordiformis"
+],
+false
+],
+[
+"Black Haw",
+[
+"Viburnum lentago"
+],
+false
+],
+[
+"Black Hawthorn",
+[
+"Crataegus douglasii"
+],
+false
+],
+[
+"Black Walnut",
+[
+"Juglans nigra"
+],
+false
+],
+[
+"Blackjack Pine",
+[
+"Pinus ponderosa"
+],
+false
+],
+[
+"Blaspheme Vine",
+[
+"Smilax laurifolia"
+],
+false
+],
+[
+"Bloodleaf",
+[
+"Iresine herbstii"
+],
+false
+],
+[
+"Blooming Sally",
+[
+"Epilobium angustifolium"
+],
+false
+],
+[
+"Blue Bead",
+[
+"Clintonia borealis"
+],
+false
+],
+[
+"Blue Daisy",
+[
+"Felicia amelloides"
+],
+false
+],
+[
+"Blue Echeveria",
+[
+"Echeveria glauca"
+],
+false
+],
+[
+"Blue Eyed Daisy",
+[
+"Arctotis stoechadifolia"
+],
+false
+],
+[
+"Blue-dicks",
+[
+"Dichelostemma pulchellum"
+],
+false
+],
+[
+"Blue-dicks 2",
+[
+"Hookera pulchella"
+],
+false
+],
+[
+"Blue-dicks 3",
+[
+"Brodiaea pulchella"
+],
+false
+],
+[
+"Blue-eyed African Daisy",
+[
+"Arctotis stoechadifolia"
+],
+false
+],
+[
+"Bluebottle",
+[
+"Centaurea cyanus"
+],
+false
+],
+[
+"Blunt Leaf Peperomia",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Blushing Bromeliad",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Bold Sword Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Boston Fern",
+[
+"Nephrolepis exalta bostoniensis"
+],
+false
+],
+[
+"Bottle Palm",
+[
+"Beaucarnea recurvata"
+],
+false
+],
+[
+"Bottle Palm 2",
+[
+"Nolina tuberculata"
+],
+false
+],
+[
+"Bottlebrush",
+[
+"Callistemon species"
+],
+false
+],
+[
+"Brazilian Orchid",
+[
+"Sophronitis spp."
+],
+false
+],
+[
+"Bride's Bonnet",
+[
+"Clintonia uniflora"
+],
+false
+],
+[
+"Bristly Greenbrier",
+[
+"Smilax hispida"
+],
+false
+],
+[
+"Brodiaea Pulchella",
+[
+"Dichelostemma pulchellum"
+],
+false
+],
+[
+"Broom Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Bullbrier",
+[
+"Smilax rotundifolia"
+],
+false
+],
+[
+"Bur Gourd",
+[
+"Cucumis anguria"
+],
+false
+],
+[
+"Burro's Tail",
+[
+"Sedum morganianum"
+],
+false
+],
+[
+"Buttercup Squash",
+[
+"Cucurbita maxima cv buttercup"
+],
+false
+],
+[
+"Butterfly Ginger",
+[
+"Hedychium coronarium"
+],
+false
+],
+[
+"Butternut Squash",
+[
+"Cucurbita maxima cv butternut"
+],
+false
+],
+[
+"Buzzy Lizzie",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Caeroba",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"Calathea",
+[
+"Calathea spp."
+],
+false
+],
+[
+"Calathea Lancifolia 2",
+[
+"Maranta insignis"
+],
+false
+],
+[
+"Calathea Lancifolia 3",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"California Pitcher Plant",
+[
+"Darlingtonia californica"
+],
+false
+],
+[
+"Callistemon Brachyandrus",
+[
+"Callistemon species"
+],
+false
+],
+[
+"Callistemon citrinus",
+[
+"Callistemon citrinus"
+],
+false
+],
+[
+"Callistemon viminalis",
+[
+"Callistemon viminalis"
+],
+false
+],
+[
+"Calochortus nuttalli",
+[
+"Calochortus spp."
+],
+false
+],
+[
+"Camellia",
+[
+"Camellia japonica"
+],
+false
+],
+[
+"Canada Hemlock",
+[
+"Tsuga canadensis"
+],
+false
+],
+[
+"Canary Date Palm",
+[
+"Phoenix canariensis"
+],
+false
+],
+[
+"Candle Plant",
+[
+"Plectranthus coleoides"
+],
+false
+],
+[
+"Candycorn Plant",
+[
+"Hypocyrta nummularia"
+],
+false
+],
+[
+"Cane Palm",
+[
+"Dypsis lutescens",
+"chrysalidocarpus lutescens (alternate scientific name)"
+],
+false
+],
+[
+"Canna",
+[
+"Canna indica"
+],
+false
+],
+[
+"Canna Lily",
+[
+"Canna generalis"
+],
+false
+],
+[
+"Canterbury-bell",
+[
+"Gloxinia perennis"
+],
+false
+],
+[
+"Cape Marigold",
+[
+"Dimorphotheca pluvialis"
+],
+false
+],
+[
+"Cape Primrose",
+[
+"Streptocarpus spp."
+],
+false
+],
+[
+"Carob",
+[
+"Ceratonia siliqua"
+],
+false
+],
+[
+"Caroba",
+[
+"Jacaranda procera"
+],
+false
+],
+[
+"Carolina Hemlock",
+[
+"Tsuga caroliniana"
+],
+false
+],
+[
+"Carrion Flower",
+[
+"Smilax herbacea"
+],
+false
+],
+[
+"Carrion Flower 2",
+[
+"Stapelia hirsata"
+],
+false
+],
+[
+"Carrot Fern",
+[
+"Onychium japonica"
+],
+false
+],
+[
+"Carrot Flower",
+[
+"Daucus carota var. sativa"
+],
+false
+],
+[
+"Casaba Melon",
+[
+"Cucumis melo"
+],
+false
+],
+[
+"Cast Iron Plant",
+[
+"Aspidistra elatior"
+],
+false
+],
+[
+"Cat Brier",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Cat Ear",
+[
+"Calochortus spp."
+],
+false
+],
+[
+"Cattleya Labiata",
+[
+"Cattleya labiata"
+],
+false
+],
+[
+"Celosia Globosa",
+[
+"Celosia globosa"
+],
+false
+],
+[
+"Celosia Plumosa",
+[
+"Celosia plumosa"
+],
+false
+],
+[
+"Celosia Spicata",
+[
+"Celosia spicata"
+],
+false
+],
+[
+"Chamaedorea",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Chaparral",
+[
+"Larrea tridentata"
+],
+false
+],
+[
+"Chervil",
+[
+"Anthriscus cerefolium"
+],
+false
+],
+[
+"Chestnut",
+[
+"Castanea dentata"
+],
+false
+],
+[
+"Chicken-Gizzard",
+[
+"Iresine herbstii"
+],
+false
+],
+[
+"Chickens and Hens",
+[
+"Echeveria elegans"
+],
+false
+],
+[
+"Chin-lao-shu",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"China Aster",
+[
+"Callistephus chinensis"
+],
+false
+],
+[
+"China Root",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Chinese Plumbago",
+[
+"Ceratostigma willmottianum"
+],
+false
+],
+[
+"Chlorophytum",
+[
+"Anthericum comosum"
+],
+false
+],
+[
+"Chlorophytum bichetti",
+[
+"Chlorophytum bichetti"
+],
+false
+],
+[
+"Chocolate Soldier",
+[
+"Episcia dianthiflora"
+],
+false
+],
+[
+"Christmas Cactus",
+[
+"Schlumbergera bridgesii"
+],
+false
+],
+[
+"Christmas Dagger",
+[
+"Polystichum acrostichoides"
+],
+false
+],
+[
+"Christmas Orchid",
+[
+"Cattleya trianaei"
+],
+false
+],
+[
+"Christmas Palm",
+[
+"Adonidia merrillii"
+],
+false
+],
+[
+"Cilantro",
+[
+"Coriandrum sativum"
+],
+false
+],
+[
+"Cinnamon",
+[
+"Cinnamomum zeylanicum"
+],
+false
+],
+[
+"Cinquefoil",
+[
+"Potentilla spp."
+],
+false
+],
+[
+"Cirrhopetalum",
+[
+"Bulbophyllum appendiculatum"
+],
+false
+],
+[
+"Clearweed",
+[
+"Pilea pumila"
+],
+false
+],
+[
+"Cliff Brake",
+[
+"Pellaea rotundifolia"
+],
+false
+],
+[
+"Club Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Cocks Comb",
+[
+"Amaranthus hypochondriacus"
+],
+false
+],
+[
+"Cocktail Orchid",
+[
+"Cattleya forbesii"
+],
+false
+],
+[
+"Collinia Elegans",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Common Camellia",
+[
+"Camellia japonica",
+"Thea japonica"
+],
+false
+],
+[
+"Common Catbrier",
+[
+"Smilax rotundifolia"
+],
+false
+],
+[
+"Common Garden Canna",
+[
+"Canna generalis"
+],
+false
+],
+[
+"Common Greenbrier",
+[
+"Smilax rotundifolia"
+],
+false
+],
+[
+"Common Snapdragon",
+[
+"Antirrhinum majus"
+],
+false
+],
+[
+"Common Staghorn Fern",
+[
+"Platycerium bifurcatum"
+],
+false
+],
+[
+"Confederate Jasmine",
+[
+"Trachelospermum jasminoides"
+],
+false
+],
+[
+"Coolwort",
+[
+"Pilea pumila"
+],
+false
+],
+[
+"Copper Rose",
+[
+"Echeveria multicaulis"
+],
+false
+],
+[
+"Coral Bells",
+[
+"Heuchera sanguinea"
+],
+false
+],
+[
+"Coreopsis",
+[
+"Coreopsis spp."
+],
+false
+],
+[
+"Cornflower",
+[
+"Centaurea cyanus"
+],
+false
+],
+[
+"Crape Myrtle",
+[
+"Lagerstroemia indica"
+],
+false
+],
+[
+"Creeping Charlie",
+[
+"Pilea nummulariifolia"
+],
+false
+],
+[
+"Creeping Gloxinia",
+[
+"Asarina erubescens"
+],
+false
+],
+[
+"Creeping Mahonia",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Creeping Pilea",
+[
+"Pilea nummulariifolia"
+],
+false
+],
+[
+"Creeping Rubus",
+[
+"Rubus pedatus"
+],
+false
+],
+[
+"Creeping Zinnia",
+[
+"Sanvitalia spp."
+],
+false
+],
+[
+"Crepe Myrtle",
+[
+"Lagerstroemia indica"
+],
+false
+],
+[
+"Crimson Bottlebush",
+[
+"Callistemon species"
+],
+false
+],
+[
+"Crimson Cup",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Crisped Feather Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Crossandra",
+[
+"Crossandra species"
+],
+false
+],
+[
+"Cucumber",
+[
+"Cucumis sativus"
+],
+false
+],
+[
+"Cushion Aloe",
+[
+"Aloe retusa"
+],
+false
+],
+[
+"Cushion Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Cyrtudeira",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Dainty Rabbits-Foot Fern",
+[
+"Davallia fejeensis"
+],
+false
+],
+[
+"Dallas Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Dancing Doll Orchid",
+[
+"Oncidium flexuosum"
+],
+false
+],
+[
+"Desert Trumpet",
+[
+"Eriogonium inflatum"
+],
+false
+],
+[
+"Dichelostemma",
+[
+"Dichelostemma species"
+],
+false
+],
+[
+"Dichorisandra Reginae",
+[
+"Dichorisandra reginae"
+],
+false
+],
+[
+"Dill",
+[
+"Anethum graveolena"
+],
+false
+],
+[
+"Dinteranthus",
+[
+"Dinteranthus vanzylii"
+],
+false
+],
+[
+"Duffii Fern",
+[
+"Nephrolepsis cordifolia 'duffii'"
+],
+false
+],
+[
+"Dwarf Date Palm",
+[
+"Phoenix acaulis"
+],
+false
+],
+[
+"Dwarf Feather Palm",
+[
+"Nephrolepis exalta"
+],
+false
+],
+[
+"Dwarf Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Dwarf Rose-Stripe Star",
+[
+"Cryptanthus bivattus minor"
+],
+false
+],
+[
+"Dwarf Royal Palm",
+[
+"Veitchia merillii"
+],
+false
+],
+[
+"Dwarf Whitman Fern",
+[
+"Nephrolepsis cordifolia plumosa"
+],
+false
+],
+[
+"Earth Star",
+[
+"Cryptanthus bivattus minor"
+],
+false
+],
+[
+"Easter Cattleya",
+[
+"Cattleya mossiae"
+],
+false
+],
+[
+"Easter Daisy",
+[
+"Townsendia sericea"
+],
+false
+],
+[
+"Easter Lily Cactus",
+[
+"Echinopsis multiplex"
+],
+false
+],
+[
+"Easter Orchid",
+[
+"Cattleya mossiae"
+],
+false
+],
+[
+"Edible Banana",
+[
+"Musa acuminata"
+],
+false
+],
+[
+"Emerald Ripple Peperomia",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"English Hawthorn",
+[
+"Crataegus laevigata"
+],
+false
+],
+[
+"Episcia",
+[
+"Episcia dianthiflora"
+],
+false
+],
+[
+"Fairy Fountain",
+[
+"Celosia cristata"
+],
+false
+],
+[
+"False Aralia",
+[
+"Dizygotheca elegantissima"
+],
+false
+],
+[
+"Fan Tufted Palm",
+[
+"Rhapis flabelliformis"
+],
+false
+],
+[
+"Feather Palm",
+[
+"Nephrolepis exaltata"
+],
+false
+],
+[
+"Fennel",
+[
+"Foeniculum vulgare"
+],
+false
+],
+[
+"Fiery Reed Orchid",
+[
+"Epidendrum ibaguense"
+],
+false
+],
+[
+"Fig Leaf Gourd",
+[
+"Cucurbita ficifolia"
+],
+false
+],
+[
+"Figleaf Palm",
+[
+"Fatsia japonica"
+],
+false
+],
+[
+"Fingernail Plant",
+[
+"Neoregelia spectabilis"
+],
+false
+],
+[
+"Fire Weed",
+[
+"Epilobium angustifolium"
+],
+false
+],
+[
+"Fish Tail Fern",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Flame African Violet",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Flame of the Woods",
+[
+"Ixora coccinea"
+],
+false
+],
+[
+"Florida Butterfly Orchid (Encyclia tampensis)",
+[
+"Encyclia tampensis"
+],
+false
+],
+[
+"Florida Butterfly Orchid (Epidendrum tampense)",
+[
+"Epidendrum tampense"
+],
+false
+],
+[
+"Fluffy Ruffles",
+[
+"Nephrolepsis exalta"
+],
+false
+],
+[
+"Forster Sentry Palm",
+[
+"Howea forsteriana"
+],
+false
+],
+[
+"Fortunes Palm",
+[
+"Trachycarpus fortunei"
+],
+false
+],
+[
+"Freckle Face",
+[
+"Hypoestes phyllostachya"
+],
+false
+],
+[
+"Friendship Plant",
+[
+"Pilea involucrata"
+],
+false
+],
+[
+"Garden Marigold",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Garden Snapdragon",
+[
+"Antirrhinum majus"
+],
+false
+],
+[
+"Gerber Daisy",
+[
+"Gerbera jamesonii"
+],
+false
+],
+[
+"German Violet",
+[
+"Exacum affine"
+],
+false
+],
+[
+"Gherkins",
+[
+"Cucumis sativus"
+],
+false
+],
+[
+"Ghost Leafless Orchid",
+[
+"Polyrrhiza lindenii"
+],
+false
+],
+[
+"Ghost Plant",
+[
+"Sedum weinbergii"
+],
+false
+],
+[
+"Giant Aster",
+[
+"Townsendia sericea"
+],
+false
+],
+[
+"Giant Holly Fern",
+[
+"Ploystichum munitum"
+],
+false
+],
+[
+"Giant Touch-Me-Not",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Giant White Inch Plant",
+[
+"Albiflora spp."
+],
+false
+],
+[
+"Globe Thistle",
+[
+"Echinops spp."
+],
+false
+],
+[
+"Gloxinia",
+[
+"Sinningia speciosa"
+],
+false
+],
+[
+"Gold Bloom",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Gold-Fish Plant",
+[
+"Hypocyrta nummularia"
+],
+false
+],
+[
+"Golden Bells",
+[
+"Oleaceae"
+],
+false
+],
+[
+"Golden Butterfly Palm",
+[
+"Dypsis lutescens"
+],
+false
+],
+[
+"Golden Lace Orchid",
+[
+"Haemaria discolor"
+],
+false
+],
+[
+"Golden Shower Orchid",
+[
+"Oncidium sphacelatum"
+],
+false
+],
+[
+"Good Luck Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Grape Hyacinth",
+[
+"Muscari armeniacum"
+],
+false
+],
+[
+"Grape Ivy",
+[
+"Cissus rhombifolia"
+],
+false
+],
+[
+"Great Willow Herb",
+[
+"Epilobium angustifolium"
+],
+false
+],
+[
+"Green Ripple Peperomia",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"Greenbrier",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Hagbrier",
+[
+"Smilax hispida"
+],
+false
+],
+[
+"Hardy Baby Tears",
+[
+"Sedum album"
+],
+false
+],
+[
+"Hardy Gloxinia",
+[
+"Incarvillea delavayi"
+],
+false
+],
+[
+"Hare Fern",
+[
+"Davallia spp."
+],
+false
+],
+[
+"Haworthia",
+[
+"Haworthia species"
+],
+false
+],
+[
+"Haws",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Haws Apple",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Hawthorn",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Hedgehog Gourd",
+[
+"Cucumis dipsaceus"
+],
+false
+],
+[
+"Hellfetter",
+[
+"Smilax hispida"
+],
+false
+],
+[
+"Hemlock Tree",
+[
+"Tsuga species"
+],
+false
+],
+[
+"Hen and Chickens Fern",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"Hens and Chickens",
+[
+"Echeveria elegans"
+],
+false
+],
+[
+"Hibiscus",
+[
+"Hibiscus syriacus"
+],
+false
+],
+[
+"Hindu Rope Plant",
+[
+"Hoya carnosa 'krinkle kurl'"
+],
+false
+],
+[
+"Hoary Alyssum",
+[
+"Berteroa incana"
+],
+false
+],
+[
+"Holligold",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Holly Fern",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Hollyhock",
+[
+"Alcea rosea"
+],
+false
+],
+[
+"Honey Locust",
+[
+"Gleditsia triacanthos"
+],
+false
+],
+[
+"Honey Plant",
+[
+"Hoya carnosa"
+],
+false
+],
+[
+"Honeydew Melon",
+[
+"Cucumis melo"
+],
+false
+],
+[
+"Honeysuckle Fuchsia",
+[
+"Fuchsia triphylla"
+],
+false
+],
+[
+"Hookera pulchella",
+[
+"Dichelostemma pulchellum"
+],
+false
+],
+[
+"Hubbard Squash",
+[
+"Cucurbita maxima var. hubbard"
+],
+false
+],
+[
+"Hypocyrta",
+[
+"Hypocyrta nummularia"
+],
+false
+],
+[
+"Ice Plant",
+[
+"Lampranthus piquet"
+],
+false
+],
+[
+"Impatience Plant",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Irish Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Iron Tree",
+[
+"Ixora coccinea"
+],
+false
+],
+[
+"Ivy Peperomia",
+[
+"Peperomia griseoargentea"
+],
+false
+],
+[
+"Jackson Brier",
+[
+"Smilax lanceolata"
+],
+false
+],
+[
+"Jacob's Ladder",
+[
+"Smilax herbacea"
+],
+false
+],
+[
+"Japanese Aralia",
+[
+"Fatsia japonica"
+],
+false
+],
+[
+"Japanese Holly Fern",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Japanese Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Japanese Pittosporum",
+[
+"Pittosporum tobira"
+],
+false
+],
+[
+"Jasmine",
+[
+"Jasminum species"
+],
+false
+],
+[
+"Jewel Orchid",
+[
+"Haemaria discolor"
+],
+false
+],
+[
+"Joseph's Coat",
+[
+"Iresine herbstii"
+],
+false
+],
+[
+"Jungle Geranium",
+[
+"Ixora javanica"
+],
+false
+],
+[
+"Kaempferia",
+[
+"Kaempferia spp."
+],
+false
+],
+[
+"Kahali Ginger",
+[
+"Hedychium gardnerianum"
+],
+false
+],
+[
+"Kenilworth Ivy",
+[
+"Cymbalaria muralis"
+],
+false
+],
+[
+"Kentia Palm",
+[
+"Howea forsteriana"
+],
+false
+],
+[
+"Kenya Violet",
+[
+"Saintpaulia confusa"
+],
+false
+],
+[
+"Kharoub",
+[
+"Ceratonia siliqua"
+],
+false
+],
+[
+"King and Queen Fern",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"King Nut",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"King of the Forest",
+[
+"Anoectuchilus setaceus"
+],
+false
+],
+[
+"Kuang-yen-pa-hsieh",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Lace Flower Vine",
+[
+"Episcia dianthiflora"
+],
+false
+],
+[
+"Lace Orchid",
+[
+"Odontoglossum crispum"
+],
+false
+],
+[
+"Ladies Ear Drops",
+[
+"Fuschsia spp."
+],
+false
+],
+[
+"Lady Lou",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Lady Palm",
+[
+"Rhapis flabelliformus"
+],
+false
+],
+[
+"Lady Slipper",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Lagerstroemia Indica",
+[
+"Lagerstroemia indica"
+],
+false
+],
+[
+"Lance Pleomele",
+[
+"Draceana spp."
+],
+false
+],
+[
+"Laurel-Leaved Greenbrier",
+[
+"Smilax laurifolia"
+],
+false
+],
+[
+"Leather Peperomia",
+[
+"Peperomia crassifolia"
+],
+false
+],
+[
+"Lemon Balm",
+[
+"Melissa officinalis"
+],
+false
+],
+[
+"Leopard Orchid",
+[
+"Dendrobium gracilicaule"
+],
+false
+],
+[
+"Lesser Snapdragon",
+[
+"Antirrhinum orontium"
+],
+false
+],
+[
+"Lily of the Valley Orchid",
+[
+"Odontoglossum pulchellum"
+],
+false
+],
+[
+"Linden",
+[
+"Tilia americana"
+],
+false
+],
+[
+"Lipstick Plant",
+[
+"Aeschynanthus humilis"
+],
+false
+],
+[
+"Little Fantasy Peperomia",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"Little Zebra Plant",
+[
+"Haworthia subfasciata"
+],
+false
+],
+[
+"Living Rock Cactus",
+[
+"Pleiospilos bolusii"
+],
+false
+],
+[
+"Living Stones",
+[
+"Lithops naureeniae"
+],
+false
+],
+[
+"Loco Weed (Oxytropis spp.)",
+[
+"Oxytropis spp."
+],
+false
+],
+[
+"Locust Pods",
+[
+"Ceratonia siliqua"
+],
+false
+],
+[
+"Madagascar Jasmine",
+[
+"Stephanotis floribunda"
+],
+false
+],
+[
+"Magnolia Bush",
+[
+"Magnolia stellata"
+],
+false
+],
+[
+"Mahonia",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Majesty Palm",
+[
+"Ravenea rivularis"
+],
+false
+],
+[
+"Malabar Gourd",
+[
+"Cucurbita ficifolia"
+],
+false
+],
+[
+"Manila Palm",
+[
+"Veitchia merrillii"
+],
+false
+],
+[
+"Maranta",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"Marbled Fingernail",
+[
+"Neoregelia spectabilis"
+],
+false
+],
+[
+"Mariposa Lily",
+[
+"Calochortus gunnisonii"
+],
+false
+],
+[
+"Maroon",
+[
+"Echeveria multicaulis"
+],
+false
+],
+[
+"Maroon Chenille Plant",
+[
+"Echeveria derenbergii"
+],
+false
+],
+[
+"Mary-Bud",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Measles Plant",
+[
+"Acantha"
+],
+false
+],
+[
+"Metallic Peperomia",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"Mexican Firecracker",
+[
+"Echeveria Pulinata"
+],
+false
+],
+[
+"Mexican Rosettes",
+[
+"Echevaria"
+],
+false
+],
+[
+"Mexican Snowballs",
+[
+"Echevaria"
+],
+false
+],
+[
+"Miniature Date Palm",
+[
+"Phoenix robellinii"
+],
+false
+],
+[
+"Miniature Fish Tail",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Miniature Maranta",
+[
+"Calathea micans"
+],
+false
+],
+[
+"Miniature Marble Plant",
+[
+"Neoregelia spectabilis"
+],
+false
+],
+[
+"Mistletoe Cactus",
+[
+"Rhipsalis cassutha"
+],
+false
+],
+[
+"Mockernut Hickory",
+[
+"Carya tomentosa"
+],
+false
+],
+[
+"Money Tree",
+[
+"Pachira aquatica"
+],
+false
+],
+[
+"Mosaic Plant",
+[
+"Bertolonia mosaica"
+],
+false
+],
+[
+"Mosaic Vase",
+[
+"Guzmania musaica"
+],
+false
+],
+[
+"Moss Agate",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Moss Campion",
+[
+"Silene acaulis"
+],
+false
+],
+[
+"Moss Fern",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Moss Phlox",
+[
+"Phlox subulata"
+],
+false
+],
+[
+"Mossy Campion",
+[
+"Silene acaulis"
+],
+false
+],
+[
+"Mother Fern",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"Mother of Pearl",
+[
+"Secum weinbergii"
+],
+false
+],
+[
+"Mother Spleenwort",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"Mountain Camellia",
+[
+"Stewartia ovata"
+],
+false
+],
+[
+"Mountain Grape",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Mulberry Bush Greenbrier",
+[
+"Smilax sp."
+],
+false
+],
+[
+"Mulberry Tree",
+[
+"Morus sp."
+],
+false
+],
+[
+"Musa Paradisiaca",
+[
+"Musa acuminata"
+],
+false
+],
+[
+"Muscari Armeniacum",
+[
+"Muscari armeniacum"
+],
+false
+],
+[
+"Muskmelon",
+[
+"Cucumis melo"
+],
+false
+],
+[
+"Nasturtium",
+[
+"Tropaeolum majus"
+],
+false
+],
+[
+"Natal Plum",
+[
+"Carissa grandiflora"
+],
+false
+],
+[
+"Neanthe Bella Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Nematanthus spp.",
+[
+"Hypocyrta nummularia"
+],
+false
+],
+[
+"Neoregelia",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Nerve Plant",
+[
+"Fittonia verschaffeltii"
+],
+false
+],
+[
+"Night Blooming Cereus",
+[
+"Hylocereus undatus"
+],
+false
+],
+[
+"Old Man Cactus",
+[
+"Cephalocereus senilis"
+],
+false
+],
+[
+"Old World Orchid",
+[
+"Bulbophyllum appendiculatum"
+],
+false
+],
+[
+"Orange Star",
+[
+"Guzmania lingulata minor"
+],
+false
+],
+[
+"Oregon Grape",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Ossifragi Vase",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Paddys Wig",
+[
+"Soleirolia soleirolii"
+],
+false
+],
+[
+"Painted Lady",
+[
+"Echeveria multicaulis"
+],
+false
+],
+[
+"Pampas Grass",
+[
+"Cortaderia selloana"
+],
+false
+],
+[
+"Panamiga",
+[
+"Pilea involucrata"
+],
+false
+],
+[
+"Pansy Orchid",
+[
+"Miltonia roezlii alba"
+],
+false
+],
+[
+"Paradise Palm",
+[
+"Howea forsteriana"
+],
+false
+],
+[
+"Parlor Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Parsley Fern",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"Patient Lucy",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Patient Plant",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Peacock Plant",
+[
+"Kaempferia"
+],
+false
+],
+[
+"Pearl Plant",
+[
+"Haworthia margaritifera"
+],
+false
+],
+[
+"Pearly Dots",
+[
+"Haworthia margaritifera"
+],
+false
+],
+[
+"Peperomia Hederifolia",
+[
+"Peperomia griseoargentea"
+],
+false
+],
+[
+"Peperomia Peltfolia",
+[
+"Peperomia peltifolia"
+],
+false
+],
+[
+"Peperomia Rotundifolia",
+[
+"Peperomia rotundifolia"
+],
+false
+],
+[
+"Peperomia Sandersii",
+[
+"Peperomia sandersii"
+],
+false
+],
+[
+"Pepper Face",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Persian Violet",
+[
+"Exacum affine"
+],
+false
+],
+[
+"Peruvian Lily",
+[
+"Alstroemeria"
+],
+false
+],
+[
+"Petunia",
+[
+"Petunia species"
+],
+false
+],
+[
+"Phalaenopsis Orchid",
+[
+"Phalaenopsis sp."
+],
+false
+],
+[
+"Pheasant Plant",
+[
+"Cryptanthus zonatus"
+],
+false
+],
+[
+"Piggy Back Plant",
+[
+"Tolmeia menziesii"
+],
+false
+],
+[
+"Pignut Hickory",
+[
+"Carya glabra"
+],
+false
+],
+[
+"Pilea Microphylla",
+[
+"Pilea microphylla"
+],
+false
+],
+[
+"Pilea Mucosa",
+[
+"Pilea microphylla"
+],
+false
+],
+[
+"Pincushion Flower",
+[
+"Leucospermum incisum"
+],
+false
+],
+[
+"Pink Brocade",
+[
+"Episcia cultivar"
+],
+false
+],
+[
+"Pink Splash",
+[
+"Hypoestes phyllostachya"
+],
+false
+],
+[
+"Pink Starlite",
+[
+"Cryptanthus bivattus minor"
+],
+false
+],
+[
+"Pirliteiro",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Pitaya",
+[
+"Hylocereus undatus"
+],
+false
+],
+[
+"Plantanus Occidentalis",
+[
+"Plantanus occidentalis"
+],
+false
+],
+[
+"Platinum Peperomia",
+[
+"Peperomia griseoargentea"
+],
+false
+],
+[
+"Platycerium Alcicorne",
+[
+"Platycerium alcicorne"
+],
+false
+],
+[
+"Plumbago Larpentiae",
+[
+"Ceratostigma larpentiae"
+],
+false
+],
+[
+"Plush Plant",
+[
+"Echeveria pul-oliver"
+],
+false
+],
+[
+"Poison Ivy",
+[
+"Toxicodendron species"
+],
+false
+],
+[
+"Poison Oak",
+[
+"Toxicodendron species"
+],
+false
+],
+[
+"Poison Sumac",
+[
+"Toxicodendron species"
+],
+false
+],
+[
+"Polka Dot Plant",
+[
+"Hypoestes phyllostachya"
+],
+false
+],
+[
+"Polystichum Falcatum",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Pony Tail",
+[
+"Beaucarnea recurvata"
+],
+false
+],
+[
+"Porcelain Flower",
+[
+"Hoya carnosa 'krinkle kurl'"
+],
+false
+],
+[
+"Pot Marigold",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Prairie Lily",
+[
+"Zephyranthes drummondii"
+],
+false
+],
+[
+"Prayer Plant",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"Prostrate Coleus",
+[
+"Plectranthus oetendahlii"
+],
+false
+],
+[
+"Pupleosier Willow",
+[
+"Salix purpurea"
+],
+false
+],
+[
+"Purple Baby Tears",
+[
+"Frithia pulchra"
+],
+false
+],
+[
+"Purple Passion Vine",
+[
+"Gynura aurantica"
+],
+false
+],
+[
+"Purple Velvet Plant",
+[
+"Gynura aurantica"
+],
+false
+],
+[
+"Purple Waffle Plant",
+[
+"Hemigraphis exotica"
+],
+false
+],
+[
+"Queencup",
+[
+"Clintonia uniflora"
+],
+false
+],
+[
+"Queens Spiderwort",
+[
+"Dichorisandra reginae"
+],
+false
+],
+[
+"Queensland Arrowroot",
+[
+"Canna edulis"
+],
+false
+],
+[
+"Rabbits Foot Fern",
+[
+"Davallia spp."
+],
+false
+],
+[
+"Rainbow Orchid",
+[
+"Epidendrum prismatocarpum"
+],
+false
+],
+[
+"Red African Violet",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Red Berried Greenbrier",
+[
+"Smilax walteria"
+],
+false
+],
+[
+"Red Edge Peperomia",
+[
+"Peperomia clusiifolia"
+],
+false
+],
+[
+"Red Hawthorne",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Red Maple",
+[
+"Acer rubrum"
+],
+false
+],
+[
+"Red Palm Lily",
+[
+"Cordyline rubra"
+],
+false
+],
+[
+"Red Veined Prayer",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"Reed Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Resurrection Lily",
+[
+"Kaempferia"
+],
+false
+],
+[
+"Rhynchophorum",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Ribbon Plant (Chlorophytum Comosum)",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Roosevelt Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Rose",
+[
+"Rosa Species"
+],
+false
+],
+[
+"Rose of China",
+[
+"Hibiscus syriacus"
+],
+false
+],
+[
+"Rose of Sharon",
+[
+"Hibiscus syriacus"
+],
+false
+],
+[
+"Rosemary",
+[
+"Rosmarinus officinalis"
+],
+false
+],
+[
+"Russian Knapweed",
+[
+"Centaurea repens"
+],
+false
+],
+[
+"Russian Olive",
+[
+"elaeagnus species"
+],
+false
+],
+[
+"Saffron Spike Zebra",
+[
+"Aphelandra squarrosa"
+],
+false
+],
+[
+"Sage",
+[
+"Salvia officinalis"
+],
+false
+],
+[
+"Saint Bernards Lily",
+[
+"Anthericum liliago"
+],
+false
+],
+[
+"Salad Burnet",
+[
+"Poterium sanguisorba"
+],
+false
+],
+[
+"Sand Lily",
+[
+"Leucocrinum montanum"
+],
+false
+],
+[
+"Sand Verbena",
+[
+"Abronia fragrans"
+],
+false
+],
+[
+"Satin Pellionia",
+[
+"Pellonia pulchra"
+],
+false
+],
+[
+"Savory (Summer)",
+[
+"Satureja hortensis"
+],
+false
+],
+[
+"Savory (Winter)",
+[
+"Satureja hortensis"
+],
+false
+],
+[
+"Sawbrier",
+[
+"Smilax glauca"
+],
+false
+],
+[
+"Scabious",
+[
+"Leucospermum incisum"
+],
+false
+],
+[
+"Scarborough Lily",
+[
+"Vallota speciosa"
+],
+false
+],
+[
+"Scarlet Orchid",
+[
+"Epidendrum tampense"
+],
+false
+],
+[
+"Scarlet Sage",
+[
+"Salvia coccinea"
+],
+false
+],
+[
+"Sego Lily",
+[
+"Calochortus gunnisonii"
+],
+false
+],
+[
+"Shagbark Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Shan Ku'ei-lai",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Shellbark Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Shrimp Cactus",
+[
+"Schlumbergera russelliana"
+],
+false
+],
+[
+"Silver Bell",
+[
+"Halesia carolina"
+],
+false
+],
+[
+"Silver Berry",
+[
+"elaeagnus species"
+],
+false
+],
+[
+"Silver Heart",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"Silver Pink Vine",
+[
+"Hoya publcalyx"
+],
+false
+],
+[
+"Silver Star",
+[
+"Cryptanthus lacerdae"
+],
+false
+],
+[
+"Silver Table Fern",
+[
+"Pteris sp."
+],
+false
+],
+[
+"Silver Tree Anamiga",
+[
+"NONE LISTED"
+],
+false
+],
+[
+"Slender Deutzia",
+[
+"Deutzia gracilis"
+],
+false
+],
+[
+"Small Fruited Hickory",
+[
+"Carya glabra"
+],
+false
+],
+[
+"Smilax Tamnoides Vas",
+[
+"Smilax hispida"
+],
+false
+],
+[
+"Speckled Wood Lily",
+[
+"Clintonia umbelluata"
+],
+false
+],
+[
+"Spice Orchid (Epidendrum atropurpeum)",
+[
+"Epidendrum atropurpeum"
+],
+false
+],
+[
+"Spice Orchid (Epidendrum ibaguense)",
+[
+"Epidendrum ibaguense"
+],
+false
+],
+[
+"Spider Flower",
+[
+"Cleome hasserlana"
+],
+false
+],
+[
+"Spider Ivy",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Spider Plant",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Star Jasmine",
+[
+"Trachelospermum jasminoides"
+],
+false
+],
+[
+"Star Lily",
+[
+"Leucocrinum montanum"
+],
+false
+],
+[
+"Star Plant",
+[
+"Cryptanthus bivattus minor"
+],
+false
+],
+[
+"Stevia",
+[
+"Stevia rebaudiana"
+],
+false
+],
+[
+"Strawberry",
+[
+"Fragaria spp."
+],
+false
+],
+[
+"Striped Blushing",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Sudan Grass",
+[
+"Sorghum vulgare var sudanesis"
+],
+false
+],
+[
+"Sugar Pods",
+[
+"Ceratonia siliqua"
+],
+false
+],
+[
+"Sulfur Flower",
+[
+"Eriogonium umbellatum"
+],
+false
+],
+[
+"Summer Hyacinth",
+[
+"Galtonia spp."
+],
+false
+],
+[
+"Sunflower",
+[
+"helianthus angustifolius"
+],
+false
+],
+[
+"Swamp Sunflower",
+[
+"helianthus angustifolius"
+],
+false
+],
+[
+"Swedish Ivy",
+[
+"Plectranthus australis"
+],
+false
+],
+[
+"Sweet Pea",
+[
+"Lathyrus latifolius"
+],
+false
+],
+[
+"Sweet Potato Vine",
+[
+"Ipomoea batatas"
+],
+false
+],
+[
+"Sweetheart Hoya",
+[
+"Hoya kerrii"
+],
+false
+],
+[
+"Sword Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Tailed Orchid",
+[
+"Masdevallia spp."
+],
+false
+],
+[
+"Tall Feather Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Tall Mahonia",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Tangerine Impatience",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Teasel Gourd",
+[
+"Cucumis dipsaceus"
+],
+false
+],
+[
+"Texas Sage",
+[
+"Salvia coccinea"
+],
+false
+],
+[
+"Thea Japonica",
+[
+"Camellia japonica"
+],
+false
+],
+[
+"Thimble Cactus",
+[
+"Mammillaria fragilis"
+],
+false
+],
+[
+"Thorn Apple",
+[
+"Crataegus douglasii"
+],
+false
+],
+[
+"Thyme",
+[
+"Thymus vulgaris"
+],
+false
+],
+[
+"Ti hu-ling",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Tickseed",
+[
+"Coreopsis californica"
+],
+false
+],
+[
+"Tiger Orchid",
+[
+"Haemaria discolor"
+],
+false
+],
+[
+"Toad Spotted Cactus",
+[
+"Stapelia variegata"
+],
+false
+],
+[
+"Torch Lily",
+[
+"Kniphofia"
+],
+false
+],
+[
+"Tous-les-mois",
+[
+"Canna edulis"
+],
+false
+],
+[
+"Trailing Peperomia",
+[
+"Peperomia prostata"
+],
+false
+],
+[
+"Tree Cactus",
+[
+"Opuntia species"
+],
+false
+],
+[
+"Tree Gloxinia",
+[
+"Kohleria lindeniana"
+],
+false
+],
+[
+"Tropical Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"True Cantaloupe",
+[
+"Cucumis melo"
+],
+false
+],
+[
+"Tu Fu-Ling",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Tulip Poplar",
+[
+"Liriodendron tulipifera"
+],
+false
+],
+[
+"Turban Squash",
+[
+"Cucurbita maxima cv turbaniformis"
+],
+false
+],
+[
+"Turf Lily",
+[
+"Liriope muscari"
+],
+false
+],
+[
+"Umbrella Plant",
+[
+"Eriogonium umbellatum"
+],
+false
+],
+[
+"Urbinia Agavoides",
+[
+"Echeveria elegans"
+],
+false
+],
+[
+"Usambara Violet",
+[
+"Santpaulia confusa"
+],
+false
+],
+[
+"Variegated Wax Plant",
+[
+"Echeveria sp."
+],
+false
+],
+[
+"Velvet Plant",
+[
+"Gynura aurantica"
+],
+false
+],
+[
+"Venus Fly Trap",
+[
+"Dionaea muscipula"
+],
+false
+],
+[
+"Verona Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Verona Lace Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Vining Peperomia",
+[
+"Peperomia serpens variegata"
+],
+false
+],
+[
+"Violet Slipper Gloxinia",
+[
+"Sinningia speciosa"
+],
+false
+],
+[
+"Waffle Plant",
+[
+"Hemigraphis exotica"
+],
+false
+],
+[
+"Walking Anthericum",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Washington Hawthorn",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Water Hickory",
+[
+"Carya aquatica"
+],
+false
+],
+[
+"Water Hyacinth",
+[
+"Eichhornia crassipes"
+],
+false
+],
+[
+"Watermelon Begonia",
+[
+"Peperomia argyreia"
+],
+false
+],
+[
+"Watermelon Peperomia",
+[
+"Peperomia argyreia"
+],
+false
+],
+[
+"Watermelon Pilea",
+[
+"Pilea cadieri"
+],
+false
+],
+[
+"Wax Plant",
+[
+"Hoya carnosa 'krinkle kurl'"
+],
+false
+],
+[
+"Wax Rosette",
+[
+"Echeveria gilva"
+],
+false
+],
+[
+"Weeping Bottlebrush",
+[
+"Callistemon species"
+],
+false
+],
+[
+"Weeping Sargent Hemlock",
+[
+"Tsuga species"
+],
+false
+],
+[
+"Weisdornbluten",
+[
+"Crataegus species"
+],
+false
+],
+[
+"West Indian Gherkin",
+[
+"Cucumis anguria"
+],
+false
+],
+[
+"Western Sword",
+[
+"Ploystichum munitum"
+],
+false
+],
+[
+"White Edged Swedish Ivy",
+[
+"Plectranthus australis"
+],
+false
+],
+[
+"White Ginger",
+[
+"Hedychium coronarium"
+],
+false
+],
+[
+"White Heart Hickory",
+[
+"Carya tomentosa"
+],
+false
+],
+[
+"Whitman Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Wild Buckwheat",
+[
+"Eriogonium umbellatum"
+],
+false
+],
+[
+"Wild Hyacinth",
+[
+"Dichelostemma pulchellum"
+],
+false
+],
+[
+"Wild Lantana",
+[
+"Abronia fragrans"
+],
+false
+],
+[
+"Wild Sasparilla",
+[
+"Smilax glauca"
+],
+false
+],
+[
+"Wild Strawberry",
+[
+"Fragaria"
+],
+false
+],
+[
+"Willow Herb",
+[
+"Epilobium angustifolium"
+],
+false
+],
+[
+"Windmill Palm",
+[
+"Trachycarpus fortunei"
+],
+false
+],
+[
+"Winter Cattleya",
+[
+"Cattleya trianaei"
+],
+false
+],
+[
+"Withered Snapdragon",
+[
+"Anthirrhinum multiflorum"
+],
+false
+],
+[
+"Woolflower",
+[
+"Celosia cristata"
+],
+false
+],
+[
+"Yellow Bloodleaf",
+[
+"Iresine herbstii"
+],
+false
+],
+[
+"Yellow Palm",
+[
+"Dypsis lutescens"
+],
+false
+],
+[
+"Yellow-Flowered Gourd",
+[
+"Cucurbita species"
+],
+false
+],
+[
+"Yellowrocket",
+[
+"Barbarea vulgaris"
+],
+false
+],
+[
+"Yorba Linda",
+[
+"Peperomia rotundifolia"
+],
+false
+],
+[
+"Zebra Haworthia",
+[
+"Haworthia fasciata"
+],
+false
+],
+[
+"Zinnia",
+[
+"Zinnia species"
+],
+false
+],
+[
+"Zucchini Squash",
+[
+"Cucurbia pepo cv zucchini"
+],
+false
+]
+],
+"dogs": [
+[
+"Adam-and-Eve",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"African Wonder Tree",
+[
+"Ricinus communis"
+],
+true
+],
+[
+"Alocasia",
+[
+"Alocasia spp."
+],
+true
+],
+[
+"Aloe",
+[
+"Aloe vera"
+],
+true
+],
+[
+"Amaryllis",
+[
+"Amaryllis spp."
+],
+true
+],
+[
+"Ambrosia Mexicana",
+[
+"Chenopodium botrys"
+],
+true
+],
+[
+"American Bittersweet",
+[
+"Celastrus scandens"
+],
+true
+],
+[
+"American Holly",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"American Mandrake",
+[
+"Podophyllum peltatum"
+],
+true
+],
+[
+"American Yew",
+[
+"Taxus canadensus"
+],
+true
+],
+[
+"Andromeda Japonica",
+[
+"Pieris japonica"
+],
+true
+],
+[
+"Angelica Tree",
+[
+"Aralia spinosa"
+],
+true
+],
+[
+"Apple",
+[
+"Malus sylvestrus"
+],
+true
+],
+[
+"Apricot",
+[
+"Prunus armeniaca"
+],
+true
+],
+[
+"Arrow-Head Vine",
+[
+"Syngonium podophyllum"
+],
+true
+],
+[
+"Arum",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Arum Lily",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Asparagus Fern",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Australian Ivy Palm",
+[
+"Brassaia actinophylla"
+],
+true
+],
+[
+"Australian Nut",
+[
+"Macadamia integrifolia"
+],
+true
+],
+[
+"Autumn Crocus",
+[
+"Colchicum autumnale"
+],
+true
+],
+[
+"Azalea",
+[
+"Rhododendron spp"
+],
+true
+],
+[
+"Baby Doll Ti Plant",
+[
+"Cordyline terminalis"
+],
+true
+],
+[
+"Barbados Aloe",
+[
+"Aloe barbadensis"
+],
+true
+],
+[
+"Barbados Lily",
+[
+"Hippeastrum spp."
+],
+true
+],
+[
+"Barbados Pride",
+[
+"Caesalpinia pulcherrima"
+],
+true
+],
+[
+"Barbados Pride 2",
+[
+"Poinciana gilliesii"
+],
+true
+],
+[
+"Bay Laurel",
+[
+"Laurus nobilis"
+],
+true
+],
+[
+"Bead Tree",
+[
+"Melia azedarach"
+],
+true
+],
+[
+"Begonia",
+[
+"Begonia spp."
+],
+true
+],
+[
+"Bergamot Orange",
+[
+"Citrus Aurantium"
+],
+true
+],
+[
+"Bird of Paradise",
+[
+"Caesalpinia gilliesii"
+],
+true
+],
+[
+"Bird of Paradise 2",
+[
+"Poinciana gilliesii"
+],
+true
+],
+[
+"Bird of Paradise Flower",
+[
+"Strelitzia reginae"
+],
+true
+],
+[
+"Bird's Tongue Flower",
+[
+"Strelitzia reginae"
+],
+true
+],
+[
+"Bishop’s Weed",
+[
+"Ammi majus"
+],
+true
+],
+[
+"Bitter Root",
+[
+"Apocynum androsaemifolium"
+],
+true
+],
+[
+"Black Calla",
+[
+"Arum palestinum"
+],
+true
+],
+[
+"Black Cherry",
+[
+"Prunus serotina"
+],
+true
+],
+[
+"Black Laurel",
+[
+"Leucothoe spp."
+],
+true
+],
+[
+"Black Nightshade",
+[
+"Solanum nigrum"
+],
+true
+],
+[
+"Black Walnut",
+[
+"Juglans nigra"
+],
+true
+],
+[
+"Bobbins",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Bog Laurel",
+[
+"Kalmia poliifolia"
+],
+true
+],
+[
+"Borage",
+[
+"Borage officinalis"
+],
+true
+],
+[
+"Boxwood",
+[
+"Buxus spp."
+],
+true
+],
+[
+"Branching Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Brazilwood",
+[
+"Poinciana gilliesii"
+],
+true
+],
+[
+"Bread and Butter Plant",
+[
+"Coleus ampoinicus"
+],
+true
+],
+[
+"Brunfelsia",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Buckeye",
+[
+"Aesculus spp"
+],
+true
+],
+[
+"Buckwheat",
+[
+"Fagopyrum spp."
+],
+true
+],
+[
+"Buddhist Pine",
+[
+"Podocarpus macrophylla"
+],
+true
+],
+[
+"Burning Bush",
+[
+"Euonymus atropurpurea"
+],
+true
+],
+[
+"Buttercup",
+[
+"Ranunculus spp."
+],
+true
+],
+[
+"Butterfly Iris",
+[
+"Iris spuria"
+],
+true
+],
+[
+"Caladium",
+[
+"Caladium hortulanum"
+],
+true
+],
+[
+"Calamondin Orange",
+[
+"Citrus mitis"
+],
+true
+],
+[
+"California Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Calla Lily",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Cape Jasmine",
+[
+"Gardenia jasminoides"
+],
+true
+],
+[
+"Caraway",
+[
+"Carum carvi"
+],
+true
+],
+[
+"Cardboard Cycad",
+[
+"Zamia furfuracea"
+],
+true
+],
+[
+"Cardboard Palm",
+[
+"Zamia spp."
+],
+true
+],
+[
+"Cardinal Flower",
+[
+"Lobelia cardinalis"
+],
+true
+],
+[
+"Carnation",
+[
+"Dianthus caryophyllus"
+],
+true
+],
+[
+"Castor Bean Plant",
+[
+"Ricinus communis"
+],
+true
+],
+[
+"Ceriman",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Chamomile",
+[
+"Anthemis nobilis"
+],
+true
+],
+[
+"Chandelier Plant",
+[
+"Kalanchoe tubiflora"
+],
+true
+],
+[
+"Charming Dieffenbachia",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"Cherry",
+[
+"Prunus spp."
+],
+true
+],
+[
+"Chinaberry Tree",
+[
+"Melia azedarach"
+],
+true
+],
+[
+"Chinese Evergreen",
+[
+"Aglaonema modestum"
+],
+true
+],
+[
+"Chinese Jade",
+[
+"Crassula arborescens"
+],
+true
+],
+[
+"Chives",
+[
+"Allium schoenoprasum"
+],
+true
+],
+[
+"Choke Cherry",
+[
+"Prunus virginiana"
+],
+true
+],
+[
+"Christmas Rose",
+[
+"Helleborus niger"
+],
+true
+],
+[
+"Chrysanthemum",
+[
+"Chrysanthemum spp."
+],
+true
+],
+[
+"Clematis",
+[
+"Clematis spp."
+],
+true
+],
+[
+"Climbing Bittersweet",
+[
+"Celastrus scandens"
+],
+true
+],
+[
+"Climbing Lily",
+[
+"Gloriosa superba"
+],
+true
+],
+[
+"Climbing Nightshade",
+[
+"Solanum dulcamara"
+],
+true
+],
+[
+"Clivia Lily",
+[
+"Clivia spp."
+],
+true
+],
+[
+"Clusia Rosea",
+[
+"Clusia major"
+],
+true
+],
+[
+"Coffee Tree",
+[
+"Polyscias guilfoylei"
+],
+true
+],
+[
+"Coleus",
+[
+"Coleus ampoinicus"
+],
+true
+],
+[
+"Common Privet",
+[
+"Ligustrum vulgare"
+],
+true
+],
+[
+"Coontie Palm",
+[
+"Zamia pumila"
+],
+true
+],
+[
+"Copperleaf",
+[
+"Acalypha godseffiana"
+],
+true
+],
+[
+"Cordatum",
+[
+"Philodendron oxycardium"
+],
+true
+],
+[
+"Corn Plant",
+[
+"Dracaena fragrans"
+],
+true
+],
+[
+"Cornstalk Plant",
+[
+"Dracaena fragrans"
+],
+true
+],
+[
+"Cow parsnip",
+[
+"Heracleum maximum"
+],
+true
+],
+[
+"Cowbane",
+[
+"Cicuta species"
+],
+true
+],
+[
+"Cuckoo-pint",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Cutleaf Philodendron",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Cycads",
+[
+"Cycas",
+"Zamia species"
+],
+true
+],
+[
+"Cyclamen",
+[
+"Cyclamen spp"
+],
+true
+],
+[
+"Daffodil",
+[
+"Narcissus spp"
+],
+true
+],
+[
+"Dahlia",
+[
+"Dahlia species"
+],
+true
+],
+[
+"Daisy",
+[
+"Chrysanthemum species"
+],
+true
+],
+[
+"Deadly Nightshade",
+[
+"Solanum spp"
+],
+true
+],
+[
+"Desert Azalea",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Desert Rose",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Devil's Backbone",
+[
+"Kalanchoe tubiflora"
+],
+true
+],
+[
+"Devils Ivy",
+[
+"Epipremnum aureum"
+],
+true
+],
+[
+"Dieffenbachia",
+[
+"Dieffenbachia"
+],
+true
+],
+[
+"Dock",
+[
+"Rumex sp."
+],
+true
+],
+[
+"Dog Daisy",
+[
+"Achillea millefolium"
+],
+true
+],
+[
+"Dog Hobble",
+[
+"Leucothoe sp."
+],
+true
+],
+[
+"Dogbane Hemp",
+[
+"Apocynum spp."
+],
+true
+],
+[
+"Dracaena",
+[
+"Dracaena spp."
+],
+true
+],
+[
+"Dumbcane",
+[
+"Dieffenbachia"
+],
+true
+],
+[
+"Dwarf Poinciana",
+[
+"Caesalpinia pulcherrima"
+],
+true
+],
+[
+"Easter Rose",
+[
+"Helleborus niger"
+],
+true
+],
+[
+"Eastern Star",
+[
+"Dianthus spp."
+],
+true
+],
+[
+"Elephant Ears (Caladium hortulanum)",
+[
+"Caladium hortulanum"
+],
+true
+],
+[
+"Elephant Ears (Colocasia esculenta)",
+[
+"Colocasia esculenta"
+],
+true
+],
+[
+"Elephant-Ear Begonia",
+[
+"Begonia scharfii"
+],
+true
+],
+[
+"Emerald Feather",
+[
+"Asparagus densiflorus"
+],
+true
+],
+[
+"English Holly",
+[
+"Ilex aquifolium"
+],
+true
+],
+[
+"English Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"English Yew",
+[
+"Taxus baccata"
+],
+true
+],
+[
+"Epazote",
+[
+"Chenopodium ambrosioides"
+],
+true
+],
+[
+"Eucalyptus",
+[
+"Eucalyptus species"
+],
+true
+],
+[
+"European Bittersweet",
+[
+"Solanum dulcamara"
+],
+true
+],
+[
+"European Holly",
+[
+"Ilex aquifolium"
+],
+true
+],
+[
+"Exotica",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"False Bittersweet",
+[
+"Celastrus scandens"
+],
+true
+],
+[
+"False Queen Anne’s Lace",
+[
+"Ammi majus"
+],
+true
+],
+[
+"Feather Geranium",
+[
+"Ambrosia mexicana"
+],
+true
+],
+[
+"Fern Palm",
+[
+"Zamia spp."
+],
+true
+],
+[
+"Fetter Bush",
+[
+"Leucothoe spp."
+],
+true
+],
+[
+"Fetterbush",
+[
+"Lyonia spp."
+],
+true
+],
+[
+"Fiddle-Leaf",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Fig",
+[
+"Ficus benjamina"
+],
+true
+],
+[
+"Figwort",
+[
+"Ranunculus acris"
+],
+true
+],
+[
+"Fire Lily",
+[
+"Hippeastrum spp."
+],
+true
+],
+[
+"Flag",
+[
+"Iris species"
+],
+true
+],
+[
+"Flamingo Flower",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Fleabane",
+[
+"Erigeron speciosus"
+],
+true
+],
+[
+"Florida Beauty",
+[
+"Dracaena surculosa"
+],
+true
+],
+[
+"Florist's Calla",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Foxglove",
+[
+"Digitalis purpurea"
+],
+true
+],
+[
+"Foxtail",
+[
+"Acalypha hispida"
+],
+true
+],
+[
+"Franciscan Rain Tree",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Garden Calla",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Garden Chamomile",
+[
+"Anthemis nobilis"
+],
+true
+],
+[
+"Garden Hyacinth",
+[
+"Hyacinthus orientalis"
+],
+true
+],
+[
+"Gardenia",
+[
+"Gardenia jasminoides"
+],
+true
+],
+[
+"Garlic",
+[
+"Allium sativum"
+],
+true
+],
+[
+"Geranium",
+[
+"Pelargonium species"
+],
+true
+],
+[
+"Geranium-Leaf Aralia",
+[
+"Polyscias guilfoylei"
+],
+true
+],
+[
+"Giant Dracaena",
+[
+"Cordyline australis"
+],
+true
+],
+[
+"Giant Dumb Cane",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"Giant Hogweed",
+[
+"Heracleum maximum"
+],
+true
+],
+[
+"Glacier Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Gladiola",
+[
+"Gladiolus species"
+],
+true
+],
+[
+"Gloriosa Lily",
+[
+"Gloriosa superba"
+],
+true
+],
+[
+"Gold Dieffenbachia",
+[
+"Dieffenbachia picta"
+],
+true
+],
+[
+"Gold Dust Dracaena",
+[
+"Dracaena surculosa"
+],
+true
+],
+[
+"Golden Birds Nest",
+[
+"Sansevieria trifasciata"
+],
+true
+],
+[
+"Golden Pothos",
+[
+"Epipremnum aureum"
+],
+true
+],
+[
+"Golden Ragwort",
+[
+"Senecio species"
+],
+true
+],
+[
+"Good Luck Plant",
+[
+"Oxalis spp."
+],
+true
+],
+[
+"Grapefruit",
+[
+"Citrus paradisii"
+],
+true
+],
+[
+"Grass Palm",
+[
+"Cordyline australis"
+],
+true
+],
+[
+"Greater Ammi",
+[
+"Ammi majus"
+],
+true
+],
+[
+"Green Gold Naphthysis",
+[
+"Syngonium podophyllum"
+],
+true
+],
+[
+"Ground Apple",
+[
+"Anthemis nobilis"
+],
+true
+],
+[
+"Groundsel",
+[
+"Senecio species"
+],
+true
+],
+[
+"Hahn's Self Branching English Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Hashish",
+[
+"Cannabis sativa"
+],
+true
+],
+[
+"Hawaiian Ti",
+[
+"Giant Dracaena"
+],
+true
+],
+[
+"Heartleaf Philodendron",
+[
+"Philodendron hederaceum"
+],
+true
+],
+[
+"Heavenly Bamboo",
+[
+"Nandina domestica"
+],
+true
+],
+[
+"Hellebore",
+[
+"Helleborus niger"
+],
+true
+],
+[
+"Hercules' Club",
+[
+"Aralia spinosa"
+],
+true
+],
+[
+"Hills of Snow",
+[
+"Hydrangea arborescens"
+],
+true
+],
+[
+"Holly",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"Hops",
+[
+"Humulus lupulus"
+],
+true
+],
+[
+"Horse Chestnut",
+[
+"Aesculus glabra"
+],
+true
+],
+[
+"Horsehead Philodendron",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Horseweed",
+[
+"Erigeron speciosus"
+],
+true
+],
+[
+"Hortensia",
+[
+"Hydrangea arborescens"
+],
+true
+],
+[
+"Hosta",
+[
+"Hosta plataginea"
+],
+true
+],
+[
+"Hurricane Plant",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Hyacinth",
+[
+"Hyacinthus orientalis"
+],
+true
+],
+[
+"Hydrangea",
+[
+"Hydrangea arborescens"
+],
+true
+],
+[
+"Impala Lily",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Inch Plant",
+[
+"Tradescantia flumeninsis"
+],
+true
+],
+[
+"Indian Apple",
+[
+"Podophyllum peltatum"
+],
+true
+],
+[
+"Indian Borage",
+[
+"Coleus ampoinicus"
+],
+true
+],
+[
+"Indian Hemp (Apocynum androsaemifolium)",
+[
+"Apocynum androsaemifolium"
+],
+true
+],
+[
+"Indian Hemp (Cannabis sativa)",
+[
+"Cannabis sativa"
+],
+true
+],
+[
+"Indian Pink",
+[
+"Lobelia cardinalis"
+],
+true
+],
+[
+"Indian Rubber Plant",
+[
+"Ficus benjamina"
+],
+true
+],
+[
+"Inkberry",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"Iris",
+[
+"Iris species"
+],
+true
+],
+[
+"Iron Cross Begonia",
+[
+"Begonia masoniana"
+],
+true
+],
+[
+"Ivy Arum",
+[
+"Epipremnum aureum"
+],
+true
+],
+[
+"Jack-in-the-pulpit",
+[
+"Arisaema triphyllum"
+],
+true
+],
+[
+"Jade Plant",
+[
+"Crassula argentea"
+],
+true
+],
+[
+"Japanese Yew",
+[
+"Taxus sp."
+],
+true
+],
+[
+"Jerusalem Cherry",
+[
+"Solanum pseudocapsicum"
+],
+true
+],
+[
+"Jerusalem Oak",
+[
+"Ambrosia mexicana"
+],
+true
+],
+[
+"Jonquil",
+[
+"Narcissus jonquilla"
+],
+true
+],
+[
+"Kaffir Lily",
+[
+"Clivia minata"
+],
+true
+],
+[
+"Kalanchoe",
+[
+"Kalanchoe spp"
+],
+true
+],
+[
+"Kiss-me-quick",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Klamath Weed",
+[
+"Hypericum perforatum"
+],
+true
+],
+[
+"Kudu Lily",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Lace Fern",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Lacy Tree Philodendron",
+[
+"Philodendron selloum"
+],
+true
+],
+[
+"Lady-of-the-night",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Lambkill",
+[
+"Kalmia augustifolia"
+],
+true
+],
+[
+"Lantana",
+[
+"Lantana camara"
+],
+true
+],
+[
+"Larkspur",
+[
+"Delphinium species"
+],
+true
+],
+[
+"Laurel",
+[
+"Kalmia latifolia"
+],
+true
+],
+[
+"Lavender",
+[
+"Lavendula angustifolia"
+],
+true
+],
+[
+"Leatherflower",
+[
+"Clematis sp."
+],
+true
+],
+[
+"Leek",
+[
+"Allium ampeloprasum"
+],
+true
+],
+[
+"Lemon",
+[
+"Citrus limonia"
+],
+true
+],
+[
+"Lemon Grass",
+[
+"Cymbopogon citratus"
+],
+true
+],
+[
+"Lemon Verbena",
+[
+"Aloysia triphylla"
+],
+true
+],
+[
+"Lenten Rose",
+[
+"Helleborus niger"
+],
+true
+],
+[
+"Lily of the Palace",
+[
+"Hippeastrum spp."
+],
+true
+],
+[
+"Lily of the Valley",
+[
+"Convallaria majalis"
+],
+true
+],
+[
+"Lily-of-the-Valley Bush",
+[
+"Pieris japonica"
+],
+true
+],
+[
+"Lime",
+[
+"Citrus aurantifolia"
+],
+true
+],
+[
+"Lobelia",
+[
+"Lobelia cardinalis"
+],
+true
+],
+[
+"Locust",
+[
+"Robinia spp."
+],
+true
+],
+[
+"Lord-and-Ladies",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Lovage",
+[
+"Levisticum officinale"
+],
+true
+],
+[
+"Macadamia Nut",
+[
+"Macadamia integrifolia"
+],
+true
+],
+[
+"Madagascar Dragon Tree",
+[
+"Dracaena marginata"
+],
+true
+],
+[
+"Malanga",
+[
+"Colocasia esculenta"
+],
+true
+],
+[
+"Malaysian Dracaena",
+[
+"Dracaena reflexa"
+],
+true
+],
+[
+"Maleberry",
+[
+"Lyonia sp."
+],
+true
+],
+[
+"Mapleleaf Begonia",
+[
+"Begonia cleopatra"
+],
+true
+],
+[
+"Marble Queen",
+[
+"Scindapsus aureus"
+],
+true
+],
+[
+"Marijuana",
+[
+"Cannabis sativa"
+],
+true
+],
+[
+"Marjoram",
+[
+"Origanum majorana"
+],
+true
+],
+[
+"Mauna Loa Peace Lily",
+[
+"Spathiphyllum"
+],
+true
+],
+[
+"Mayapple",
+[
+"Podophyllum peltatum"
+],
+true
+],
+[
+"Mayweed",
+[
+"Anthemis cotula"
+],
+true
+],
+[
+"Meadow Saffron",
+[
+"Colchicum autumnale"
+],
+true
+],
+[
+"Medicine Plant",
+[],
+true
+],
+[
+"Metallic Leaf Begonia",
+[
+"Begonia metallica"
+],
+true
+],
+[
+"Mexican Breadfruit",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Milfoil",
+[
+"Achillea millefolium"
+],
+true
+],
+[
+"Milkweed",
+[
+"Asclepias species"
+],
+true
+],
+[
+"Mint",
+[
+"Mentha sp."
+],
+true
+],
+[
+"Mistletoe \"American\"",
+[
+"Phoradendron flavescens"
+],
+true
+],
+[
+"Mock Azalea",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Mole Bean Plant",
+[
+"Ricinus communis"
+],
+true
+],
+[
+"Morning Glory",
+[
+"Ipomoea spp"
+],
+true
+],
+[
+"Morning-Noon-and-Night",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Moss Rose",
+[
+"Portulaca oleracea"
+],
+true
+],
+[
+"Mother of Millions",
+[
+"Kalanchoe tubiflora"
+],
+true
+],
+[
+"Mother-in-Law",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Mother-In-Law Plant",
+[
+"Kalanchoe tubiflora"
+],
+true
+],
+[
+"Mother-in-Law’s Tongue",
+[
+"Sansevieria trifasciata"
+],
+true
+],
+[
+"Mum",
+[
+"Chrysanthemum spp."
+],
+true
+],
+[
+"Naked Lady",
+[
+"Amaryllis spp."
+],
+true
+],
+[
+"Nandina",
+[
+"Nandina domestica"
+],
+true
+],
+[
+"Narcissus",
+[
+"Narcissus spp"
+],
+true
+],
+[
+"Nasturtium (Watercress)",
+[
+"Nasturtium officinale"
+],
+true
+],
+[
+"Needlepoint Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Nephthytis",
+[
+"Syngonium podophyllum"
+],
+true
+],
+[
+"Nicotiana",
+[
+"Nicotiana glauca"
+],
+true
+],
+[
+"Nightshade",
+[
+"Solanum spp"
+],
+true
+],
+[
+"Octopus Tree",
+[
+"Schefflera or Brassia actinoplylla"
+],
+true
+],
+[
+"Oilcloth Flower",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Oleander",
+[
+"Nerium oleander"
+],
+true
+],
+[
+"Onion",
+[
+"Allium cepa"
+],
+true
+],
+[
+"Orange",
+[
+"Citrus sinensis"
+],
+true
+],
+[
+"Oregano",
+[
+"Origanum vulgare hirtum"
+],
+true
+],
+[
+"Oregon Holly",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"Ornamental Pepper",
+[
+"Solanum pseudocapsicum"
+],
+true
+],
+[
+"Pacific Yew",
+[
+"Taxus brevifolia"
+],
+true
+],
+[
+"Painter's Pallette",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Palm Lily",
+[
+"Cordyline australis"
+],
+true
+],
+[
+"Panda Plant",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Paper White",
+[
+"Narcissus spp"
+],
+true
+],
+[
+"Paraguayan Jasmine",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Parsley",
+[
+"Petroselinum crispum"
+],
+true
+],
+[
+"Peace Begonia",
+[
+"Begonia rex 'peace'"
+],
+true
+],
+[
+"Peace Lily",
+[
+"Spathiphyllum"
+],
+true
+],
+[
+"Peach",
+[
+"Prunus persica"
+],
+true
+],
+[
+"Peacock Flower",
+[
+"Caesalpinia pulcherrima"
+],
+true
+],
+[
+"Pencil Cactus",
+[
+"Euphorbia tirucalli"
+],
+true
+],
+[
+"Peony",
+[
+"Paeonis officinalis"
+],
+true
+],
+[
+"Periwinkle",
+[
+"Vinca rosea"
+],
+true
+],
+[
+"Philodendron Pertusum",
+[
+"Philodendron spp"
+],
+true
+],
+[
+"Pie Plant",
+[
+"Rheum rhabarbarium"
+],
+true
+],
+[
+"Pieris",
+[
+"Pieris japonica"
+],
+true
+],
+[
+"Pig Lily",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Pigtail Plant",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Pink Pearl",
+[
+"Begonia semperflorens cultivar"
+],
+true
+],
+[
+"Pinks",
+[
+"Dianthus caryophyllus"
+],
+true
+],
+[
+"Plantain Lily",
+[
+"Hosta plantaginea"
+],
+true
+],
+[
+"Plum",
+[
+"Prunus domestica"
+],
+true
+],
+[
+"Plumosa Fern",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Poinciana",
+[
+"Caesalpinia gilliessi"
+],
+true
+],
+[
+"Poinsettia",
+[
+"Euphorbia pulcherrima"
+],
+true
+],
+[
+"Poison Daisy",
+[
+"Anthemis cotula"
+],
+true
+],
+[
+"Poison Hemlock",
+[
+"Conium maculatum"
+],
+true
+],
+[
+"Poison Parsnip",
+[
+"Cicuta maculata"
+],
+true
+],
+[
+"Portulaca",
+[
+"Portulaca oleracea"
+],
+true
+],
+[
+"Pride-of-India",
+[
+"Melia azedarach"
+],
+true
+],
+[
+"Primrose",
+[
+"Primula vulgaris"
+],
+true
+],
+[
+"Privet",
+[
+"Ligustrum japonicum"
+],
+true
+],
+[
+"Purslane",
+[
+"Portulaca oleracea"
+],
+true
+],
+[
+"Queensland Nut",
+[
+"Macadamia integrifolia"
+],
+true
+],
+[
+"Racemose asparagus",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Ragwort",
+[
+"Senecio species"
+],
+true
+],
+[
+"Ranger's Button",
+[
+"Sphenosciadium capitellatum"
+],
+true
+],
+[
+"Red Emerald",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Red Princess",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Red-Marginated Dracaena",
+[
+"Dracaena marginata"
+],
+true
+],
+[
+"Rex Begonia",
+[
+"Begonia rex"
+],
+true
+],
+[
+"Rhododendron",
+[
+"Rhododendron spp"
+],
+true
+],
+[
+"Rhubarb",
+[
+"Rheum rhabarbarium"
+],
+true
+],
+[
+"Ribbon Plant",
+[
+"Dracaena spp."
+],
+true
+],
+[
+"Ridderstjerne",
+[
+"Hippeastrum spp."
+],
+true
+],
+[
+"Rock Moss",
+[
+"Portulaca oleracea"
+],
+true
+],
+[
+"Roman Chamomile",
+[
+"Anthemis nobilis"
+],
+true
+],
+[
+"Rosary Pea",
+[
+"Abrus precatorius"
+],
+true
+],
+[
+"Rosebay",
+[
+"Rhododendron spp"
+],
+true
+],
+[
+"Running Myrtle",
+[
+"Vinca rosea"
+],
+true
+],
+[
+"Sabi Star",
+[
+"Adenium obesum"
+],
+true
+],
+[
+"Sacred Bamboo",
+[
+"Nandina domestica"
+],
+true
+],
+[
+"Saddle Leaf",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Sago Palm",
+[
+"Cycas revoluta",
+"zamia species"
+],
+true
+],
+[
+"Satin Pothos",
+[
+"Scindapsus pictus"
+],
+true
+],
+[
+"Scented Geranium",
+[
+"Pelargonium sp."
+],
+true
+],
+[
+"Schefflera",
+[
+"Schefflera"
+],
+true
+],
+[
+"Seaside Daisy",
+[
+"Erigeron speciosus"
+],
+true
+],
+[
+"Seven Bark",
+[
+"Hydrangea arborescens"
+],
+true
+],
+[
+"Shamrock Plant",
+[
+"Oxalis spp."
+],
+true
+],
+[
+"Shatavari",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Showy Daisy",
+[
+"Erigeron speciosus"
+],
+true
+],
+[
+"Silver Dollar",
+[
+"Crassula arborescens"
+],
+true
+],
+[
+"Silver Jade Plant",
+[
+"Crassula arborescens"
+],
+true
+],
+[
+"Skunk Cabbage",
+[
+"Symplocarpus foetidus"
+],
+true
+],
+[
+"Snake Lilly",
+[
+"Iris species"
+],
+true
+],
+[
+"Snake Plant",
+[
+"Sansevieria trifasciata"
+],
+true
+],
+[
+"Solomon’s Lily",
+[
+"Arum palestinum"
+],
+true
+],
+[
+"Sorrel",
+[
+"Rumex scutatus"
+],
+true
+],
+[
+"Sowbread",
+[
+"Cyclamen spp"
+],
+true
+],
+[
+"Spanish Thyme",
+[
+"Coleus ampoinicus"
+],
+true
+],
+[
+"Spindle Tree",
+[
+"Euonymus atropurpurea"
+],
+true
+],
+[
+"Split Leaf Philodendron",
+[
+"Philodendron bipennifolium"
+],
+true
+],
+[
+"Spotted Dumb Cane",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"Sprengeri Fern",
+[
+"Asparagus densiflorus cv sprengeri"
+],
+true
+],
+[
+"Spring Parsley",
+[
+"Cymopterus watsonii"
+],
+true
+],
+[
+"St. John’s Wort",
+[
+"Hypericum perforatum"
+],
+true
+],
+[
+"Staggerbush",
+[
+"Lyonia sp."
+],
+true
+],
+[
+"Starch Root",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Starleaf",
+[
+"Brassaia actinophylla"
+],
+true
+],
+[
+"Stinking Chamomile",
+[
+"Anthemis cotula"
+],
+true
+],
+[
+"Straight-Margined Dracaena",
+[
+"Dracaena marginata"
+],
+true
+],
+[
+"Striped Dracaena",
+[
+"Dracaena deremensis"
+],
+true
+],
+[
+"Superb Lily",
+[
+"Gloriosa superba"
+],
+true
+],
+[
+"Sweet Cherry",
+[
+"Prunus avium"
+],
+true
+],
+[
+"Sweet William",
+[
+"Dianthus caryophyllus"
+],
+true
+],
+[
+"Sweetheart Ivy",
+[
+"Hedera helix"
+],
+true
+],
+[
+"Swiss Cheese Plant",
+[
+"Monstera deliciosa"
+],
+true
+],
+[
+"Tahitian Bridal Veil",
+[
+"tradescantia multiflora"
+],
+true
+],
+[
+"Tail Flower",
+[
+"Anthurium scherzeranum"
+],
+true
+],
+[
+"Taro (Caladium hortulanum)",
+[
+"Caladium hortulanum"
+],
+true
+],
+[
+"Taro (Colocasia esculenta)",
+[
+"Colocasia esculenta"
+],
+true
+],
+[
+"Taro Vine",
+[
+"Epipremnum aureum"
+],
+true
+],
+[
+"Tarragon",
+[
+"Artemisia dracunculus"
+],
+true
+],
+[
+"Texas Umbrella Tree",
+[
+"Melia azedarach"
+],
+true
+],
+[
+"Ti-Plant",
+[
+"Cordyline terminalis"
+],
+true
+],
+[
+"Tobacco",
+[
+"Nicotiana glauca"
+],
+true
+],
+[
+"Tomato Plant",
+[
+"Lycopersicon spp"
+],
+true
+],
+[
+"Tree Philodendron",
+[
+"Philodendron selloum"
+],
+true
+],
+[
+"Tree Tobacco",
+[
+"Nicotiana glauca"
+],
+true
+],
+[
+"Tropic Snow",
+[
+"Dieffenbachia amoena"
+],
+true
+],
+[
+"True Aloe",
+[
+"Aloe barbadensis"
+],
+true
+],
+[
+"Trumpet Lily",
+[
+"Zantedeschia aethiopica"
+],
+true
+],
+[
+"Tulip",
+[
+"Tulipa spp."
+],
+true
+],
+[
+"Umbrella Leaf",
+[
+"Podophyllum peltatum"
+],
+true
+],
+[
+"Umbrella Tree",
+[
+"Brassaia actinophylla"
+],
+true
+],
+[
+"Variable Dieffenbachia",
+[
+"Dieffenbachia picta"
+],
+true
+],
+[
+"Variegated Inch Plant",
+[
+"Tradescantia flumeninsis"
+],
+true
+],
+[
+"Variegated Laurel",
+[
+"Tradescantia flumeninsis"
+],
+true
+],
+[
+"Variegated Philodendron",
+[
+"Scindapsus",
+"Philodendron spp"
+],
+true
+],
+[
+"Vinca",
+[
+"Vinca rosea"
+],
+true
+],
+[
+"Virgin's Bower",
+[
+"Clematis sp."
+],
+true
+],
+[
+"Wahoo",
+[
+"Euonymus occidentalis"
+],
+true
+],
+[
+"Wake Robin",
+[
+"Arum maculatum"
+],
+true
+],
+[
+"Warneckei Dracaena",
+[
+"Dracaena deremensis"
+],
+true
+],
+[
+"Water Flag",
+[
+"Iris species"
+],
+true
+],
+[
+"Water Hemlock",
+[
+"Cicuta maculata"
+],
+true
+],
+[
+"Wax-Leaf",
+[
+"Ligustrum japonicum"
+],
+true
+],
+[
+"Weeping Fig",
+[
+"Ficus sp."
+],
+true
+],
+[
+"Western Yew",
+[
+"Taxus brevifolia"
+],
+true
+],
+[
+"White Heads",
+[
+"Sphenosciadium capitellatum"
+],
+true
+],
+[
+"Wild Arum",
+[
+"Arum palestinum"
+],
+true
+],
+[
+"Wild Calla",
+[
+"Arum palestinum"
+],
+true
+],
+[
+"Wild Carnation",
+[
+"Dianthus caryophyllus"
+],
+true
+],
+[
+"Wild Coffee",
+[
+"Polyscias guilfoylei"
+],
+true
+],
+[
+"Winter Cherry",
+[
+"Solanum pseudocapsicum"
+],
+true
+],
+[
+"Winterberry",
+[
+"Ilex opaca"
+],
+true
+],
+[
+"Wisteria",
+[
+"Wisteria spp."
+],
+true
+],
+[
+"Yarrow",
+[
+"Achillea millefolium"
+],
+true
+],
+[
+"Yellow Oleander",
+[
+"Thevetia peruviana"
+],
+true
+],
+[
+"Yesterday, Today, Tomorrow",
+[
+"Brunfelsia species"
+],
+true
+],
+[
+"Yew",
+[
+"Taxus spp."
+],
+true
+],
+[
+"Yew Pine",
+[
+"Podocarpus macrophylla"
+],
+true
+],
+[
+"Yucca",
+[
+"Yucca spp."
+],
+true
+],
+[
+"Acorn Squash",
+[
+"Cucurbita pepo"
+],
+false
+],
+[
+"African Daisy",
+[
+"Gerbera jamesonii"
+],
+false
+],
+[
+"African Violet",
+[
+"Saintpaulia spp."
+],
+false
+],
+[
+"Algaroba",
+[
+"Prosopis limensis"
+],
+false
+],
+[
+"Aluminum Plant",
+[
+"Pilea cadieri"
+],
+false
+],
+[
+"Alumroot",
+[
+"Heuchera sanguinea"
+],
+false
+],
+[
+"Alyssum",
+[
+"Alyssum spp."
+],
+false
+],
+[
+"American Rubber Plant",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Amur Maple",
+[
+"Acer ginnala"
+],
+false
+],
+[
+"Anthericum Comosum",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Antirrhinum Multiflorum",
+[
+"Antirrhinum multiflorum"
+],
+false
+],
+[
+"Arabian Gentian",
+[
+"Exacum affine"
+],
+false
+],
+[
+"Areca Palm",
+[
+"Dypsis lutescens"
+],
+false
+],
+[
+"Aregelia",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Artillery Plant",
+[
+"Pilea microphylla"
+],
+false
+],
+[
+"Aspidium falcatum",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Australian Pine",
+[
+"Araucaria heterophylla"
+],
+false
+],
+[
+"Autumn Olive",
+[
+"Eleagnus spp."
+],
+false
+],
+[
+"Baby Rubber Plant",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Baby’s Breath",
+[
+"Gypsophila elegans"
+],
+false
+],
+[
+"Baby’s Tears",
+[
+"Hypoestes phyllostachya"
+],
+false
+],
+[
+"Bachelors Buttons",
+[
+"Centaurea cyanus"
+],
+false
+],
+[
+"Ball Fern",
+[
+"Davallia spp."
+],
+false
+],
+[
+"Bamboo",
+[
+"Phyllostachys aurea"
+],
+false
+],
+[
+"Bamboo Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Bamboo Vine",
+[
+"Smilax laurifolia"
+],
+false
+],
+[
+"Banana",
+[
+"Musa acuminata"
+],
+false
+],
+[
+"Banana Squash",
+[
+"Cucurbita maxima var. banana"
+],
+false
+],
+[
+"Barberton Daisy",
+[
+"Gerbera jamesonii"
+],
+false
+],
+[
+"Barnaby's Thistle",
+[
+"Centaurea solstitialis"
+],
+false
+],
+[
+"Basil",
+[
+"Ocimum basilicum"
+],
+false
+],
+[
+"Beets",
+[
+"Beta vulgaris"
+],
+false
+],
+[
+"Begonia, Climbing",
+[
+"Cissus dicolor"
+],
+false
+],
+[
+"Begonia, Trailing",
+[
+"Pellionia daveauana"
+],
+false
+],
+[
+"Belmore Sentry Palm",
+[
+"Howea belmoreana"
+],
+false
+],
+[
+"Big Shagbark Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Big Shellbark Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Bitter Pecan",
+[
+"Carya aquatica"
+],
+false
+],
+[
+"Bitternut",
+[
+"Carya cordiformis"
+],
+false
+],
+[
+"Black Haw",
+[
+"Viburnum lentago"
+],
+false
+],
+[
+"Black Hawthorn",
+[
+"Crataegus douglasii"
+],
+false
+],
+[
+"Blackjack Pine",
+[
+"Pinus ponderosa"
+],
+false
+],
+[
+"Blaspheme Vine",
+[
+"Smilax laurifolia"
+],
+false
+],
+[
+"Bloodleaf",
+[
+"Iresine herbstii"
+],
+false
+],
+[
+"Blooming Sally",
+[
+"Epilobium angustifolium"
+],
+false
+],
+[
+"Blue Bead",
+[
+"Clintonia borealis"
+],
+false
+],
+[
+"Blue Daisy",
+[
+"Felicia amelloides"
+],
+false
+],
+[
+"Blue Echeveria",
+[
+"Echeveria glauca"
+],
+false
+],
+[
+"Blue Eyed Daisy",
+[
+"Arctotis stoechadifolia"
+],
+false
+],
+[
+"Blue-dicks",
+[
+"Dichelostemma pulchellum"
+],
+false
+],
+[
+"Blue-dicks 2",
+[
+"Hookera pulchella"
+],
+false
+],
+[
+"Blue-dicks 3",
+[
+"Brodiaea pulchella"
+],
+false
+],
+[
+"Blue-eyed African Daisy",
+[
+"Arctotis stoechadifolia"
+],
+false
+],
+[
+"Bluebottle",
+[
+"Centaurea cyanus"
+],
+false
+],
+[
+"Blunt Leaf Peperomia",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Blushing Bromeliad",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Bold Sword Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Boston Fern",
+[
+"Nephrolepis exalta bostoniensis"
+],
+false
+],
+[
+"Bottle Palm",
+[
+"Beaucarnea recurvata"
+],
+false
+],
+[
+"Bottle Palm 2",
+[
+"Nolina tuberculata"
+],
+false
+],
+[
+"Bottlebrush",
+[
+"Callistemon species"
+],
+false
+],
+[
+"Brazilian Orchid",
+[
+"Sophronitis spp."
+],
+false
+],
+[
+"Bride's Bonnet",
+[
+"Clintonia uniflora"
+],
+false
+],
+[
+"Bristly Greenbrier",
+[
+"Smilax hispida"
+],
+false
+],
+[
+"Brodiaea Pulchella",
+[
+"Dichelostemma pulchellum"
+],
+false
+],
+[
+"Broom Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Bullbrier",
+[
+"Smilax rotundifolia"
+],
+false
+],
+[
+"Bur Gourd",
+[
+"Cucumis anguria"
+],
+false
+],
+[
+"Burro's Tail",
+[
+"Sedum morganianum"
+],
+false
+],
+[
+"Buttercup Squash",
+[
+"Cucurbita maxima cv buttercup"
+],
+false
+],
+[
+"Butterfly Ginger",
+[
+"Hedychium coronarium"
+],
+false
+],
+[
+"Butternut Squash",
+[
+"Cucurbita maxima cv butternut"
+],
+false
+],
+[
+"Buzzy Lizzie",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Caeroba",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"Calathea",
+[
+"Calathea spp."
+],
+false
+],
+[
+"Calathea Lancifolia 2",
+[
+"Maranta insignis"
+],
+false
+],
+[
+"Calathea Lancifolia 3",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"California Pitcher Plant",
+[
+"Darlingtonia californica"
+],
+false
+],
+[
+"Callistemon Brachyandrus",
+[
+"Callistemon species"
+],
+false
+],
+[
+"Callistemon citrinus",
+[
+"Callistemon citrinus"
+],
+false
+],
+[
+"Callistemon viminalis",
+[
+"Callistemon viminalis"
+],
+false
+],
+[
+"Calochortus nuttalli",
+[
+"Calochortus spp."
+],
+false
+],
+[
+"Camellia",
+[
+"Camellia japonica"
+],
+false
+],
+[
+"Canada Hemlock",
+[
+"Tsuga canadensis"
+],
+false
+],
+[
+"Canary Date Palm",
+[
+"Phoenix canariensis"
+],
+false
+],
+[
+"Candle Plant",
+[
+"Plectranthus coleoides"
+],
+false
+],
+[
+"Candycorn Plant",
+[
+"Hypocyrta nummularia"
+],
+false
+],
+[
+"Cane Palm",
+[
+"Dypsis lutescens",
+"chrysalidocarpus lutescens (alternate scientific name)"
+],
+false
+],
+[
+"Canna",
+[
+"Canna indica"
+],
+false
+],
+[
+"Canna Lily",
+[
+"Canna generalis"
+],
+false
+],
+[
+"Canterbury-bell",
+[
+"Gloxinia perennis"
+],
+false
+],
+[
+"Cape Marigold",
+[
+"Dimorphotheca pluvialis"
+],
+false
+],
+[
+"Cape Primrose",
+[
+"Streptocarpus spp."
+],
+false
+],
+[
+"Carob",
+[
+"Ceratonia siliqua"
+],
+false
+],
+[
+"Caroba",
+[
+"Jacaranda procera"
+],
+false
+],
+[
+"Carolina Hemlock",
+[
+"Tsuga caroliniana"
+],
+false
+],
+[
+"Carrion Flower",
+[
+"Smilax herbacea"
+],
+false
+],
+[
+"Carrion Flower 2",
+[
+"Stapelia hirsata"
+],
+false
+],
+[
+"Carrot Fern",
+[
+"Onychium japonica"
+],
+false
+],
+[
+"Carrot Flower",
+[
+"Daucus carota var. sativa"
+],
+false
+],
+[
+"Casaba Melon",
+[
+"Cucumis melo"
+],
+false
+],
+[
+"Cast Iron Plant",
+[
+"Aspidistra elatior"
+],
+false
+],
+[
+"Cat Brier",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Cat Ear",
+[
+"Calochortus spp."
+],
+false
+],
+[
+"Cattleya Labiata",
+[
+"Cattleya labiata"
+],
+false
+],
+[
+"Celosia Globosa",
+[
+"Celosia globosa"
+],
+false
+],
+[
+"Celosia Plumosa",
+[
+"Celosia plumosa"
+],
+false
+],
+[
+"Celosia Spicata",
+[
+"Celosia spicata"
+],
+false
+],
+[
+"Chamaedorea",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Chaparral",
+[
+"Larrea tridentata"
+],
+false
+],
+[
+"Chervil",
+[
+"Anthriscus cerefolium"
+],
+false
+],
+[
+"Chestnut",
+[
+"Castanea dentata"
+],
+false
+],
+[
+"Chicken-Gizzard",
+[
+"Iresine herbstii"
+],
+false
+],
+[
+"Chickens and Hens",
+[
+"Echeveria elegans"
+],
+false
+],
+[
+"Chin-lao-shu",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"China Aster",
+[
+"Callistephus chinensis"
+],
+false
+],
+[
+"China Root",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Chinese Plumbago",
+[
+"Ceratostigma willmottianum"
+],
+false
+],
+[
+"Chlorophytum",
+[
+"Anthericum comosum"
+],
+false
+],
+[
+"Chlorophytum bichetti",
+[
+"Chlorophytum bichetti"
+],
+false
+],
+[
+"Chocolate Soldier",
+[
+"Episcia dianthiflora"
+],
+false
+],
+[
+"Christmas Cactus",
+[
+"Schlumbergera bridgesii"
+],
+false
+],
+[
+"Christmas Dagger",
+[
+"Polystichum acrostichoides"
+],
+false
+],
+[
+"Christmas Orchid",
+[
+"Cattleya trianaei"
+],
+false
+],
+[
+"Christmas Palm",
+[
+"Adonidia merrillii"
+],
+false
+],
+[
+"Cilantro",
+[
+"Coriandrum sativum"
+],
+false
+],
+[
+"Cinnamon",
+[
+"Cinnamomum zeylanicum"
+],
+false
+],
+[
+"Cinquefoil",
+[
+"Potentilla spp."
+],
+false
+],
+[
+"Cirrhopetalum",
+[
+"Bulbophyllum appendiculatum"
+],
+false
+],
+[
+"Clearweed",
+[
+"Pilea pumila"
+],
+false
+],
+[
+"Cliff Brake",
+[
+"Pellaea rotundifolia"
+],
+false
+],
+[
+"Club Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Cocks Comb",
+[
+"Amaranthus hypochondriacus"
+],
+false
+],
+[
+"Cocktail Orchid",
+[
+"Cattleya forbesii"
+],
+false
+],
+[
+"Collinia Elegans",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Common Camellia",
+[
+"Camellia japonica",
+"Thea japonica"
+],
+false
+],
+[
+"Common Catbrier",
+[
+"Smilax rotundifolia"
+],
+false
+],
+[
+"Common Garden Canna",
+[
+"Canna generalis"
+],
+false
+],
+[
+"Common Greenbrier",
+[
+"Smilax rotundifolia"
+],
+false
+],
+[
+"Common Snapdragon",
+[
+"Antirrhinum majus"
+],
+false
+],
+[
+"Common Staghorn Fern",
+[
+"Platycerium bifurcatum"
+],
+false
+],
+[
+"Confederate Jasmine",
+[
+"Trachelospermum jasminoides"
+],
+false
+],
+[
+"Coolwort",
+[
+"Pilea pumila"
+],
+false
+],
+[
+"Copper Rose",
+[
+"Echeveria multicaulis"
+],
+false
+],
+[
+"Coral Bells",
+[
+"Heuchera sanguinea"
+],
+false
+],
+[
+"Coreopsis",
+[
+"Coreopsis spp."
+],
+false
+],
+[
+"Cornflower",
+[
+"Centaurea cyanus"
+],
+false
+],
+[
+"Crape Myrtle",
+[
+"Lagerstroemia indica"
+],
+false
+],
+[
+"Creeping Charlie",
+[
+"Pilea nummulariifolia"
+],
+false
+],
+[
+"Creeping Gloxinia",
+[
+"Asarina erubescens"
+],
+false
+],
+[
+"Creeping Mahonia",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Creeping Pilea",
+[
+"Pilea nummulariifolia"
+],
+false
+],
+[
+"Creeping Rubus",
+[
+"Rubus pedatus"
+],
+false
+],
+[
+"Creeping Zinnia",
+[
+"Sanvitalia spp."
+],
+false
+],
+[
+"Crepe Myrtle",
+[
+"Lagerstroemia indica"
+],
+false
+],
+[
+"Crimson Bottlebush",
+[
+"Callistemon species"
+],
+false
+],
+[
+"Crimson Cup",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Crisped Feather Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Crossandra",
+[
+"Crossandra species"
+],
+false
+],
+[
+"Cucumber",
+[
+"Cucumis sativus"
+],
+false
+],
+[
+"Cushion Aloe",
+[
+"Aloe retusa"
+],
+false
+],
+[
+"Cushion Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Cyrtudeira",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Dainty Rabbits-Foot Fern",
+[
+"Davallia fejeensis"
+],
+false
+],
+[
+"Dallas Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Dancing Doll Orchid",
+[
+"Oncidium flexuosum"
+],
+false
+],
+[
+"Day Lilies (many varieties)",
+[
+"Hemerocallis spp."
+],
+false
+],
+[
+"Desert Trumpet",
+[
+"Eriogonium inflatum"
+],
+false
+],
+[
+"Dichelostemma",
+[
+"Dichelostemma species"
+],
+false
+],
+[
+"Dichorisandra Reginae",
+[
+"Dichorisandra reginae"
+],
+false
+],
+[
+"Dill",
+[
+"Anethum graveolena"
+],
+false
+],
+[
+"Dinteranthus",
+[
+"Dinteranthus vanzylii"
+],
+false
+],
+[
+"Duffii Fern",
+[
+"Nephrolepsis cordifolia 'duffii'"
+],
+false
+],
+[
+"Dwarf Date Palm",
+[
+"Phoenix acaulis"
+],
+false
+],
+[
+"Dwarf Feather Palm",
+[
+"Nephrolepis exalta"
+],
+false
+],
+[
+"Dwarf Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Dwarf Rose-Stripe Star",
+[
+"Cryptanthus bivattus minor"
+],
+false
+],
+[
+"Dwarf Royal Palm",
+[
+"Veitchia merillii"
+],
+false
+],
+[
+"Dwarf Whitman Fern",
+[
+"Nephrolepsis cordifolia plumosa"
+],
+false
+],
+[
+"Earth Star",
+[
+"Cryptanthus bivattus minor"
+],
+false
+],
+[
+"Easter Cattleya",
+[
+"Cattleya mossiae"
+],
+false
+],
+[
+"Easter Daisy",
+[
+"Townsendia sericea"
+],
+false
+],
+[
+"Easter Lily",
+[
+"Lilium longiflorum"
+],
+false
+],
+[
+"Easter Lily Cactus",
+[
+"Echinopsis multiplex"
+],
+false
+],
+[
+"Easter Orchid",
+[
+"Cattleya mossiae"
+],
+false
+],
+[
+"Edible Banana",
+[
+"Musa acuminata"
+],
+false
+],
+[
+"Emerald Ripple Peperomia",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"English Hawthorn",
+[
+"Crataegus laevigata"
+],
+false
+],
+[
+"Episcia",
+[
+"Episcia dianthiflora"
+],
+false
+],
+[
+"Fairy Fountain",
+[
+"Celosia cristata"
+],
+false
+],
+[
+"False Aralia",
+[
+"Dizygotheca elegantissima"
+],
+false
+],
+[
+"Fan Tufted Palm",
+[
+"Rhapis flabelliformis"
+],
+false
+],
+[
+"Feather Palm",
+[
+"Nephrolepis exaltata"
+],
+false
+],
+[
+"Fennel",
+[
+"Foeniculum vulgare"
+],
+false
+],
+[
+"Fiery Reed Orchid",
+[
+"Epidendrum ibaguense"
+],
+false
+],
+[
+"Fig Leaf Gourd",
+[
+"Cucurbita ficifolia"
+],
+false
+],
+[
+"Figleaf Palm",
+[
+"Fatsia japonica"
+],
+false
+],
+[
+"Fingernail Plant",
+[
+"Neoregelia spectabilis"
+],
+false
+],
+[
+"Fire Weed",
+[
+"Epilobium angustifolium"
+],
+false
+],
+[
+"Fish Tail Fern",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Flame African Violet",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Flame of the Woods",
+[
+"Ixora coccinea"
+],
+false
+],
+[
+"Florida Butterfly Orchid (Encyclia tampensis)",
+[
+"Encyclia tampensis"
+],
+false
+],
+[
+"Florida Butterfly Orchid (Epidendrum tampense)",
+[
+"Epidendrum tampense"
+],
+false
+],
+[
+"Fluffy Ruffles",
+[
+"Nephrolepsis exalta"
+],
+false
+],
+[
+"Forster Sentry Palm",
+[
+"Howea forsteriana"
+],
+false
+],
+[
+"Fortunes Palm",
+[
+"Trachycarpus fortunei"
+],
+false
+],
+[
+"Freckle Face",
+[
+"Hypoestes phyllostachya"
+],
+false
+],
+[
+"Friendship Plant",
+[
+"Pilea involucrata"
+],
+false
+],
+[
+"Garden Marigold",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Garden Snapdragon",
+[
+"Antirrhinum majus"
+],
+false
+],
+[
+"Gerber Daisy",
+[
+"Gerbera jamesonii"
+],
+false
+],
+[
+"German Violet",
+[
+"Exacum affine"
+],
+false
+],
+[
+"Gherkins",
+[
+"Cucumis sativus"
+],
+false
+],
+[
+"Ghost Leafless Orchid",
+[
+"Polyrrhiza lindenii"
+],
+false
+],
+[
+"Ghost Plant",
+[
+"Sedum weinbergii"
+],
+false
+],
+[
+"Giant Aster",
+[
+"Townsendia sericea"
+],
+false
+],
+[
+"Giant Holly Fern",
+[
+"Ploystichum munitum"
+],
+false
+],
+[
+"Giant Touch-Me-Not",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Giant White Inch Plant",
+[
+"Albiflora spp."
+],
+false
+],
+[
+"Globe Thistle",
+[
+"Echinops spp."
+],
+false
+],
+[
+"Gloxinia",
+[
+"Sinningia speciosa"
+],
+false
+],
+[
+"Gold Bloom",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Gold-Fish Plant",
+[
+"Hypocyrta nummularia"
+],
+false
+],
+[
+"Golden Bells",
+[
+"Oleaceae"
+],
+false
+],
+[
+"Golden Butterfly Palm",
+[
+"Dypsis lutescens"
+],
+false
+],
+[
+"Golden Lace Orchid",
+[
+"Haemaria discolor"
+],
+false
+],
+[
+"Golden Shower Orchid",
+[
+"Oncidium sphacelatum"
+],
+false
+],
+[
+"Good Luck Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Grape Hyacinth",
+[
+"Muscari armeniacum"
+],
+false
+],
+[
+"Grape Ivy",
+[
+"Cissus rhombifolia"
+],
+false
+],
+[
+"Great Willow Herb",
+[
+"Epilobium angustifolium"
+],
+false
+],
+[
+"Green Ripple Peperomia",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"Greenbrier",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Hagbrier",
+[
+"Smilax hispida"
+],
+false
+],
+[
+"Hardy Baby Tears",
+[
+"Sedum album"
+],
+false
+],
+[
+"Hardy Gloxinia",
+[
+"Incarvillea delavayi"
+],
+false
+],
+[
+"Hare Fern",
+[
+"Davallia spp."
+],
+false
+],
+[
+"Haworthia",
+[
+"Haworthia species"
+],
+false
+],
+[
+"Haws",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Haws Apple",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Hawthorn",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Hedgehog Gourd",
+[
+"Cucumis dipsaceus"
+],
+false
+],
+[
+"Hellfetter",
+[
+"Smilax hispida"
+],
+false
+],
+[
+"Hemlock Tree",
+[
+"Tsuga species"
+],
+false
+],
+[
+"Hen and Chickens Fern",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"Hens and Chickens",
+[
+"Echeveria elegans"
+],
+false
+],
+[
+"Hibiscus",
+[
+"Hibiscus syriacus"
+],
+false
+],
+[
+"Hindu Rope Plant",
+[
+"Hoya carnosa 'krinkle kurl'"
+],
+false
+],
+[
+"Hoary Alyssum",
+[
+"Berteroa incana"
+],
+false
+],
+[
+"Holligold",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Holly Fern",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Hollyhock",
+[
+"Alcea rosea"
+],
+false
+],
+[
+"Honey Locust",
+[
+"Gleditsia triacanthos"
+],
+false
+],
+[
+"Honey Plant",
+[
+"Hoya carnosa"
+],
+false
+],
+[
+"Honeydew Melon",
+[
+"Cucumis melo"
+],
+false
+],
+[
+"Honeysuckle Fuchsia",
+[
+"Fuchsia triphylla"
+],
+false
+],
+[
+"Hookera pulchella",
+[
+"Dichelostemma pulchellum"
+],
+false
+],
+[
+"Hubbard Squash",
+[
+"Cucurbita maxima var. hubbard"
+],
+false
+],
+[
+"Hypocyrta",
+[
+"Hypocyrta nummularia"
+],
+false
+],
+[
+"Ice Plant",
+[
+"Lampranthus piquet"
+],
+false
+],
+[
+"Impatience Plant",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Irish Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Iron Tree",
+[
+"Ixora coccinea"
+],
+false
+],
+[
+"Ivy Peperomia",
+[
+"Peperomia griseoargentea"
+],
+false
+],
+[
+"Jackson Brier",
+[
+"Smilax lanceolata"
+],
+false
+],
+[
+"Jacob's Ladder",
+[
+"Smilax herbacea"
+],
+false
+],
+[
+"Japanese Aralia",
+[
+"Fatsia japonica"
+],
+false
+],
+[
+"Japanese Holly Fern",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Japanese Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Japanese Pittosporum",
+[
+"Pittosporum tobira"
+],
+false
+],
+[
+"Japanese Show Lily",
+[
+"Lilium speciosum"
+],
+false
+],
+[
+"Jasmine",
+[
+"Jasminum species"
+],
+false
+],
+[
+"Jewel Orchid",
+[
+"Haemaria discolor"
+],
+false
+],
+[
+"Joseph's Coat",
+[
+"Iresine herbstii"
+],
+false
+],
+[
+"Jungle Geranium",
+[
+"Ixora javanica"
+],
+false
+],
+[
+"Kaempferia",
+[
+"Kaempferia spp."
+],
+false
+],
+[
+"Kahali Ginger",
+[
+"Hedychium gardnerianum"
+],
+false
+],
+[
+"Kenilworth Ivy",
+[
+"Cymbalaria muralis"
+],
+false
+],
+[
+"Kentia Palm",
+[
+"Howea forsteriana"
+],
+false
+],
+[
+"Kenya Violet",
+[
+"Saintpaulia confusa"
+],
+false
+],
+[
+"Kharoub",
+[
+"Ceratonia siliqua"
+],
+false
+],
+[
+"King and Queen Fern",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"King Nut",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"King of the Forest",
+[
+"Anoectuchilus setaceus"
+],
+false
+],
+[
+"Kuang-yen-pa-hsieh",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Lace Flower Vine",
+[
+"Episcia dianthiflora"
+],
+false
+],
+[
+"Lace Orchid",
+[
+"Odontoglossum crispum"
+],
+false
+],
+[
+"Ladies Ear Drops",
+[
+"Fuschsia spp."
+],
+false
+],
+[
+"Lady Lou",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Lady Palm",
+[
+"Rhapis flabelliformus"
+],
+false
+],
+[
+"Lady Slipper",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Lagerstroemia Indica",
+[
+"Lagerstroemia indica"
+],
+false
+],
+[
+"Lance Pleomele",
+[
+"Draceana spp."
+],
+false
+],
+[
+"Laurel-Leaved Greenbrier",
+[
+"Smilax laurifolia"
+],
+false
+],
+[
+"Leather Peperomia",
+[
+"Peperomia crassifolia"
+],
+false
+],
+[
+"Lemon Balm",
+[
+"Melissa officinalis"
+],
+false
+],
+[
+"Leopard Orchid",
+[
+"Dendrobium gracilicaule"
+],
+false
+],
+[
+"Lesser Snapdragon",
+[
+"Antirrhinum orontium"
+],
+false
+],
+[
+"Lily",
+[
+"Lilium species"
+],
+false
+],
+[
+"Lily of the Valley Orchid",
+[
+"Odontoglossum pulchellum"
+],
+false
+],
+[
+"Linden",
+[
+"Tilia americana"
+],
+false
+],
+[
+"Lipstick Plant",
+[
+"Aeschynanthus humilis"
+],
+false
+],
+[
+"Little Fantasy Peperomia",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"Little Zebra Plant",
+[
+"Haworthia subfasciata"
+],
+false
+],
+[
+"Living Rock Cactus",
+[
+"Pleiospilos bolusii"
+],
+false
+],
+[
+"Living Stones",
+[
+"Lithops naureeniae"
+],
+false
+],
+[
+"Loco Weed (Oxytropis spp.)",
+[
+"Oxytropis spp."
+],
+false
+],
+[
+"Locust Pods",
+[
+"Ceratonia siliqua"
+],
+false
+],
+[
+"Madagascar Jasmine",
+[
+"Stephanotis floribunda"
+],
+false
+],
+[
+"Magnolia Bush",
+[
+"Magnolia stellata"
+],
+false
+],
+[
+"Mahonia",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Majesty Palm",
+[
+"Ravenea rivularis"
+],
+false
+],
+[
+"Malabar Gourd",
+[
+"Cucurbita ficifolia"
+],
+false
+],
+[
+"Manila Palm",
+[
+"Veitchia merrillii"
+],
+false
+],
+[
+"Maranta",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"Marbled Fingernail",
+[
+"Neoregelia spectabilis"
+],
+false
+],
+[
+"Mariposa Lily",
+[
+"Calochortus gunnisonii"
+],
+false
+],
+[
+"Maroon",
+[
+"Echeveria multicaulis"
+],
+false
+],
+[
+"Maroon Chenille Plant",
+[
+"Echeveria derenbergii"
+],
+false
+],
+[
+"Mary-Bud",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Measles Plant",
+[
+"Acantha"
+],
+false
+],
+[
+"Metallic Peperomia",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"Mexican Firecracker",
+[
+"Echeveria Pulinata"
+],
+false
+],
+[
+"Mexican Rosettes",
+[
+"Echevaria"
+],
+false
+],
+[
+"Mexican Snowballs",
+[
+"Echevaria"
+],
+false
+],
+[
+"Miniature Date Palm",
+[
+"Phoenix robellinii"
+],
+false
+],
+[
+"Miniature Fish Tail",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Miniature Maranta",
+[
+"Calathea micans"
+],
+false
+],
+[
+"Miniature Marble Plant",
+[
+"Neoregelia spectabilis"
+],
+false
+],
+[
+"Mistletoe Cactus",
+[
+"Rhipsalis cassutha"
+],
+false
+],
+[
+"Mockernut Hickory",
+[
+"Carya tomentosa"
+],
+false
+],
+[
+"Money Tree",
+[
+"Pachira aquatica"
+],
+false
+],
+[
+"Mosaic Plant",
+[
+"Bertolonia mosaica"
+],
+false
+],
+[
+"Mosaic Vase",
+[
+"Guzmania musaica"
+],
+false
+],
+[
+"Moss Agate",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Moss Campion",
+[
+"Silene acaulis"
+],
+false
+],
+[
+"Moss Fern",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"Moss Phlox",
+[
+"Phlox subulata"
+],
+false
+],
+[
+"Mossy Campion",
+[
+"Silene acaulis"
+],
+false
+],
+[
+"Mother Fern",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"Mother of Pearl",
+[
+"Secum weinbergii"
+],
+false
+],
+[
+"Mother Spleenwort",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"Mountain Camellia",
+[
+"Stewartia ovata"
+],
+false
+],
+[
+"Mountain Grape",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Mulberry Bush Greenbrier",
+[
+"Smilax sp."
+],
+false
+],
+[
+"Mulberry Tree",
+[
+"Morus sp."
+],
+false
+],
+[
+"Musa Paradisiaca",
+[
+"Musa acuminata"
+],
+false
+],
+[
+"Muscari Armeniacum",
+[
+"Muscari armeniacum"
+],
+false
+],
+[
+"Muskmelon",
+[
+"Cucumis melo"
+],
+false
+],
+[
+"Nasturtium",
+[
+"Tropaeolum majus"
+],
+false
+],
+[
+"Natal Plum",
+[
+"Carissa grandiflora"
+],
+false
+],
+[
+"Neanthe Bella Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Nematanthus spp.",
+[
+"Hypocyrta nummularia"
+],
+false
+],
+[
+"Neoregelia",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Nerve Plant",
+[
+"Fittonia verschaffeltii"
+],
+false
+],
+[
+"Night Blooming Cereus",
+[
+"Hylocereus undatus"
+],
+false
+],
+[
+"Old Man Cactus",
+[
+"Cephalocereus senilis"
+],
+false
+],
+[
+"Old World Orchid",
+[
+"Bulbophyllum appendiculatum"
+],
+false
+],
+[
+"Orange Day Lily",
+[
+"Hemerocallis graminea"
+],
+false
+],
+[
+"Orange Star",
+[
+"Guzmania lingulata minor"
+],
+false
+],
+[
+"Oregon Grape",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Ossifragi Vase",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Paddys Wig",
+[
+"Soleirolia soleirolii"
+],
+false
+],
+[
+"Painted Lady",
+[
+"Echeveria multicaulis"
+],
+false
+],
+[
+"Pampas Grass",
+[
+"Cortaderia selloana"
+],
+false
+],
+[
+"Panamiga",
+[
+"Pilea involucrata"
+],
+false
+],
+[
+"Pansy Orchid",
+[
+"Miltonia roezlii alba"
+],
+false
+],
+[
+"Paradise Palm",
+[
+"Howea forsteriana"
+],
+false
+],
+[
+"Parlor Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Parsley Fern",
+[
+"Asplenium bulbiferum"
+],
+false
+],
+[
+"Patient Lucy",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Patient Plant",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Peacock Plant",
+[
+"Kaempferia"
+],
+false
+],
+[
+"Pearl Plant",
+[
+"Haworthia margaritifera"
+],
+false
+],
+[
+"Pearly Dots",
+[
+"Haworthia margaritifera"
+],
+false
+],
+[
+"Peperomia Hederifolia",
+[
+"Peperomia griseoargentea"
+],
+false
+],
+[
+"Peperomia Peltfolia",
+[
+"Peperomia peltifolia"
+],
+false
+],
+[
+"Peperomia Rotundifolia",
+[
+"Peperomia rotundifolia"
+],
+false
+],
+[
+"Peperomia Sandersii",
+[
+"Peperomia sandersii"
+],
+false
+],
+[
+"Pepper Face",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Persian Violet",
+[
+"Exacum affine"
+],
+false
+],
+[
+"Peruvian Lily",
+[
+"Alstroemeria"
+],
+false
+],
+[
+"Petunia",
+[
+"Petunia species"
+],
+false
+],
+[
+"Phalaenopsis Orchid",
+[
+"Phalaenopsis sp."
+],
+false
+],
+[
+"Pheasant Plant",
+[
+"Cryptanthus zonatus"
+],
+false
+],
+[
+"Piggy Back Plant",
+[
+"Tolmeia menziesii"
+],
+false
+],
+[
+"Pignut Hickory",
+[
+"Carya glabra"
+],
+false
+],
+[
+"Pilea Microphylla",
+[
+"Pilea microphylla"
+],
+false
+],
+[
+"Pilea Mucosa",
+[
+"Pilea microphylla"
+],
+false
+],
+[
+"Pincushion Flower",
+[
+"Leucospermum incisum"
+],
+false
+],
+[
+"Pink Brocade",
+[
+"Episcia cultivar"
+],
+false
+],
+[
+"Pink Splash",
+[
+"Hypoestes phyllostachya"
+],
+false
+],
+[
+"Pink Starlite",
+[
+"Cryptanthus bivattus minor"
+],
+false
+],
+[
+"Pirliteiro",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Pitaya",
+[
+"Hylocereus undatus"
+],
+false
+],
+[
+"Plantanus Occidentalis",
+[
+"Plantanus occidentalis"
+],
+false
+],
+[
+"Platinum Peperomia",
+[
+"Peperomia griseoargentea"
+],
+false
+],
+[
+"Platycerium Alcicorne",
+[
+"Platycerium alcicorne"
+],
+false
+],
+[
+"Plumbago Larpentiae",
+[
+"Ceratostigma larpentiae"
+],
+false
+],
+[
+"Plush Plant",
+[
+"Echeveria pul-oliver"
+],
+false
+],
+[
+"Poison Ivy",
+[
+"Toxicodendron species"
+],
+false
+],
+[
+"Poison Oak",
+[
+"Toxicodendron species"
+],
+false
+],
+[
+"Poison Sumac",
+[
+"Toxicodendron species"
+],
+false
+],
+[
+"Polka Dot Plant",
+[
+"Hypoestes phyllostachya"
+],
+false
+],
+[
+"Polystichum Falcatum",
+[
+"Cyrtomium falcatum"
+],
+false
+],
+[
+"Pony Tail",
+[
+"Beaucarnea recurvata"
+],
+false
+],
+[
+"Porcelain Flower",
+[
+"Hoya carnosa 'krinkle kurl'"
+],
+false
+],
+[
+"Pot Marigold",
+[
+"Calendula officinalis"
+],
+false
+],
+[
+"Prairie Lily",
+[
+"Zephyranthes drummondii"
+],
+false
+],
+[
+"Prayer Plant",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"Prostrate Coleus",
+[
+"Plectranthus oetendahlii"
+],
+false
+],
+[
+"Pupleosier Willow",
+[
+"Salix purpurea"
+],
+false
+],
+[
+"Purple Baby Tears",
+[
+"Frithia pulchra"
+],
+false
+],
+[
+"Purple Passion Vine",
+[
+"Gynura aurantica"
+],
+false
+],
+[
+"Purple Velvet Plant",
+[
+"Gynura aurantica"
+],
+false
+],
+[
+"Purple Waffle Plant",
+[
+"Hemigraphis exotica"
+],
+false
+],
+[
+"Queencup",
+[
+"Clintonia uniflora"
+],
+false
+],
+[
+"Queens Spiderwort",
+[
+"Dichorisandra reginae"
+],
+false
+],
+[
+"Queensland Arrowroot",
+[
+"Canna edulis"
+],
+false
+],
+[
+"Rabbits Foot Fern",
+[
+"Davallia spp."
+],
+false
+],
+[
+"Rainbow Orchid",
+[
+"Epidendrum prismatocarpum"
+],
+false
+],
+[
+"Red African Violet",
+[
+"Episcia reptans"
+],
+false
+],
+[
+"Red Berried Greenbrier",
+[
+"Smilax walteria"
+],
+false
+],
+[
+"Red Edge Peperomia",
+[
+"Peperomia clusiifolia"
+],
+false
+],
+[
+"Red Hawthorne",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Red Lily",
+[
+"Lilium umbellatum"
+],
+false
+],
+[
+"Red Maple",
+[
+"Acer rubrum"
+],
+false
+],
+[
+"Red Palm Lily",
+[
+"Cordyline rubra"
+],
+false
+],
+[
+"Red Veined Prayer",
+[
+"Calathea insignis"
+],
+false
+],
+[
+"Reed Palm",
+[
+"Chamaedorea elegans"
+],
+false
+],
+[
+"Resurrection Lily",
+[
+"Kaempferia"
+],
+false
+],
+[
+"Rhynchophorum",
+[
+"Peperomia obtusifolia"
+],
+false
+],
+[
+"Ribbon Plant (Chlorophytum Comosum)",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Roosevelt Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Rose",
+[
+"Rosa Species"
+],
+false
+],
+[
+"Rose of China",
+[
+"Hibiscus syriacus"
+],
+false
+],
+[
+"Rose of Sharon",
+[
+"Hibiscus syriacus"
+],
+false
+],
+[
+"Rosemary",
+[
+"Rosmarinus officinalis"
+],
+false
+],
+[
+"Rubrum Lily",
+[
+"Lilium speciosum"
+],
+false
+],
+[
+"Russian Knapweed",
+[
+"Centaurea repens"
+],
+false
+],
+[
+"Russian Olive",
+[
+"elaeagnus species"
+],
+false
+],
+[
+"Saffron Spike Zebra",
+[
+"Aphelandra squarrosa"
+],
+false
+],
+[
+"Sage",
+[
+"Salvia officinalis"
+],
+false
+],
+[
+"Saint Bernards Lily",
+[
+"Anthericum liliago"
+],
+false
+],
+[
+"Salad Burnet",
+[
+"Poterium sanguisorba"
+],
+false
+],
+[
+"Sand Lily",
+[
+"Leucocrinum montanum"
+],
+false
+],
+[
+"Sand Verbena",
+[
+"Abronia fragrans"
+],
+false
+],
+[
+"Satin Pellionia",
+[
+"Pellonia pulchra"
+],
+false
+],
+[
+"Savory (Summer)",
+[
+"Satureja hortensis"
+],
+false
+],
+[
+"Savory (Winter)",
+[
+"Satureja hortensis"
+],
+false
+],
+[
+"Sawbrier",
+[
+"Smilax glauca"
+],
+false
+],
+[
+"Scabious",
+[
+"Leucospermum incisum"
+],
+false
+],
+[
+"Scarborough Lily",
+[
+"Vallota speciosa"
+],
+false
+],
+[
+"Scarlet Orchid",
+[
+"Epidendrum tampense"
+],
+false
+],
+[
+"Scarlet Sage",
+[
+"Salvia coccinea"
+],
+false
+],
+[
+"Sego Lily",
+[
+"Calochortus gunnisonii"
+],
+false
+],
+[
+"Shagbark Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Shan Ku'ei-lai",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Shellbark Hickory",
+[
+"Carya laciniosa"
+],
+false
+],
+[
+"Shrimp Cactus",
+[
+"Schlumbergera russelliana"
+],
+false
+],
+[
+"Silver Bell",
+[
+"Halesia carolina"
+],
+false
+],
+[
+"Silver Berry",
+[
+"elaeagnus species"
+],
+false
+],
+[
+"Silver Heart",
+[
+"Peperomia caperata"
+],
+false
+],
+[
+"Silver Pink Vine",
+[
+"Hoya publcalyx"
+],
+false
+],
+[
+"Silver Star",
+[
+"Cryptanthus lacerdae"
+],
+false
+],
+[
+"Silver Table Fern",
+[
+"Pteris sp."
+],
+false
+],
+[
+"Silver Tree Anamiga",
+[
+"NONE LISTED"
+],
+false
+],
+[
+"Slender Deutzia",
+[
+"Deutzia gracilis"
+],
+false
+],
+[
+"Small Fruited Hickory",
+[
+"Carya glabra"
+],
+false
+],
+[
+"Smilax Tamnoides Vas",
+[
+"Smilax hispida"
+],
+false
+],
+[
+"Speckled Wood Lily",
+[
+"Clintonia umbelluata"
+],
+false
+],
+[
+"Spice Orchid (Epidendrum atropurpeum)",
+[
+"Epidendrum atropurpeum"
+],
+false
+],
+[
+"Spice Orchid (Epidendrum ibaguense)",
+[
+"Epidendrum ibaguense"
+],
+false
+],
+[
+"Spider Flower",
+[
+"Cleome hasserlana"
+],
+false
+],
+[
+"Spider Ivy",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Spider Plant",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Star Jasmine",
+[
+"Trachelospermum jasminoides"
+],
+false
+],
+[
+"Star Lily",
+[
+"Leucocrinum montanum"
+],
+false
+],
+[
+"Star Plant",
+[
+"Cryptanthus bivattus minor"
+],
+false
+],
+[
+"Stargazer Lily",
+[
+"Lilium orientalis"
+],
+false
+],
+[
+"Stevia",
+[
+"Stevia rebaudiana"
+],
+false
+],
+[
+"Strawberry",
+[
+"Fragaria spp."
+],
+false
+],
+[
+"Striped Blushing",
+[
+"Neoregalia spp."
+],
+false
+],
+[
+"Sudan Grass",
+[
+"Sorghum vulgare var sudanesis"
+],
+false
+],
+[
+"Sugar Pods",
+[
+"Ceratonia siliqua"
+],
+false
+],
+[
+"Sulfur Flower",
+[
+"Eriogonium umbellatum"
+],
+false
+],
+[
+"Summer Hyacinth",
+[
+"Galtonia spp."
+],
+false
+],
+[
+"Sunflower",
+[
+"helianthus angustifolius"
+],
+false
+],
+[
+"Swamp Sunflower",
+[
+"helianthus angustifolius"
+],
+false
+],
+[
+"Swedish Ivy",
+[
+"Plectranthus australis"
+],
+false
+],
+[
+"Sweet Pea",
+[
+"Lathyrus latifolius"
+],
+false
+],
+[
+"Sweet Potato Vine",
+[
+"Ipomoea batatas"
+],
+false
+],
+[
+"Sweetheart Hoya",
+[
+"Hoya kerrii"
+],
+false
+],
+[
+"Sword Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Tailed Orchid",
+[
+"Masdevallia spp."
+],
+false
+],
+[
+"Tall Feather Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Tall Mahonia",
+[
+"Mahonia aquifolium"
+],
+false
+],
+[
+"Tangerine Impatience",
+[
+"Impatiens spp."
+],
+false
+],
+[
+"Teasel Gourd",
+[
+"Cucumis dipsaceus"
+],
+false
+],
+[
+"Texas Sage",
+[
+"Salvia coccinea"
+],
+false
+],
+[
+"Thea Japonica",
+[
+"Camellia japonica"
+],
+false
+],
+[
+"Thimble Cactus",
+[
+"Mammillaria fragilis"
+],
+false
+],
+[
+"Thorn Apple",
+[
+"Crataegus douglasii"
+],
+false
+],
+[
+"Thyme",
+[
+"Thymus vulgaris"
+],
+false
+],
+[
+"Ti hu-ling",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Tickseed",
+[
+"Coreopsis californica"
+],
+false
+],
+[
+"Tiger Lily",
+[
+"Lilium tigrinum"
+],
+false
+],
+[
+"Tiger Orchid",
+[
+"Haemaria discolor"
+],
+false
+],
+[
+"Toad Spotted Cactus",
+[
+"Stapelia variegata"
+],
+false
+],
+[
+"Torch Lily",
+[
+"Kniphofia"
+],
+false
+],
+[
+"Tous-les-mois",
+[
+"Canna edulis"
+],
+false
+],
+[
+"Trailing Peperomia",
+[
+"Peperomia prostata"
+],
+false
+],
+[
+"Tree Cactus",
+[
+"Opuntia species"
+],
+false
+],
+[
+"Tree Gloxinia",
+[
+"Kohleria lindeniana"
+],
+false
+],
+[
+"Tropical Moss",
+[
+"Selaginella kraussiana"
+],
+false
+],
+[
+"True Cantaloupe",
+[
+"Cucumis melo"
+],
+false
+],
+[
+"Tu Fu-Ling",
+[
+"Smilax glabra"
+],
+false
+],
+[
+"Tulip Poplar",
+[
+"Liriodendron tulipifera"
+],
+false
+],
+[
+"Turban Squash",
+[
+"Cucurbita maxima cv turbaniformis"
+],
+false
+],
+[
+"Turf Lily",
+[
+"Liriope muscari"
+],
+false
+],
+[
+"Umbrella Plant",
+[
+"Eriogonium umbellatum"
+],
+false
+],
+[
+"Urbinia Agavoides",
+[
+"Echeveria elegans"
+],
+false
+],
+[
+"Usambara Violet",
+[
+"Santpaulia confusa"
+],
+false
+],
+[
+"Variegated Wax Plant",
+[
+"Echeveria sp."
+],
+false
+],
+[
+"Velvet Plant",
+[
+"Gynura aurantica"
+],
+false
+],
+[
+"Venus Fly Trap",
+[
+"Dionaea muscipula"
+],
+false
+],
+[
+"Verona Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Verona Lace Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Vining Peperomia",
+[
+"Peperomia serpens variegata"
+],
+false
+],
+[
+"Violet Slipper Gloxinia",
+[
+"Sinningia speciosa"
+],
+false
+],
+[
+"Waffle Plant",
+[
+"Hemigraphis exotica"
+],
+false
+],
+[
+"Walking Anthericum",
+[
+"Chlorophytum comosum"
+],
+false
+],
+[
+"Washington Hawthorn",
+[
+"Crataegus species"
+],
+false
+],
+[
+"Water Hickory",
+[
+"Carya aquatica"
+],
+false
+],
+[
+"Water Hyacinth",
+[
+"Eichhornia crassipes"
+],
+false
+],
+[
+"Watermelon Begonia",
+[
+"Peperomia argyreia"
+],
+false
+],
+[
+"Watermelon Peperomia",
+[
+"Peperomia argyreia"
+],
+false
+],
+[
+"Watermelon Pilea",
+[
+"Pilea cadieri"
+],
+false
+],
+[
+"Wax Plant",
+[
+"Hoya carnosa 'krinkle kurl'"
+],
+false
+],
+[
+"Wax Rosette",
+[
+"Echeveria gilva"
+],
+false
+],
+[
+"Weeping Bottlebrush",
+[
+"Callistemon species"
+],
+false
+],
+[
+"Weeping Sargent Hemlock",
+[
+"Tsuga species"
+],
+false
+],
+[
+"Weisdornbluten",
+[
+"Crataegus species"
+],
+false
+],
+[
+"West Indian Gherkin",
+[
+"Cucumis anguria"
+],
+false
+],
+[
+"Western Sword",
+[
+"Ploystichum munitum"
+],
+false
+],
+[
+"White Edged Swedish Ivy",
+[
+"Plectranthus australis"
+],
+false
+],
+[
+"White Ginger",
+[
+"Hedychium coronarium"
+],
+false
+],
+[
+"White Heart Hickory",
+[
+"Carya tomentosa"
+],
+false
+],
+[
+"Whitman Fern",
+[
+"Nephrolepis biserrata"
+],
+false
+],
+[
+"Wild Buckwheat",
+[
+"Eriogonium umbellatum"
+],
+false
+],
+[
+"Wild Hyacinth",
+[
+"Dichelostemma pulchellum"
+],
+false
+],
+[
+"Wild Lantana",
+[
+"Abronia fragrans"
+],
+false
+],
+[
+"Wild Sasparilla",
+[
+"Smilax glauca"
+],
+false
+],
+[
+"Wild Strawberry",
+[
+"Fragaria"
+],
+false
+],
+[
+"Willow Herb",
+[
+"Epilobium angustifolium"
+],
+false
+],
+[
+"Windmill Palm",
+[
+"Trachycarpus fortunei"
+],
+false
+],
+[
+"Winter Cattleya",
+[
+"Cattleya trianaei"
+],
+false
+],
+[
+"Withered Snapdragon",
+[
+"Anthirrhinum multiflorum"
+],
+false
+],
+[
+"Wood Lily",
+[
+"Lilium umbellatum"
+],
+false
+],
+[
+"Woolflower",
+[
+"Celosia cristata"
+],
+false
+],
+[
+"Yellow Bloodleaf",
+[
+"Iresine herbstii"
+],
+false
+],
+[
+"Yellow Palm",
+[
+"Dypsis lutescens"
+],
+false
+],
+[
+"Yellow-Flowered Gourd",
+[
+"Cucurbita species"
+],
+false
+],
+[
+"Yellowrocket",
+[
+"Barbarea vulgaris"
+],
+false
+],
+[
+"Yorba Linda",
+[
+"Peperomia rotundifolia"
+],
+false
+],
+[
+"Zebra Haworthia",
+[
+"Haworthia fasciata"
+],
+false
+],
+[
+"Zinnia",
+[
+"Zinnia species"
+],
+false
+],
+[
+"Zucchini Squash",
+[
+"Cucurbia pepo cv zucchini"
+],
+false
+]
+]
+}

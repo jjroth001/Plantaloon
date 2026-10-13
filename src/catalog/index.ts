@@ -1,8 +1,9 @@
+import { ASPCA } from './aspca';
 import { EXTRA_NAMES } from './extra-names';
 import { CARE_GROUPS } from './groups';
 import { GROWSPOT_SPECIES } from './growspot-species';
 import { GROUP_OVERRIDES_BY_SPECIES, SPECIES_OVERRIDES } from './overrides';
-import type { CareGroup, LightTier, Species, SpeciesOverride } from './types';
+import type { CareGroup, LightTier, Species, SpeciesOverride, Toxicity } from './types';
 
 export type { CareGroup, LightTier, Species } from './types';
 
@@ -102,7 +103,30 @@ export const POPULAR_SPECIES_IDS: ReadonlySet<string> = new Set(
 const TIERS: LightTier[] = ['low', 'medium', 'high', 'very_high'];
 
 /** A plant's care: its group's profile with the species' differences applied. */
-export type Care = Omit<CareGroup, 'genera'> & { note?: string };
+/**
+ * Where a plant's pet safety comes from: ASPCA's lists for both cats and dogs, for one of
+ * them, or (not listed) inferred from related plants in its care group.
+ */
+export type PetsSource = 'aspca' | 'partial' | 'related';
+
+export type Care = Omit<CareGroup, 'genera'> & { note?: string; petsSource: PetsSource };
+
+const ASPCA_CODE: Record<string, Toxicity | null> = { t: 'toxic', n: 'non_toxic', '-': null };
+
+/** Pet safety: ASPCA's answer wherever it lists the plant, otherwise the inferred one. */
+export function petsFor(
+  scientific: string | undefined,
+  inferred: CareGroup['pets'],
+): { pets: CareGroup['pets']; source: PetsSource } {
+  const code = scientific ? ASPCA[scientific] : undefined;
+  if (!code) return { pets: inferred, source: 'related' };
+  const cats = ASPCA_CODE[code[0]];
+  const dogs = ASPCA_CODE[code[1]];
+  return {
+    pets: { cats: cats ?? inferred.cats, dogs: dogs ?? inferred.dogs },
+    source: cats && dogs ? 'aspca' : 'partial',
+  };
+}
 
 export function careFor(groupId: string, speciesIdValue?: string | null): Care {
   const group = getGroup(groupId);
@@ -119,6 +143,7 @@ export function careFor(groupId: string, speciesIdValue?: string | null): Care {
       max: TIERS[Math.max(TIERS.indexOf(light.max), i)],
     };
   }
+  const pets = petsFor(species?.scientific, o.pets ?? group.pets);
   return {
     id: group.id,
     name: group.name,
@@ -128,7 +153,8 @@ export function careFor(groupId: string, speciesIdValue?: string | null): Care {
     fertilize: group.fertilize,
     humidity: o.humidity ?? group.humidity,
     minTempC: group.minTempC,
-    pets: o.pets ?? group.pets,
+    pets: pets.pets,
+    petsSource: pets.source,
     difficulty: o.difficulty ?? group.difficulty,
     summary: group.summary,
     tips: group.tips,

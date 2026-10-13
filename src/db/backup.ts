@@ -1,5 +1,7 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
+import { transaction } from './transaction';
+
 /**
  * Backups are JSON Lines: the first line holds every database row; each following line holds
  * one photo, base64-encoded. One line per photo keeps memory use down while writing.
@@ -102,9 +104,9 @@ export function parsePhotoLine(line: string): PhotoLine | null {
 
 /** Replaces everything in the database with the backup's rows (keeps this phone's own settings). */
 export async function restoreTables(db: SQLiteDatabase, backup: BackupHeader): Promise<void> {
-  await db.withTransactionAsync(async () => {
+  await transaction(db, async () => {
     await db.execAsync(
-      `DELETE FROM photo; DELETE FROM entry; DELETE FROM schedule; DELETE FROM plant; DELETE FROM room;
+      `DELETE FROM photo WHERE 1; DELETE FROM entry WHERE 1; DELETE FROM schedule WHERE 1; DELETE FROM plant WHERE 1; DELETE FROM room WHERE 1;
        DELETE FROM setting WHERE key NOT IN (${[...LOCAL_SETTINGS].map((k) => `'${k}'`).join(', ')});`,
     );
     for (const table of TABLES) {
@@ -130,10 +132,11 @@ export function summarize(backup: BackupHeader): BackupSummary {
 
 /** Permanently deletes every plant, room, entry and setting. VACUUM leaves nothing behind on disk. */
 export async function eraseAllData(db: SQLiteDatabase): Promise<void> {
-  await db.withTransactionAsync(async () => {
+  await transaction(db, async () => {
     await db.execAsync(
-      'DELETE FROM photo; DELETE FROM entry; DELETE FROM schedule; DELETE FROM plant; DELETE FROM room; DELETE FROM setting;',
+      'DELETE FROM photo WHERE 1; DELETE FROM entry WHERE 1; DELETE FROM schedule WHERE 1; DELETE FROM plant WHERE 1; DELETE FROM room WHERE 1; DELETE FROM setting WHERE 1;',
     );
   });
-  await db.execAsync('VACUUM');
+  // Reclaims the space; if it can't run right now, the data is already gone anyway.
+  await db.execAsync('VACUUM').catch(() => {});
 }

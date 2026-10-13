@@ -1,5 +1,5 @@
 import * as DocumentPicker from 'expo-document-picker';
-import { Directory, File, Paths } from 'expo-file-system';
+import { Directory, File, FileMode, Paths } from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
@@ -14,6 +14,7 @@ import {
 } from '@/db/backup';
 
 import { todayString } from './dates';
+import { LineSplitter } from './lines';
 import { photoFile } from './photos';
 
 /** Writes a backup file (data + photos) to the cache and opens Android's share sheet. */
@@ -36,30 +37,58 @@ export async function shareBackup(db: SQLiteDatabase): Promise<void> {
   });
 }
 
+const CHUNK = 1 << 20;
+
 /**
- * Reads a picked file. Expo Go's file access is sandboxed and refuses the picker's cached
- * copy; fetch reads it fine, so fall back to that. Installed builds take the first path.
+ * Calls `onLine` for each line of a file, reading 1 MB at a time so a backup full of photos
+ * never sits in memory all at once. Return false from `onLine` to stop early.
  */
-async function readPickedFile(uri: string): Promise<string> {
+async function forEachLine(uri: string, onLine: (line: string) => boolean | void): Promise<void> {
+  let handle: ReturnType<File['open']>;
   try {
-    return await new File(uri).text();
+    handle = new File(uri).open(FileMode.ReadOnly);
   } catch (error) {
+    // Expo Go's sandbox refuses the picker's copy; fetch can still read it (all at once).
     const response = await fetch(uri).catch(() => null);
     if (!response) throw error;
-    return response.text();
+    for (const line of (await response.text()).split('\n')) {
+      if (onLine(line.replace(/\r$/, '')) === false) return;
+    }
+    return;
+  }
+  try {
+    const splitter = new LineSplitter();
+    const size = handle.size ?? 0;
+    let read = 0;
+    while (read < size) {
+      const chunk = handle.readBytes(Math.min(CHUNK, size - read));
+      if (chunk.length === 0) break;
+      read += chunk.length;
+      for (const line of splitter.push(chunk)) if (onLine(line) === false) return;
+      // Let the screen update between chunks.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    const last = splitter.flush();
+    if (last != null) onLine(last);
+  } finally {
+    handle.close();
   }
 }
 
-export type PickedBackup = { header: BackupHeader; lines: string[]; summary: BackupSummary };
+export type PickedBackup = { uri: string; header: BackupHeader; summary: BackupSummary };
 
 /** Lets the user pick a backup. Null if they cancel; throws if the file isn't a valid backup. */
 export async function pickBackup(): Promise<PickedBackup | null> {
   const result = await DocumentPicker.getDocumentAsync({ type: '*/*', copyToCacheDirectory: true });
   if (result.canceled) return null;
-  const text = await readPickedFile(result.assets[0].uri);
-  const lines = text.split('\n');
-  const header = parseBackupHeader(lines[0] ?? '');
-  return { header, lines: lines.slice(1), summary: summarize(header) };
+  const uri = result.assets[0].uri;
+  let first = '';
+  await forEachLine(uri, (line) => {
+    first = line;
+    return false;
+  });
+  const header = parseBackupHeader(first);
+  return { uri, header, summary: summarize(header) };
 }
 
 /** Replaces this phone's plants, journal and photos with the backup's. */
@@ -68,14 +97,19 @@ export async function restoreBackup(db: SQLiteDatabase, picked: PickedBackup): P
   const incoming = new Directory(Paths.document, 'photos-restoring');
   if (incoming.exists) incoming.delete();
   incoming.create({ intermediates: true });
-  for (const line of picked.lines) {
-    if (!line.trim()) continue;
+  let isHeader = true;
+  await forEachLine(picked.uri, (line) => {
+    if (isHeader) {
+      isHeader = false;
+      return;
+    }
+    if (!line.trim()) return;
     const photo = parsePhotoLine(line);
-    if (!photo) continue;
+    if (!photo) return;
     const file = new File(incoming, photo.photo);
     file.create({ overwrite: true });
     file.write(photo.data, { encoding: 'base64' });
-  }
+  });
 
   await restoreTables(db, picked.header);
 

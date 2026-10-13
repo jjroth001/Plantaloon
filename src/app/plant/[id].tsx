@@ -295,7 +295,14 @@ export default function PlantScreen() {
           </Card>
         </View>
       </Screen>
-      {undo && <UndoBar message={undo.message} onUndo={undoLast} onHide={hideUndo} />}
+      {undo && (
+        <UndoBar
+          key={undo.entryIds.join()}
+          message={undo.message}
+          onUndo={undoLast}
+          onHide={hideUndo}
+        />
+      )}
     </View>
   );
 }

@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { useToday } from '@/hooks/use-today';
 import { buildTasks } from '@/lib/care-tasks';
-import { requestNotificationPermission, syncReminders } from '@/lib/notifications';
+import {
+  onPermissionGranted,
+  requestNotificationPermission,
+  syncReminders,
+} from '@/lib/notifications';
 import { planReminders } from '@/lib/reminders';
 
 /**
@@ -16,8 +21,21 @@ export function ReminderSync() {
   const settings = useSettings();
   const today = useToday();
   const asked = useRef(false);
-  // Bumped once permission is granted, so reminders get scheduled straight away.
+  // Bumped when permission is granted (here, in Settings, or in Android's own settings
+  // while the app was in the background), so reminders get scheduled straight away.
   const [granted, setGranted] = useState(0);
+
+  useEffect(() => {
+    const bump = () => setGranted((n) => n + 1);
+    const unsubscribe = onPermissionGranted(bump);
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') bump();
+    });
+    return () => {
+      unsubscribe();
+      sub.remove();
+    };
+  }, []);
 
   const enabled = settings.data?.reminders ?? false;
   const minute = settings.data?.reminderMinute ?? 540;
@@ -28,9 +46,7 @@ export function ReminderSync() {
   useEffect(() => {
     if (enabled && hasPlants && !asked.current) {
       asked.current = true;
-      requestNotificationPermission()
-        .then((ok) => ok && setGranted((n) => n + 1))
-        .catch(() => {});
+      requestNotificationPermission().catch(() => {});
     }
   }, [enabled, hasPlants]);
 

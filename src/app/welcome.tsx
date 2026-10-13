@@ -60,6 +60,8 @@ export default function WelcomeScreen() {
   };
 
   const restore = async () => {
+    if (busy) return;
+    setBusy(true);
     try {
       const picked = await pickBackup();
       if (!picked) return;
@@ -68,6 +70,8 @@ export default function WelcomeScreen() {
       await setSetting(db, 'onboarded', true);
     } catch (error) {
       Alert.alert('Can’t restore that file', (error as Error).message);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -76,7 +80,13 @@ export default function WelcomeScreen() {
       footer={
         <>
           <Button title="Get started" icon="plant" onPress={start} busy={busy} />
-          <Button title="Restore a backup" variant="ghost" size="small" onPress={restore} />
+          <Button
+            title="Restore a backup"
+            variant="ghost"
+            size="small"
+            onPress={restore}
+            disabled={busy}
+          />
         </>
       }>
       <View style={styles.hero}>

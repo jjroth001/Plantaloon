@@ -4,6 +4,7 @@ import type { LightTier } from '@/catalog/types';
 import type { IconName } from '@/components/icons/icon';
 
 import { newId } from './ids';
+import { transaction } from './transaction';
 import type { Entry, EntryType, Photo, Plant, PotSize, Room, Schedule, Task } from './types';
 
 // --- Row mapping ------------------------------------------------------------
@@ -199,7 +200,7 @@ export async function moveRoom(db: SQLiteDatabase, id: string, direction: -1 | 1
   const j = i + direction;
   if (i < 0 || j < 0 || j >= rooms.length) return;
   [rooms[i], rooms[j]] = [rooms[j], rooms[i]];
-  await db.withTransactionAsync(async () => {
+  await transaction(db, async () => {
     for (let k = 0; k < rooms.length; k++) {
       await db.runAsync('UPDATE room SET sort_order = ? WHERE id = ?', k, rooms[k].id);
     }
@@ -213,7 +214,7 @@ export async function deleteRoom(
   moveTo: string | null,
   now = Date.now(),
 ): Promise<void> {
-  await db.withTransactionAsync(async () => {
+  await transaction(db, async () => {
     if (moveTo) {
       await db.runAsync(
         'UPDATE plant SET room_id = ?, updated_at = ? WHERE room_id = ?',
@@ -257,7 +258,7 @@ export async function createPlant(
   now = Date.now(),
 ): Promise<string> {
   const id = newId();
-  await db.withTransactionAsync(async () => {
+  await transaction(db, async () => {
     await db.runAsync(
       `INSERT INTO plant (id, room_id, nickname, species_id, group_id, pot_size, pot_drainage,
          cover_photo_id, acquired_on, notes, created_at, updated_at)
@@ -434,7 +435,7 @@ export async function completeTask(
   at = Date.now(),
 ): Promise<string[]> {
   const ids: string[] = [];
-  await db.withTransactionAsync(async () => {
+  await transaction(db, async () => {
     for (const plantId of plantIds) {
       ids.push(await insertEntry(db, { plantId, type: task, at, note: null, data: {} }, at));
     }
@@ -482,7 +483,7 @@ export async function deleteEntries(db: SQLiteDatabase, ids: readonly string[]):
     `SELECT id, file FROM photo WHERE entry_id IN (${marks})`,
     ...ids,
   );
-  await db.withTransactionAsync(async () => {
+  await transaction(db, async () => {
     if (photos.length > 0) {
       const photoMarks = photos.map(() => '?').join(',');
       await db.runAsync(
@@ -549,7 +550,7 @@ export async function addPhoto(
   now = Date.now(),
 ): Promise<string> {
   const id = newId();
-  await db.withTransactionAsync(async () => {
+  await transaction(db, async () => {
     const entryId =
       input.entryId ??
       (await insertEntry(
@@ -583,7 +584,7 @@ export async function addPhoto(
 export async function deletePhoto(db: SQLiteDatabase, id: string): Promise<string | null> {
   const photo = await getPhoto(db, id);
   if (!photo) return null;
-  await db.withTransactionAsync(async () => {
+  await transaction(db, async () => {
     await db.runAsync('UPDATE plant SET cover_photo_id = NULL WHERE cover_photo_id = ?', id);
     await db.runAsync('DELETE FROM photo WHERE id = ?', id);
     await db.runAsync(

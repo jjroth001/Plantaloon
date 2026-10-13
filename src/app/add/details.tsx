@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { careFor, getGroup, getSpecies } from '@/catalog';
@@ -52,6 +52,18 @@ export default function AddPlantDetails() {
   }));
   const [lastWatered, setLastWatered] = useState<LastWatered>('unknown');
   const [photo, setPhoto] = useState<StoredPhoto | null>(null);
+  // A photo picked for a plant that's never added is removed again.
+  const saved = useRef(false);
+  const pending = useRef<StoredPhoto | null>(null);
+  useEffect(() => {
+    pending.current = photo;
+  }, [photo]);
+  useEffect(
+    () => () => {
+      if (!saved.current && pending.current) deletePhotoFiles([pending.current.file]);
+    },
+    [],
+  );
   const [busy, setBusy] = useState(false);
 
   const roomList = rooms.data ?? [];
@@ -104,6 +116,7 @@ export default function AddPlantDetails() {
         lastWatered: watered,
       });
       if (photo) await addPhoto(db, { plantId: id, ...photo, takenAt: Date.now() });
+      saved.current = true;
       successFeedback();
       router.dismissAll();
       router.push({ pathname: '/plant/[id]', params: { id } });

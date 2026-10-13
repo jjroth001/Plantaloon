@@ -68,12 +68,15 @@ export default function SettingsScreen() {
             text: 'Restore',
             style: 'destructive',
             onPress: async () => {
+              setBusy('restore');
               try {
                 await restoreBackup(db, picked);
                 successFeedback();
                 Alert.alert('Restored', 'Your plants are back.');
               } catch (error) {
                 Alert.alert('Restore failed', (error as Error).message);
+              } finally {
+                setBusy(null);
               }
             },
           },
@@ -219,7 +222,7 @@ export default function SettingsScreen() {
             title={busy === 'backup' ? 'Preparing backup…' : 'Back up'}
             subtitle={
               s.lastBackupAt
-                ? `Last backup: ${formatRelativeDay(dateOf(s.lastBackupAt)).toLowerCase()}`
+                ? `Last backup shared: ${formatRelativeDay(dateOf(s.lastBackupAt)).toLowerCase()}`
                 : 'Save your plants, journal and photos to Drive or a file'
             }
             onPress={busy ? undefined : backUp}

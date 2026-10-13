@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -31,6 +31,7 @@ export default function PlantPhotos() {
     [id],
   );
   const [index, setIndex] = useState<number | null>(null);
+  const list = useRef<FlatList>(null);
 
   const photos = data.data?.photos ?? [];
   const startIndex = Math.max(
@@ -52,7 +53,15 @@ export default function PlantPhotos() {
           const file = await deletePhoto(db, shown.id);
           deletePhotoFiles([file]);
           if (photos.length <= 1) router.back();
-          else setIndex(Math.max(0, current - 1));
+          else {
+            // Show the photo that slides into its place (or the one before, if it was last),
+            // and keep the list's scroll position in step with what the header says.
+            const next = Math.min(current, photos.length - 2);
+            setIndex(next);
+            requestAnimationFrame(() =>
+              list.current?.scrollToIndex({ index: next, animated: false }),
+            );
+          }
         },
       },
     ]);
@@ -63,6 +72,7 @@ export default function PlantPhotos() {
       <StatusBar style="light" />
       {photos.length > 0 && (
         <FlatList
+          ref={list}
           data={photos}
           horizontal
           pagingEnabled

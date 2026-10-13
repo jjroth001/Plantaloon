@@ -39,9 +39,12 @@ export default function EraseScreen() {
     try {
       await syncReminders([]).catch(() => {});
       router.dismissAll();
-      await eraseAllData(db);
-      const photos = new Directory(Paths.document, 'photos');
-      if (photos.exists) photos.delete();
+      try {
+        await eraseAllData(db);
+      } finally {
+        const photos = new Directory(Paths.document, 'photos');
+        if (photos.exists) photos.delete();
+      }
       // With settings gone the app returns to the welcome screen by itself.
     } finally {
       setBusy(false);

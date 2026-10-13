@@ -37,6 +37,14 @@ async function ensureChannel(Notifications: NotificationsModule) {
   });
 }
 
+const grantedListeners = new Set<() => void>();
+
+/** Called whenever permission is newly granted, so reminders can be scheduled right away. */
+export function onPermissionGranted(listener: () => void): () => void {
+  grantedListeners.add(listener);
+  return () => grantedListeners.delete(listener);
+}
+
 /** Asks for notification permission if needed. Returns whether we may notify. */
 export async function requestNotificationPermission(): Promise<boolean> {
   if (!remindersSupported) return false;
@@ -45,7 +53,9 @@ export async function requestNotificationPermission(): Promise<boolean> {
   const current = await Notifications.getPermissionsAsync();
   if (current.granted) return true;
   if (!current.canAskAgain) return false;
-  return (await Notifications.requestPermissionsAsync()).granted;
+  const granted = (await Notifications.requestPermissionsAsync()).granted;
+  if (granted) grantedListeners.forEach((listener) => listener());
+  return granted;
 }
 
 export async function hasNotificationPermission(): Promise<boolean> {

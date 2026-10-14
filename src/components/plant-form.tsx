@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import type { ReactNode } from 'react';
 import { StyleSheet, Switch, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
@@ -22,69 +23,28 @@ import {
   POT_MATERIAL,
   type Plant,
   type PotMaterial,
-  type PotSize,
   type Room,
   type Task,
 } from '@/db/types';
+import {
+  diameterCm,
+  isInGround,
+  type ExtraTask,
+  type FormSection,
+  type LengthUnit,
+  type PlantFormValue,
+  type ScheduleValue,
+} from '@/lib/plant-form-value';
 import { potSizeFor } from '@/lib/schedule';
 import { tapFeedback } from '@/lib/haptics';
 import { EXTRA_TASKS, kindOf, TASK_INFO, taskIcon, taskLabel } from '@/lib/tasks';
 import { useTheme } from '@/theme/theme-provider';
 
-export type ScheduleValue = { enabled: boolean; intervalDays: number };
-
-/** A reminder beyond watering and feeding: mist, turn, clean, prune, repot or a custom one. */
-export type ExtraTask = { task: Task; label: string | null; intervalDays: number };
-
-export type PlantFormValue = {
-  nickname: string;
-  roomId: string | null;
-  potSize: PotSize;
-  potDrainage: boolean;
-  potMaterial: PotMaterial;
-  /** Exact diameter as typed, in the user's unit ('' = not given). */
-  potDiameter: string;
-  /** Outdoors, planted in the ground (only counts in an outdoor room). */
-  inGround: boolean;
-  /** Other plants growing in the same pot. */
-  potMates: string[];
-  water: ScheduleValue;
-  fertilize: ScheduleValue;
-  extras: ExtraTask[];
-};
-
-export type LengthUnit = 'cm' | 'in';
-
-/** In the ground for real: the switch is on and the chosen room is outdoors. */
-export function isInGround(value: PlantFormValue, rooms: readonly Room[]): boolean {
-  return value.inGround && rooms.some((r) => r.id === value.roomId && r.outdoor);
-}
-
-/** The typed diameter in centimetres, or null if empty or not a sensible number. */
-export function diameterCm(text: string, unit: LengthUnit): number | null {
-  const n = Number.parseFloat(text.replace(',', '.'));
-  if (!Number.isFinite(n) || n <= 0) return null;
-  const cm = unit === 'in' ? n * 2.54 : n;
-  return cm >= 2 && cm <= 200 ? Math.round(cm * 10) / 10 : null;
-}
-
-/** A stored diameter shown in the user's unit ("14", "5.5"). */
-export function formatDiameter(cm: number | null, unit: LengthUnit): string {
-  if (cm == null) return '';
-  const v = unit === 'in' ? cm / 2.54 : cm;
-  return String(Math.round(v * 10) / 10);
-}
-
-/** Extra reminders worth saving: custom ones need a name. */
-export function namedExtras(extras: ExtraTask[]): ExtraTask[] {
-  return extras
-    .map((e) => ({ ...e, label: e.label?.trim() || null }))
-    .filter((e) => kindOf(e.task) !== 'custom' || e.label);
-}
+export * from '@/lib/plant-form-value';
 
 const MATERIALS = Object.keys(POT_MATERIAL) as PotMaterial[];
 
-/** The fields shared by "Add a plant" and "Edit plant". */
+/** The fields shared by "Add a plant" and "Edit plant": all of them, or one section. */
 export function PlantForm({
   value,
   onChange,
@@ -93,6 +53,8 @@ export function PlantForm({
   pausedInWinter,
   unit,
   mateCandidates,
+  section,
+  inFold,
 }: {
   value: PlantFormValue;
   onChange: (value: PlantFormValue) => void;
@@ -104,7 +66,13 @@ export function PlantForm({
   namePlaceholder: string;
   /** Feeding pauses over winter for this kind of plant. */
   pausedInWinter: boolean;
+  /** Only this part of the form; everything when left out. */
+  section?: FormSection;
+  /** Inside a fold that's already a card: lists sit on it directly. */
+  inFold?: boolean;
 }) {
+  const show = (s: FormSection) => section == null || section === s;
+  const Box = inFold ? Plain : Card;
   const theme = useTheme();
   const set = <K extends keyof PlantFormValue>(key: K, v: PlantFormValue[K]) =>
     onChange({ ...value, [key]: v });
@@ -132,35 +100,39 @@ export function PlantForm({
 
   return (
     <>
-      <TextField
-        label="Name (optional)"
-        value={value.nickname}
-        onChangeText={(t) => set('nickname', t)}
-        placeholder={namePlaceholder}
-        maxLength={40}
-      />
+      {show('name') && (
+        <TextField
+          label="Name (optional)"
+          value={value.nickname}
+          onChangeText={(t) => set('nickname', t)}
+          placeholder={namePlaceholder}
+          maxLength={40}
+        />
+      )}
 
-      <Field label="Room">
-        <View style={styles.chips}>
-          {rooms.map((room) => (
+      {show('room') && (
+        <Field label="Room">
+          <View style={styles.chips}>
+            {rooms.map((room) => (
+              <Chip
+                key={room.id}
+                label={room.name}
+                icon={room.icon}
+                selected={value.roomId === room.id}
+                onPress={() => set('roomId', room.id)}
+              />
+            ))}
             <Chip
-              key={room.id}
-              label={room.name}
-              icon={room.icon}
-              selected={value.roomId === room.id}
-              onPress={() => set('roomId', room.id)}
+              label="New room"
+              icon="plus"
+              selected={false}
+              onPress={() => router.push({ pathname: '/room/[id]', params: { id: 'new' } })}
             />
-          ))}
-          <Chip
-            label="New room"
-            icon="plus"
-            selected={false}
-            onPress={() => router.push({ pathname: '/room/[id]', params: { id: 'new' } })}
-          />
-        </View>
-      </Field>
+          </View>
+        </Field>
+      )}
 
-      {outdoors && (
+      {show('room') && outdoors && (
         <Card>
           <SwitchRow
             title="Planted in the ground"
@@ -171,7 +143,7 @@ export function PlantForm({
         </Card>
       )}
 
-      {!ground && (
+      {show('pot') && !ground && (
         <>
           <Field label="Pot size">
             <Segmented
@@ -271,87 +243,95 @@ export function PlantForm({
         </>
       )}
 
-      <Card>
-        <ScheduleField task="water" value={value.water} onChange={(v) => set('water', v)} />
-        <Divider />
-        <ScheduleField
-          task="fertilize"
-          value={value.fertilize}
-          onChange={(v) => set('fertilize', v)}
-          hint={pausedInWinter ? 'Pauses over winter, when plants rest.' : undefined}
-        />
-      </Card>
+      {show('care') && (
+        <Box>
+          <ScheduleField task="water" value={value.water} onChange={(v) => set('water', v)} />
+          <Divider />
+          <ScheduleField
+            task="fertilize"
+            value={value.fertilize}
+            onChange={(v) => set('fertilize', v)}
+            hint={pausedInWinter ? 'Pauses over winter, when plants rest.' : undefined}
+          />
+        </Box>
+      )}
 
-      <Card>
-        <ThemedText type="subheading">Other reminders</ThemedText>
-        {value.extras.map((extra, i) => (
-          <Animated.View
-            key={extra.task}
-            entering={FadeIn.duration(180)}
-            exiting={FadeOut.duration(140)}
-            layout={LinearTransition.duration(200)}
-            style={styles.schedule}>
-            {i > 0 && <Divider />}
-            <View style={styles.scheduleHeader}>
-              <Icon name={taskIcon(extra.task)} size={22} color={theme.tint} />
-              {kindOf(extra.task) === 'custom' ? (
-                <View style={styles.flex}>
-                  <TextField
-                    label="Task"
-                    value={extra.label ?? ''}
-                    onChangeText={(label) => setExtra(i, { label })}
-                    placeholder="e.g. Check for pests"
-                    maxLength={40}
-                  />
-                </View>
-              ) : (
-                <ThemedText type="default" style={styles.flex}>
-                  {taskLabel(extra.task)}
-                </ThemedText>
-              )}
-              <IconButton
-                icon="x"
-                label={`Remove ${taskLabel(extra.task, extra.label)} reminder`}
-                size={36}
-                onPress={() => {
-                  tapFeedback();
-                  set(
-                    'extras',
-                    value.extras.filter((_, j) => j !== i),
-                  );
-                }}
+      {show('extras') && (
+        <Box>
+          {section == null && <ThemedText type="subheading">Other reminders</ThemedText>}
+          {value.extras.map((extra, i) => (
+            <Animated.View
+              key={extra.task}
+              entering={FadeIn.duration(180)}
+              exiting={FadeOut.duration(140)}
+              layout={LinearTransition.duration(200)}
+              style={styles.schedule}>
+              {i > 0 && <Divider />}
+              <View style={styles.scheduleHeader}>
+                <Icon name={taskIcon(extra.task)} size={22} color={theme.tint} />
+                {kindOf(extra.task) === 'custom' ? (
+                  <View style={styles.flex}>
+                    <TextField
+                      label="Task"
+                      value={extra.label ?? ''}
+                      onChangeText={(label) => setExtra(i, { label })}
+                      placeholder="e.g. Check for pests"
+                      maxLength={40}
+                    />
+                  </View>
+                ) : (
+                  <ThemedText type="default" style={styles.flex}>
+                    {taskLabel(extra.task)}
+                  </ThemedText>
+                )}
+                <IconButton
+                  icon="x"
+                  label={`Remove ${taskLabel(extra.task, extra.label)} reminder`}
+                  size={36}
+                  onPress={() => {
+                    tapFeedback();
+                    set(
+                      'extras',
+                      value.extras.filter((_, j) => j !== i),
+                    );
+                  }}
+                />
+              </View>
+              <IntervalField
+                kind={kindOf(extra.task)}
+                value={extra.intervalDays}
+                onChange={(intervalDays) => setExtra(i, { intervalDays })}
               />
-            </View>
-            <IntervalField
-              kind={kindOf(extra.task)}
-              value={extra.intervalDays}
-              onChange={(intervalDays) => setExtra(i, { intervalDays })}
-            />
-          </Animated.View>
-        ))}
-        <View style={styles.chips}>
-          {addable.map((kind) => (
-            <Chip
-              key={kind}
-              label={kind === 'custom' ? 'Your own…' : TASK_INFO[kind].label}
-              icon={kind === 'custom' ? 'plus' : TASK_INFO[kind].icon}
-              selected={false}
-              onPress={() =>
-                set('extras', [
-                  ...value.extras,
-                  {
-                    task: kind === 'custom' ? newCustomTask() : (kind as Task),
-                    label: null,
-                    intervalDays: TASK_INFO[kind].defaultDays,
-                  },
-                ])
-              }
-            />
+            </Animated.View>
           ))}
-        </View>
-      </Card>
+          <View style={styles.chips}>
+            {addable.map((kind) => (
+              <Chip
+                key={kind}
+                label={kind === 'custom' ? 'Your own…' : TASK_INFO[kind].label}
+                icon={kind === 'custom' ? 'plus' : TASK_INFO[kind].icon}
+                selected={false}
+                onPress={() =>
+                  set('extras', [
+                    ...value.extras,
+                    {
+                      task: kind === 'custom' ? newCustomTask() : (kind as Task),
+                      label: null,
+                      intervalDays: TASK_INFO[kind].defaultDays,
+                    },
+                  ])
+                }
+              />
+            ))}
+          </View>
+        </Box>
+      )}
     </>
   );
+}
+
+function Plain({ children }: { children: ReactNode }) {
+  return <View style={styles.schedule}>{children}</View>;
 }
 
 function ScheduleField({

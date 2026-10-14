@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
@@ -8,20 +8,13 @@ import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Chip, Divider, Field, SwitchRow } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import type { Room } from '@/db/types';
+import type { SpotValue } from '@/lib/plant-form-value';
 import { useLightSensor } from '@/hooks/use-light-sensor';
 import { successFeedback } from '@/lib/haptics';
 import { formatLux, LIGHT_LABEL, LIGHT_TIERS, tierForLux } from '@/lib/light';
 import { useTheme } from '@/theme/theme-provider';
 
-/** What's different about a plant's spot; null = same as its room. */
-export type SpotValue = {
-  light: LightTier | null;
-  /** A light meter reading behind `light`, if it was measured. */
-  lux: number | null;
-  growLight: boolean | null;
-  draught: boolean | null;
-  nearHeater: boolean;
-};
+export { spotSummary, type SpotValue } from '@/lib/plant-form-value';
 
 /**
  * Where a plant sits within its room. Everything starts as the room's; changing something
@@ -31,17 +24,21 @@ export function SpotFields({
   value,
   onChange,
   room,
+  inFold,
 }: {
   value: SpotValue;
   onChange: (value: SpotValue) => void;
   room: Room;
+  /** Inside a fold that has its own title. */
+  inFold?: boolean;
 }) {
   const set = (patch: Partial<SpotValue>) => onChange({ ...value, ...patch });
   const light = value.light ?? room.lightTier;
   const [measuring, setMeasuring] = useState(false);
 
+  const Wrap = inFold ? Bare : Field;
   return (
-    <Field label="Its spot">
+    <Wrap label="Its spot">
       <ThemedText type="caption" color="textSecondary">
         Same as {room.name} unless you change something here. Useful for a plant on a sunny sill or
         in a dim corner.
@@ -124,8 +121,12 @@ export function SpotFields({
           </>
         )}
       </Card>
-    </Field>
+    </Wrap>
   );
+}
+
+function Bare({ children }: { label: string; children: ReactNode }) {
+  return <View style={styles.bare}>{children}</View>;
 }
 
 /** A live light reading, to save as this plant's light. */
@@ -203,6 +204,7 @@ function UseRoom({ text, onPress }: { text: string; onPress: () => void }) {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+  bare: { gap: Spacing.three },
   useRoom: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   meterRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   meterButtons: { flexDirection: 'row', justifyContent: 'flex-end', gap: Spacing.two },

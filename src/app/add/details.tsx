@@ -2,7 +2,8 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { BackHandler, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { FadeInLeft, FadeInRight, LinearTransition } from 'react-native-reanimated';
 
 import { careFor, getGroup, getSpecies } from '@/catalog';
 import { Icon } from '@/components/icons/icon';
@@ -11,6 +12,7 @@ import {
   isInGround,
   namedExtras,
   PlantForm,
+  type FormSection,
   type PlantFormValue,
 } from '@/components/plant-form';
 import { Screen } from '@/components/screen';
@@ -46,7 +48,24 @@ const LAST_WATERED: { value: LastWatered; label: string }[] = [
   { value: 'unknown', label: 'Not sure' },
 ];
 
-/** Step 2 of adding a plant: name, room, pot and reminders. */
+const STEP_TEXT: Record<FormSection, { title: string; body: string }> = {
+  name: { title: 'Name and photo', body: 'Both optional. A photo helps tell plants apart.' },
+  room: {
+    title: 'Where does it live?',
+    body: 'Pick its room. You can fine-tune its exact spot later, from Edit plant.',
+  },
+  pot: { title: 'Its pot', body: 'Size and material change how quickly the soil dries out.' },
+  care: {
+    title: 'Watering and feeding',
+    body: 'Suggested for this plant and its pot. You can change them any time.',
+  },
+  extras: {
+    title: 'Other reminders',
+    body: 'Optional: misting, turning, cleaning, pruning, repotting or your own.',
+  },
+};
+
+/** Step 2 of adding a plant: a short guide, one section per screen. */
 export default function AddPlantDetails() {
   const params = useLocalSearchParams<{ speciesId?: string; groupId?: string; name?: string }>();
   const db = useSQLiteContext();
@@ -88,6 +107,9 @@ export default function AddPlantDetails() {
     [],
   );
   const [busy, setBusy] = useState(false);
+  const [stepIndex, setStep] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const scrollRef = useRef<ScrollView>(null);
 
   const roomList = rooms.data ?? [];
   const roomId = form.roomId ?? roomList[0]?.id ?? null;
@@ -119,6 +141,32 @@ export default function AddPlantDetails() {
   };
 
   const ground = isInGround({ ...form, roomId }, roomList);
+
+  // One section per screen; the pot step is skipped for a plant in the ground.
+  const steps: FormSection[] = [
+    'name',
+    'room',
+    ...(ground ? [] : ['pot' as const]),
+    'care',
+    'extras',
+  ];
+  const index = Math.min(stepIndex, steps.length - 1);
+  const step = steps[index];
+  const go = (delta: 1 | -1) => {
+    setDirection(delta);
+    setStep(Math.max(0, Math.min(steps.length - 1, index + delta)));
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  };
+  // The phone's back gesture steps back through the guide before leaving it.
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (index === 0) return false;
+      setDirection(-1);
+      setStep(index - 1);
+      return true;
+    });
+    return () => sub.remove();
+  }, [index]);
 
   const save = async () => {
     if (!roomId) return;
@@ -164,85 +212,136 @@ export default function AddPlantDetails() {
     }
   };
 
+  const last = index === steps.length - 1;
+
   return (
     <Screen
       belowHeader
+      ref={scrollRef}
       footer={
-        <Button title="Add plant" icon="check" onPress={save} busy={busy} disabled={!roomId} />
-      }>
-      <View style={styles.header}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={photo ? 'Change photo' : 'Add a photo'}
-          onPress={pickPhoto}
-          style={[styles.photo, { backgroundColor: theme.tintSoft }]}>
-          {photo ? (
-            <Image
-              source={{ uri: photoUri(photo.file) }}
-              style={styles.photoImage}
-              contentFit="cover"
-            />
-          ) : (
-            <>
-              <Icon name="camera" size={28} color={theme.tint} />
-              <ThemedText type="caption" color="tint">
-                Photo
-              </ThemedText>
-            </>
+        <View style={styles.footer}>
+          {index > 0 && (
+            <Button title="Back" variant="secondary" onPress={() => go(-1)} style={styles.back} />
           )}
-        </Pressable>
-        <View style={styles.flex}>
-          <ThemedText type="heading">
-            {species?.common[0] ?? (form.nickname || 'Unlisted plant')}
-          </ThemedText>
-          {species && (
-            <ThemedText type="body" color="textSecondary" style={styles.italic}>
-              {species.scientific}
-            </ThemedText>
-          )}
-          <ThemedText type="caption" color="textSecondary">
-            {group.name}
-          </ThemedText>
+          <Button
+            title={last ? 'Add plant' : 'Next'}
+            icon={last ? 'check' : undefined}
+            onPress={last ? save : () => go(1)}
+            busy={busy}
+            disabled={!roomId}
+            style={styles.flex}
+          />
         </View>
+      }>
+      <View
+        style={styles.progress}
+        accessible
+        accessibilityLabel={`Step ${index + 1} of ${steps.length}`}>
+        {steps.map((s, i) => (
+          <Animated.View
+            key={s}
+            layout={LinearTransition.duration(240)}
+            style={[
+              styles.dot,
+              i === index && styles.dotNow,
+              { backgroundColor: i <= index ? theme.tint : theme.element },
+            ]}
+          />
+        ))}
       </View>
 
-      <Card style={{ backgroundColor: theme.tintSoft, borderColor: 'transparent' }}>
-        <ThemedText type="body">{care.summary}</ThemedText>
-        <View style={styles.facts}>
-          <Fact icon="sun" text={LIGHT_LABEL[care.light.best]} />
-          <Fact icon="paw-print" text={petText(care.pets)} />
+      <Animated.View
+        key={step}
+        entering={(direction > 0 ? FadeInRight : FadeInLeft).duration(240)}
+        style={styles.step}>
+        <View style={styles.stepTitle}>
+          <ThemedText type="title">{STEP_TEXT[step].title}</ThemedText>
+          <ThemedText type="body" color="textSecondary">
+            {STEP_TEXT[step].body}
+          </ThemedText>
         </View>
-      </Card>
 
-      {settings.data && (
-        <PlantForm
-          value={{ ...form, roomId }}
-          onChange={update}
-          rooms={roomList}
-          unit={unit}
-          mateCandidates={(plants.data ?? []).filter((p) => !p.propStage)}
-          namePlaceholder={species?.common[0] ?? 'e.g. Fern by the window'}
-          pausedInWinter={!(care.fertilize?.winter ?? false)}
-        />
-      )}
+        {step === 'name' && (
+          <>
+            <View style={styles.header}>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={photo ? 'Change photo' : 'Add a photo'}
+                onPress={pickPhoto}
+                style={[styles.photo, { backgroundColor: theme.tintSoft }]}>
+                {photo ? (
+                  <Image
+                    source={{ uri: photoUri(photo.file) }}
+                    style={styles.photoImage}
+                    contentFit="cover"
+                  />
+                ) : (
+                  <>
+                    <Icon name="camera" size={28} color={theme.tint} />
+                    <ThemedText type="caption" color="tint">
+                      Photo
+                    </ThemedText>
+                  </>
+                )}
+              </Pressable>
+              <View style={styles.flex}>
+                <ThemedText type="heading">
+                  {species?.common[0] ?? (form.nickname || 'Unlisted plant')}
+                </ThemedText>
+                {species && (
+                  <ThemedText type="body" color="textSecondary" style={styles.italic}>
+                    {species.scientific}
+                  </ThemedText>
+                )}
+                <ThemedText type="caption" color="textSecondary">
+                  {group.name}
+                </ThemedText>
+              </View>
+            </View>
 
-      <Field label="When was it last watered?">
-        <View style={styles.chips}>
-          {LAST_WATERED.map((option) => (
-            <Chip
-              key={option.value}
-              label={option.label}
-              selected={lastWatered === option.value}
-              onPress={() => setLastWatered(option.value)}
-            />
-          ))}
-        </View>
-        <ThemedText type="caption" color="textSecondary">
-          {lastWatered === 'unknown'
-            ? 'It’ll show up today, so you can check the soil.'
-            : 'Reminders count on from then.'}
-        </ThemedText>
-      </Field>
+            <Card style={{ backgroundColor: theme.tintSoft, borderColor: 'transparent' }}>
+              <ThemedText type="body">{care.summary}</ThemedText>
+              <View style={styles.facts}>
+                <Fact icon="sun" text={LIGHT_LABEL[care.light.best]} />
+                <Fact icon="paw-print" text={petText(care.pets)} />
+              </View>
+            </Card>
+          </>
+        )}
+
+        {settings.data && (
+          <PlantForm
+            value={{ ...form, roomId }}
+            onChange={update}
+            rooms={roomList}
+            unit={unit}
+            mateCandidates={(plants.data ?? []).filter((p) => !p.propStage)}
+            namePlaceholder={species?.common[0] ?? 'e.g. Fern by the window'}
+            pausedInWinter={!(care.fertilize?.winter ?? false)}
+            section={step}
+          />
+        )}
+
+        {step === 'care' && (
+          <Field label="When was it last watered?">
+            <View style={styles.chips}>
+              {LAST_WATERED.map((option) => (
+                <Chip
+                  key={option.value}
+                  label={option.label}
+                  selected={lastWatered === option.value}
+                  onPress={() => setLastWatered(option.value)}
+                />
+              ))}
+            </View>
+            <ThemedText type="caption" color="textSecondary">
+              {lastWatered === 'unknown'
+                ? 'It’ll show up today, so you can check the soil.'
+                : 'Reminders count on from then.'}
+            </ThemedText>
+          </Field>
+        )}
+      </Animated.View>
     </Screen>
   );
 }
@@ -276,4 +375,11 @@ const styles = StyleSheet.create({
   facts: { gap: Spacing.two },
   fact: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+  footer: { flexDirection: 'row', gap: Spacing.three },
+  back: { paddingHorizontal: Spacing.five },
+  progress: { flexDirection: 'row', gap: Spacing.two, alignItems: 'center' },
+  dot: { width: 14, height: 6, borderRadius: 3 },
+  dotNow: { width: 30 },
+  step: { gap: Spacing.four },
+  stepTitle: { gap: Spacing.one },
 });

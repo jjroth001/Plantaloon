@@ -10,9 +10,13 @@ import {
   formatDiameter,
   namedExtras,
   PlantForm,
+  sectionSummary,
+  type FormSection,
+  type LengthUnit,
   type PlantFormValue,
 } from '@/components/plant-form';
-import { SpotFields, type SpotValue } from '@/components/plant/spot-fields';
+import { Fold } from '@/components/fold';
+import { SpotFields, spotSummary, type SpotValue } from '@/components/plant/spot-fields';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Button } from '@/components/ui';
@@ -40,7 +44,7 @@ export default function EditPlant() {
   const rooms = useDbQuery(['room'], listRooms);
   const plants = useDbQuery(['plant'], listPlants);
   const settings = useSettings();
-  const unit = settings.data?.temperatureUnit === 'F' ? 'in' : 'cm';
+  const unit: LengthUnit = settings.data?.temperatureUnit === 'F' ? 'in' : 'cm';
   const loaded = useDbQuery(
     [],
     async (d) => {
@@ -52,6 +56,7 @@ export default function EditPlant() {
   );
   const [form, setForm] = useState<PlantFormValue | null>(null);
   const [spotForm, setSpot] = useState<SpotValue | null>(null);
+  const [openFolds, setOpenFolds] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
 
   const plant = loaded.data?.plant;
@@ -114,6 +119,36 @@ export default function EditPlant() {
   };
 
   const ground = isInGround(value, rooms.data);
+
+  // A cutting is still rooting on its own, so it can't share a pot yet.
+  const mateCandidates = plant.propStage
+    ? []
+    : plants.data.filter((p) => p.id !== plant.id && !p.propStage);
+  const formProps = {
+    value,
+    onChange: update,
+    rooms: rooms.data,
+    unit,
+    mateCandidates,
+    namePlaceholder: displayName({ ...plant, nickname: null }),
+    pausedInWinter: !(care.fertilize?.winter ?? false),
+    inFold: true,
+  };
+  const summary = (section: FormSection) =>
+    sectionSummary(section, value, {
+      rooms: rooms.data!,
+      unit,
+      plants: mateCandidates,
+      name: displayName({ ...plant, nickname: null }),
+    });
+  // Every section starts closed; tap to open (several can be open).
+  const fold = (key: string, title: string, text: string) => ({
+    title,
+    summary: text,
+    open: openFolds.includes(key),
+    onToggle: () =>
+      setOpenFolds((o) => (o.includes(key) ? o.filter((k) => k !== key) : [...o, key])),
+  });
 
   const save = async () => {
     setBusy(true);
@@ -184,19 +219,26 @@ export default function EditPlant() {
 
   return (
     <Screen belowHeader footer={<Button title="Save" icon="check" onPress={save} busy={busy} />}>
-      <PlantForm
-        value={value}
-        onChange={update}
-        rooms={rooms.data}
-        unit={unit}
-        // A cutting is still rooting on its own, so it can't share a pot yet.
-        mateCandidates={
-          plant.propStage ? [] : plants.data.filter((p) => p.id !== plant.id && !p.propStage)
-        }
-        namePlaceholder={displayName({ ...plant, nickname: null })}
-        pausedInWinter={!(care.fertilize?.winter ?? false)}
-      />
-      {room && <SpotFields value={spot} onChange={setSpot} room={room} />}
+      <Fold {...fold('name', 'Name and room', summary('name'))}>
+        <PlantForm {...formProps} section="name" />
+        <PlantForm {...formProps} section="room" />
+      </Fold>
+      {!ground && (
+        <Fold {...fold('pot', 'Pot', summary('pot'))}>
+          <PlantForm {...formProps} section="pot" />
+        </Fold>
+      )}
+      {room && (
+        <Fold {...fold('spot', 'Its spot', spotSummary(spot, room))}>
+          <SpotFields value={spot} onChange={setSpot} room={room} inFold />
+        </Fold>
+      )}
+      <Fold {...fold('care', 'Watering and feeding', summary('care'))}>
+        <PlantForm {...formProps} section="care" />
+      </Fold>
+      <Fold {...fold('extras', 'Other reminders', summary('extras'))}>
+        <PlantForm {...formProps} section="extras" />
+      </Fold>
       <Button
         title="Move to archive"
         icon="archive"

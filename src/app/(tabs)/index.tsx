@@ -78,9 +78,9 @@ export default function TodayScreen() {
     const first = list[0];
     setUndo({
       message:
-        list.length === 1
+        ids.length === 1 || list.length === 1
           ? doneMessage(first.task, first.label, first.name)
-          : `${TASK_INFO[kindOf(first.task)].done} ${list.length} plants`,
+          : `${TASK_INFO[kindOf(first.task)].done} ${ids.length} plants`,
       entryIds: ids,
     });
   };

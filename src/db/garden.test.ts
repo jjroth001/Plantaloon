@@ -27,6 +27,8 @@ import {
   loadGarden,
   setSchedule,
   skipTask,
+  syncPotDetails,
+  updatePlant,
   type NewPlant,
 } from './garden';
 import { setSetting } from './settings';
@@ -412,6 +414,33 @@ test('shared pots: aligned schedules, watered and skipped together, one row on T
   await setPotMates(db, a, [b], T0 + 3 * DAY);
   await deletePlant(db, b);
   expect((await loadGarden(db)).plants[0].sharedPot).toBeNull();
+});
+
+test('editing a pot-mate: lining up uses the new edit, and the pot moves as one', async () => {
+  const { db, roomId } = await setup();
+  const a = await createPlant(db, pothos(roomId, { nickname: 'Pothos' }), T0);
+  const b = await createPlant(
+    db,
+    pothos(roomId, { nickname: 'Philo', water: { intervalDays: 5, enabled: true } }),
+    T0,
+  );
+  // Same order as the edit screen: schedules first, then the pot is lined up.
+  await setSchedule(db, a, 'water', { intervalDays: 4, enabled: true }, T0);
+  await setPotMates(db, a, [b], T0);
+  let garden = await loadGarden(db);
+  expect(garden.schedules.filter((x) => x.task === 'water').map((x) => x.intervalDays)).toEqual([
+    4, 4,
+  ]);
+
+  // Moving one plant to another room (or changing the pot) moves its pot-mates too.
+  const other = await createRoom(db, { name: 'Bedroom', icon: 'bed' }, T0);
+  await updatePlant(db, a, { roomId: other, potSize: 'l', potDiameterCm: 28 }, T0 + DAY);
+  await syncPotDetails(db, a, T0 + DAY);
+  garden = await loadGarden(db);
+  const mate = garden.plants.find((p) => p.id === b);
+  expect(mate?.roomId).toBe(other);
+  expect(mate?.potSize).toBe('l');
+  expect(mate?.potDiameterCm).toBe(28);
 });
 
 test('a typed pot diameter is stored', async () => {

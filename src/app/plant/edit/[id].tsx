@@ -22,6 +22,7 @@ import {
   removeSchedule,
   setPotMates,
   setSchedule,
+  syncPotDetails,
   updatePlant,
 } from '@/db/garden';
 import { useDbQuery } from '@/db/use-db-query';
@@ -35,7 +36,8 @@ export default function EditPlant() {
   const db = useSQLiteContext();
   const rooms = useDbQuery(['room'], listRooms);
   const plants = useDbQuery(['plant'], listPlants);
-  const unit = useSettings().data?.temperatureUnit === 'F' ? 'in' : 'cm';
+  const settings = useSettings();
+  const unit = settings.data?.temperatureUnit === 'F' ? 'in' : 'cm';
   const loaded = useDbQuery(
     [],
     async (d) => {
@@ -49,7 +51,10 @@ export default function EditPlant() {
   const [busy, setBusy] = useState(false);
 
   const plant = loaded.data?.plant;
-  if (!plant || !rooms.data || !plants.data) return <Screen belowHeader>{null}</Screen>;
+  // Wait for settings too, so a typed diameter is read in the right unit.
+  if (!plant || !rooms.data || !plants.data || !settings.data) {
+    return <Screen belowHeader>{null}</Screen>;
+  }
   const initialMates = plant.sharedPot
     ? plants.data
         .filter((p) => p.sharedPot === plant.sharedPot && p.id !== plant.id)
@@ -107,9 +112,12 @@ export default function EditPlant() {
       const matesChanged =
         value.potMates.length !== initialMates.length ||
         value.potMates.some((m) => !initialMates.includes(m));
-      if (matesChanged) await setPotMates(db, plant.id, value.potMates);
       await setSchedule(db, plant.id, 'water', value.water);
       await setSchedule(db, plant.id, 'fertilize', value.fertilize);
+      // After the schedules, so lining up the pot takes this edit into account.
+      if (matesChanged) await setPotMates(db, plant.id, value.potMates);
+      // One pot: the same room, size and material for every plant in it.
+      await syncPotDetails(db, plant.id);
       for (const extra of namedExtras(value.extras)) {
         await setSchedule(db, plant.id, extra.task, {
           intervalDays: extra.intervalDays,
@@ -155,7 +163,10 @@ export default function EditPlant() {
         onChange={update}
         rooms={rooms.data}
         unit={unit}
-        mateCandidates={plants.data.filter((p) => p.id !== plant.id && !p.propStage)}
+        // A cutting is still rooting on its own, so it can't share a pot yet.
+        mateCandidates={
+          plant.propStage ? [] : plants.data.filter((p) => p.id !== plant.id && !p.propStage)
+        }
         namePlaceholder={displayName({ ...plant, nickname: null })}
         pausedInWinter={!(care.fertilize?.winter ?? false)}
       />

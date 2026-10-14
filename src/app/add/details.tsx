@@ -11,7 +11,14 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Chip, Field } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
-import { addPhoto, createPlant, listPlants, listRooms, setPotMates } from '@/db/garden';
+import {
+  addPhoto,
+  createPlant,
+  listPlants,
+  listRooms,
+  setPotMates,
+  syncPotDetails,
+} from '@/db/garden';
 import { useSettings } from '@/db/use-settings';
 import { useDbQuery } from '@/db/use-db-query';
 import { choosePhoto } from '@/lib/add-photo';
@@ -39,7 +46,8 @@ export default function AddPlantDetails() {
   const theme = useTheme();
   const rooms = useDbQuery(['room'], listRooms);
   const plants = useDbQuery(['plant'], listPlants);
-  const unit = useSettings().data?.temperatureUnit === 'F' ? 'in' : 'cm';
+  const settings = useSettings();
+  const unit = settings.data?.temperatureUnit === 'F' ? 'in' : 'cm';
   const species = getSpecies(params.speciesId);
   const groupId = species?.groupId ?? params.groupId ?? '';
   const group = getGroup(groupId);
@@ -128,7 +136,10 @@ export default function AddPlantDetails() {
         fertilize: form.fertilize,
         lastWatered: watered,
       });
-      if (form.potMates.length) await setPotMates(db, id, form.potMates);
+      if (form.potMates.length) {
+        await setPotMates(db, id, form.potMates);
+        await syncPotDetails(db, id);
+      }
       if (photo) await addPhoto(db, { plantId: id, ...photo, takenAt: Date.now() });
       saved.current = true;
       successFeedback();
@@ -189,15 +200,17 @@ export default function AddPlantDetails() {
         </View>
       </Card>
 
-      <PlantForm
-        value={{ ...form, roomId }}
-        onChange={update}
-        rooms={roomList}
-        unit={unit}
-        mateCandidates={(plants.data ?? []).filter((p) => !p.propStage)}
-        namePlaceholder={species?.common[0] ?? 'e.g. Fern by the window'}
-        pausedInWinter={!(care.fertilize?.winter ?? false)}
-      />
+      {settings.data && (
+        <PlantForm
+          value={{ ...form, roomId }}
+          onChange={update}
+          rooms={roomList}
+          unit={unit}
+          mateCandidates={(plants.data ?? []).filter((p) => !p.propStage)}
+          namePlaceholder={species?.common[0] ?? 'e.g. Fern by the window'}
+          pausedInWinter={!(care.fertilize?.winter ?? false)}
+        />
+      )}
 
       <Field label="When was it last watered?">
         <View style={styles.chips}>

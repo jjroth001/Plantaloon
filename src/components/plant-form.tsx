@@ -116,7 +116,12 @@ export function PlantForm({
   const used = new Set(value.extras.map((e) => kindOf(e.task)));
   // Pot-mates: plants in the chosen room, plus any already chosen.
   const mates = mateCandidates.filter(
-    (p) => p.roomId === value.roomId || value.potMates.includes(p.id),
+    (p) =>
+      p.roomId === value.roomId ||
+      value.potMates.includes(p.id) ||
+      // Keep a picked pot's other plants visible, wherever they are.
+      (p.sharedPot != null &&
+        mateCandidates.some((m) => m.sharedPot === p.sharedPot && value.potMates.includes(m.id))),
   );
   const addable = EXTRA_TASKS.filter((k) => k === 'custom' || !used.has(k));
 
@@ -222,14 +227,18 @@ export function PlantForm({
                 label={displayName(p)}
                 icon="potted-plant"
                 selected={value.potMates.includes(p.id)}
-                onPress={() =>
+                onPress={() => {
+                  // A plant already in a pot comes with its whole pot.
+                  const pot = p.sharedPot
+                    ? mates.filter((m) => m.sharedPot === p.sharedPot).map((m) => m.id)
+                    : [p.id];
                   set(
                     'potMates',
                     value.potMates.includes(p.id)
-                      ? value.potMates.filter((id) => id !== p.id)
-                      : [...value.potMates, p.id],
-                  )
-                }
+                      ? value.potMates.filter((id) => !pot.includes(id))
+                      : [...new Set([...value.potMates, ...pot])],
+                  );
+                }}
               />
             ))}
           </View>

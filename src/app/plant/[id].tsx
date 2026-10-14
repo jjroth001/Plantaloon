@@ -103,7 +103,14 @@ export default function PlantScreen() {
   const log = async (task: Task) => {
     successFeedback();
     const ids = await completeTask(db, [plant.id], task);
-    setUndo({ message: doneMessage(task, null, name), entryIds: ids });
+    const others = ids.length - 1;
+    setUndo({
+      message:
+        others > 0
+          ? `${doneMessage(task, null, name)} and ${others === 1 ? 'its pot-mate' : `${others} pot-mates`}`
+          : doneMessage(task, null, name),
+      entryIds: ids,
+    });
   };
 
   const undoLast = async () => {

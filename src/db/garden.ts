@@ -581,6 +581,27 @@ async function withPotMates(db: SQLiteDatabase, plantIds: readonly string[], tas
 }
 
 /**
+ * It's one pot: its room, size, material and drainage are the same for every plant in it.
+ * Copies this plant's to its pot-mates.
+ */
+export async function syncPotDetails(
+  db: SQLiteDatabase,
+  plantId: string,
+  now = Date.now(),
+): Promise<void> {
+  const mates = (await potMates(db, plantId)).filter((id) => id !== plantId);
+  if (mates.length === 0) return;
+  await db.runAsync(
+    `UPDATE plant SET (room_id, pot_size, pot_diameter_cm, pot_material, pot_drainage, updated_at) =
+       (SELECT room_id, pot_size, pot_diameter_cm, pot_material, pot_drainage, ? FROM plant WHERE id = ?)
+     WHERE id IN (${mates.map(() => '?').join(',')})`,
+    now,
+    plantId,
+    ...mates,
+  );
+}
+
+/**
  * Puts a plant in a pot with `mateIds` (or on its own when empty). Pots left with a single
  * plant stop being shared. The pot's watering and feeding are lined up: the shortest interval
  * among them wins (the thirstiest plant sets the pace), on if any had it on.
@@ -712,9 +733,12 @@ export async function skipTask(
 ): Promise<string[]> {
   const data = label ? { task, days, label } : { task, days };
   const ids: string[] = [];
-  for (const id of await withPotMates(db, [plantId], task)) {
-    ids.push(await insertEntry(db, { plantId: id, type: 'skip', at, note: null, data }, at));
-  }
+  const everyone = await withPotMates(db, [plantId], task);
+  await transaction(db, async () => {
+    for (const id of everyone) {
+      ids.push(await insertEntry(db, { plantId: id, type: 'skip', at, note: null, data }, at));
+    }
+  });
   return ids;
 }
 

@@ -12,6 +12,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ICONS = [
+  'archive',
   'armchair',
   'arrow-counter-clockwise',
   'arrow-fat-up',

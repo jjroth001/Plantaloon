@@ -26,6 +26,14 @@ export type Room = {
   updatedAt: number;
 };
 
+export type ArchiveReason = 'died' | 'gave_away' | 'other';
+
+export const ARCHIVE_REASON: Record<ArchiveReason, string> = {
+  died: 'Died',
+  gave_away: 'Gave it away',
+  other: 'Other',
+};
+
 export type PotMaterial = 'plastic' | 'terracotta' | 'glazed' | 'glass' | 'other';
 
 /** A cutting's progress: rooting → rooted → (potted up: becomes a normal plant). */
@@ -51,6 +59,10 @@ export type Plant = {
   spotDraught: boolean | null;
   /** Next to a heater or radiator. */
   nearHeater: boolean;
+  /** Set once it's in the archive (died, given away…); null while still growing. */
+  archivedAt: number | null;
+  archiveReason: ArchiveReason | null;
+  archiveNote: string | null;
   coverPhotoId: string | null;
   acquiredOn: string | null;
   notes: string | null;

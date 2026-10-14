@@ -55,6 +55,7 @@ import { lightFit } from '@/lib/light';
 import { checkSpot, effectiveLight, spotOf } from '@/lib/spot';
 import { doneMessage, taskForEntry, taskIcon, taskLabel } from '@/lib/tasks';
 import { useTaskColors } from '@/hooks/use-task-colors';
+import { ArchivedCard } from '@/components/plant/archived-card';
 import { CuttingsCard } from '@/components/plant/cuttings-card';
 import { HealthChip } from '@/components/plant/health-chip';
 import { SharedPotCard } from '@/components/plant/shared-pot-card';
@@ -65,6 +66,9 @@ import { useTheme } from '@/theme/theme-provider';
 type Undo = { message: string; entryIds: string[] };
 
 const SECTIONS: SectionName[] = ['care', 'about', 'growing', 'problems', 'journal'];
+
+/** What an archived plant's page keeps: no care, just its story. */
+const ARCHIVED_KEYS = new Set(['hero', 'archived', 'photos', 'description', 'journal']);
 
 export default function PlantScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -80,12 +84,14 @@ export default function PlantScreen() {
   const lows = useClimateLows();
   const hideUndo = useCallback(() => setUndo(null), []);
 
-  const plant = garden.data?.plants.find((p) => p.id === id);
+  const plant =
+    garden.data?.plants.find((p) => p.id === id) ?? garden.data?.archived.find((p) => p.id === id);
   if (!garden.data || !settings.data) return <Screen belowHeader>{null}</Screen>;
   if (!plant) {
     // Deleted: leave quietly.
     return <Screen belowHeader>{null}</Screen>;
   }
+  const isArchived = plant.archivedAt != null;
   const roomRow = garden.data.rooms.find((r) => r.id === plant.roomId);
   // The room, with anything set differently for this plant.
   const room = roomRow && spotOf(roomRow, plant);
@@ -227,9 +233,10 @@ export default function PlantScreen() {
             </ThemedText>
           </View>
         )}
-        <HealthChip plantId={plant.id} status={garden.data.health.get(plant.id)} />
+        {!isArchived && <HealthChip plantId={plant.id} status={garden.data.health.get(plant.id)} />}
       </View>
     </View>,
+    isArchived ? <ArchivedCard key="archived" plant={plant} /> : null,
     <View key="actions" style={styles.actions}>
       <QuickAction
         icon="drop"
@@ -390,7 +397,7 @@ export default function PlantScreen() {
         )}
       </Card>
     </Section>,
-  ].filter((child) => child != null);
+  ].filter((child) => child != null && (!isArchived || ARCHIVED_KEYS.has(String(child.key))));
   const stickyIndex = children.indexOf(tabs);
 
   return (
@@ -398,15 +405,17 @@ export default function PlantScreen() {
       <Stack.Screen
         options={{
           title: '',
-          headerRight: () => (
-            <IconButton
-              icon="pencil-simple"
-              label="Edit plant"
-              onPress={() =>
-                router.push({ pathname: '/plant/edit/[id]', params: { id: plant.id } })
-              }
-            />
-          ),
+          headerRight: isArchived
+            ? undefined
+            : () => (
+                <IconButton
+                  icon="pencil-simple"
+                  label="Edit plant"
+                  onPress={() =>
+                    router.push({ pathname: '/plant/edit/[id]', params: { id: plant.id } })
+                  }
+                />
+              ),
         }}
       />
       <Screen
@@ -414,7 +423,7 @@ export default function PlantScreen() {
         ref={scrollRef}
         onScroll={onScroll}
         onScrollBeginDrag={onScrollBeginDrag}
-        stickyHeaderIndices={[stickyIndex]}>
+        stickyHeaderIndices={stickyIndex >= 0 ? [stickyIndex] : []}>
         {children}
       </Screen>
       {undo && (

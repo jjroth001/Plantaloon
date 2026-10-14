@@ -13,6 +13,7 @@ import {
 } from '@/components/plant-form';
 import { SpotFields, type SpotValue } from '@/components/plant/spot-fields';
 import { Screen } from '@/components/screen';
+import { ThemedText } from '@/components/themed-text';
 import { Button } from '@/components/ui';
 import {
   deletePlant,
@@ -188,6 +189,16 @@ export default function EditPlant() {
         pausedInWinter={!(care.fertilize?.winter ?? false)}
       />
       {room && <SpotFields value={spot} onChange={setSpot} room={room} />}
+      <Button
+        title="Move to archive"
+        icon="archive"
+        variant="secondary"
+        onPress={() => router.push({ pathname: '/plant/archive/[id]', params: { id: plant.id } })}
+      />
+      <ThemedText type="caption" color="textSecondary">
+        For a plant that died or that you gave away: it stops getting reminders, and its journal and
+        photos are kept.
+      </ThemedText>
       <Button title="Delete plant" icon="trash" variant="ghost" onPress={remove} />
     </Screen>
   );

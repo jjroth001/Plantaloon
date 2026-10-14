@@ -97,6 +97,11 @@ function RootNavigator() {
             name="plant/cutting/[id]"
             options={{ ...sheet, title: 'Start a cutting' }}
           />
+          <Stack.Screen
+            name="plant/archive/[id]"
+            options={{ ...sheet, title: 'Move to archive' }}
+          />
+          <Stack.Screen name="archive" options={{ headerShown: true, title: 'Archive' }} />
           <Stack.Screen name="plant/log/[id]" options={{ ...sheet, title: 'Add to journal' }} />
           <Stack.Screen
             name="plant/photos/[id]"

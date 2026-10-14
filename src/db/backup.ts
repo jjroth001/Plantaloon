@@ -7,7 +7,7 @@ import { transaction } from './transaction';
  * one photo, base64-encoded. One line per photo keeps memory use down while writing.
  */
 /** 2: custom tasks, pot material, room conditions, health, cuttings. 3: pot diameter, shared pots. */
-export const BACKUP_FORMAT = 4;
+export const BACKUP_FORMAT = 5;
 
 const TABLES = ['room', 'plant', 'schedule', 'entry', 'photo', 'setting', 'wish'] as const;
 /** Tables older backups may not have (added after the first release). */
@@ -69,6 +69,9 @@ const COLUMNS: Record<TableName, readonly string[]> = {
     'spot_grow_light',
     'spot_draught',
     'near_heater',
+    'archived_at',
+    'archive_reason',
+    'archive_note',
     'cover_photo_id',
     'acquired_on',
     'notes',

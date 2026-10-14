@@ -30,6 +30,8 @@ import {
   skipTask,
   syncPotDetails,
   adoptSpot,
+  archivePlant,
+  restorePlant,
   updatePlant,
   type NewPlant,
 } from './garden';
@@ -471,6 +473,52 @@ test("a plant's own spot is stored, shared with its pot, and taken by newcomers"
   await syncPotDetails(db, c, T0);
   plants = (await loadGarden(db)).plants;
   expect(plants.every((p) => p.spotLight === 'high' && p.nearHeater)).toBe(true);
+});
+
+test('the archive: no reminders, story kept, leaves its pot, and can come back', async () => {
+  const { db, roomId } = await setup();
+  const a = await createPlant(db, pothos(roomId, { nickname: 'Pothos' }), T0);
+  const b = await createPlant(db, pothos(roomId, { nickname: 'Philo' }), T0);
+  await setPotMates(db, a, [b], T0);
+  await completeTask(db, [a], 'water', T0 + DAY);
+
+  await archivePlant(db, a, { reason: 'died', note: '  Root rot  ' }, T0 + 2 * DAY);
+  let garden = await loadGarden(db);
+  expect(garden.plants.map((p) => p.id)).toEqual([b]);
+  expect(garden.archived).toHaveLength(1);
+  expect(garden.archived[0]).toMatchObject({
+    archiveReason: 'died',
+    archiveNote: 'Root rot',
+    archivedAt: T0 + 2 * DAY,
+    sharedPot: null,
+  });
+  // Its pot-mate is on its own again, and only it has reminders.
+  expect(garden.plants[0].sharedPot).toBeNull();
+  expect(buildTasks(garden, 'north', today(30)).every((t) => t.plant.id === b)).toBe(true);
+  // The journal is kept.
+  expect((await listJournal(db, a)).length).toBeGreaterThan(0);
+
+  // Deleting its room keeps it, moved to another room.
+  const other = await createRoom(db, { name: 'Bedroom', icon: 'bed' }, T0);
+  await deleteRoom(db, roomId, other);
+  await restorePlant(db, a, T0 + 3 * DAY);
+  garden = await loadGarden(db);
+  expect(garden.archived).toHaveLength(0);
+  expect(garden.plants.find((p) => p.id === a)).toMatchObject({
+    roomId: other,
+    archivedAt: null,
+    archiveReason: null,
+  });
+  expect(buildTasks(garden, 'north', today(30)).some((t) => t.plant.id === a)).toBe(true);
+});
+
+test('deleting a room with only archived plants moves them to another room', async () => {
+  const { db, roomId } = await setup();
+  const a = await createPlant(db, pothos(roomId), T0);
+  await archivePlant(db, a, { reason: 'gave_away', note: null }, T0);
+  const other = await createRoom(db, { name: 'Bedroom', icon: 'bed' }, T0);
+  await deleteRoom(db, roomId, null);
+  expect((await loadGarden(db)).archived[0].roomId).toBe(other);
 });
 
 test('a typed pot diameter is stored', async () => {

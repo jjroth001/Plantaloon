@@ -116,6 +116,13 @@ const MIGRATIONS: string[] = [
   ALTER TABLE plant ADD COLUMN spot_draught INTEGER;
   ALTER TABLE plant ADD COLUMN near_heater INTEGER NOT NULL DEFAULT 0;
   `,
+
+  // 6: the archive, for plants that died or were given away (journal and photos kept)
+  `
+  ALTER TABLE plant ADD COLUMN archived_at INTEGER; -- NULL = still growing
+  ALTER TABLE plant ADD COLUMN archive_reason TEXT; -- 'died' | 'gave_away' | 'other'
+  ALTER TABLE plant ADD COLUMN archive_note TEXT;
+  `,
 ];
 
 /** The migration SQL in order (for tests that build a database from scratch). */

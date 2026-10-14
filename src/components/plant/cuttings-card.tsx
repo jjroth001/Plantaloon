@@ -48,7 +48,9 @@ export function CuttingsCard({
   const db = useSQLiteContext();
   const theme = useTheme();
   const [busy, setBusy] = useState(false);
-  const parent = plant.parentId ? garden.plants.find((p) => p.id === plant.parentId) : undefined;
+  const parent = plant.parentId
+    ? [...garden.plants, ...garden.archived].find((p) => p.id === plant.parentId)
+    : undefined;
   const children = garden.plants.filter((p) => p.parentId === plant.id);
 
   if (plant.propStage) {

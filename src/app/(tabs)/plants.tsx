@@ -30,6 +30,9 @@ export default function PlantsScreen() {
 
   const header = (
     <View style={styles.headerButtons}>
+      {(garden.data?.archived.length ?? 0) > 0 && (
+        <IconButton icon="archive" label="Archive" onPress={() => router.push('/archive')} />
+      )}
       <IconButton icon="heart" label="Wishlist" onPress={() => router.push('/wishlist')} />
       <IconButton icon="house" label="Rooms" onPress={() => router.push('/rooms')} />
       <IconButton

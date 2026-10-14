@@ -9,6 +9,7 @@ import { newId } from './ids';
 import { HEALTH } from './types';
 import { transaction } from './transaction';
 import type {
+  ArchiveReason,
   Entry,
   EntryType,
   HealthStatus,
@@ -58,6 +59,9 @@ type PlantRow = {
   spot_grow_light: number | null;
   spot_draught: number | null;
   near_heater: number | null;
+  archived_at: number | null;
+  archive_reason: string | null;
+  archive_note: string | null;
   cover_photo_id: string | null;
   acquired_on: string | null;
   notes: string | null;
@@ -131,6 +135,9 @@ const toPlant = (r: PlantRow): Plant => ({
   spotGrowLight: r.spot_grow_light == null ? null : r.spot_grow_light === 1,
   spotDraught: r.spot_draught == null ? null : r.spot_draught === 1,
   nearHeater: r.near_heater === 1,
+  archivedAt: r.archived_at ?? null,
+  archiveReason: (r.archive_reason ?? null) as ArchiveReason | null,
+  archiveNote: r.archive_note ?? null,
   coverPhotoId: r.cover_photo_id,
   acquiredOn: r.acquired_on,
   notes: r.notes,
@@ -310,10 +317,19 @@ export async function deleteRoom(
   now = Date.now(),
 ): Promise<void> {
   await transaction(db, async () => {
-    if (moveTo) {
+    // Archived plants have to live somewhere too: the first other room.
+    const target =
+      moveTo ??
+      (
+        await db.getFirstAsync<{ id: string }>(
+          'SELECT id FROM room WHERE id != ? ORDER BY sort_order LIMIT 1',
+          id,
+        )
+      )?.id;
+    if (target) {
       await db.runAsync(
         'UPDATE plant SET room_id = ?, updated_at = ? WHERE room_id = ?',
-        moveTo,
+        target,
         now,
         id,
       );
@@ -329,8 +345,11 @@ export async function getPlant(db: SQLiteDatabase, id: string): Promise<Plant | 
   return row ? toPlant(row) : null;
 }
 
+/** Plants still growing (not in the archive). */
 export async function listPlants(db: SQLiteDatabase): Promise<Plant[]> {
-  const rows = await db.getAllAsync<PlantRow>('SELECT * FROM plant ORDER BY created_at');
+  const rows = await db.getAllAsync<PlantRow>(
+    'SELECT * FROM plant WHERE archived_at IS NULL ORDER BY created_at',
+  );
   return rows.map(toPlant);
 }
 
@@ -590,6 +609,62 @@ export async function dismissIntervalHint(
       task,
     );
   }
+}
+
+// --- Archive ----------------------------------------------------------------
+
+/** Plants in the archive, most recently archived first. */
+export async function listArchived(db: SQLiteDatabase): Promise<Plant[]> {
+  const rows = await db.getAllAsync<PlantRow>(
+    'SELECT * FROM plant WHERE archived_at IS NOT NULL ORDER BY archived_at DESC',
+  );
+  return rows.map(toPlant);
+}
+
+/**
+ * Moves a plant to the archive: no more reminders, but its journal and photos stay. It leaves
+ * any shared pot.
+ */
+export async function archivePlant(
+  db: SQLiteDatabase,
+  id: string,
+  input: { reason: ArchiveReason; note: string | null },
+  now = Date.now(),
+): Promise<void> {
+  await transaction(db, async () => {
+    const row = await db.getFirstAsync<{ shared_pot: string | null }>(
+      'SELECT shared_pot FROM plant WHERE id = ?',
+      id,
+    );
+    await db.runAsync(
+      `UPDATE plant SET archived_at = ?, archive_reason = ?, archive_note = ?, shared_pot = NULL,
+         updated_at = ? WHERE id = ?`,
+      now,
+      input.reason,
+      input.note?.trim() || null,
+      now,
+      id,
+    );
+    if (row?.shared_pot) {
+      const left = await db.getAllAsync<{ id: string }>(
+        'SELECT id FROM plant WHERE shared_pot = ?',
+        row.shared_pot,
+      );
+      if (left.length === 1) {
+        await db.runAsync('UPDATE plant SET shared_pot = NULL WHERE id = ?', left[0].id);
+      }
+    }
+  });
+}
+
+/** Brings a plant back from the archive, with its reminders as they were. */
+export async function restorePlant(db: SQLiteDatabase, id: string, now = Date.now()) {
+  await db.runAsync(
+    `UPDATE plant SET archived_at = NULL, archive_reason = NULL, archive_note = NULL,
+       updated_at = ? WHERE id = ?`,
+    now,
+    id,
+  );
 }
 
 // --- Shared pots ------------------------------------------------------------
@@ -1060,7 +1135,10 @@ export type TaskHistory = {
 
 export type Garden = {
   rooms: Room[];
+  /** Plants still growing. */
   plants: Plant[];
+  /** Plants in the archive, most recent first. */
+  archived: Plant[];
   schedules: Schedule[];
   /** Keyed by `${plantId}:${task}`. */
   history: Map<string, TaskHistory>;
@@ -1072,26 +1150,28 @@ export type Garden = {
 export const historyKey = (plantId: string, task: Task) => `${plantId}:${task}`;
 
 export async function loadGarden(db: SQLiteDatabase): Promise<Garden> {
-  const [rooms, plants, scheduleRows, doneRows, skipRows, covers, healthRows] = await Promise.all([
-    listRooms(db),
-    listPlants(db),
-    db.getAllAsync<ScheduleRow>('SELECT * FROM schedule'),
-    db.getAllAsync<{ plant_id: string; type: string; data: string; at: number }>(
-      `SELECT plant_id, type, data, MAX(at) AS at FROM entry
+  const [rooms, plants, archived, scheduleRows, doneRows, skipRows, covers, healthRows] =
+    await Promise.all([
+      listRooms(db),
+      listPlants(db),
+      listArchived(db),
+      db.getAllAsync<ScheduleRow>('SELECT * FROM schedule'),
+      db.getAllAsync<{ plant_id: string; type: string; data: string; at: number }>(
+        `SELECT plant_id, type, data, MAX(at) AS at FROM entry
        WHERE type IN ('water', 'fertilize', 'mist', 'rotate', 'clean', 'prune', 'repot')
        GROUP BY plant_id, type
        UNION ALL
        SELECT plant_id, type, data, MAX(at) AS at FROM entry WHERE type = 'custom'
        GROUP BY plant_id, CASE WHEN json_valid(data) THEN json_extract(data, '$.task') END`,
-    ),
-    db.getAllAsync<{ plant_id: string; at: number; data: string }>(
-      "SELECT plant_id, at, data FROM entry WHERE type = 'skip' ORDER BY at",
-    ),
-    coverPhotos(db),
-    db.getAllAsync<{ plant_id: string; data: string }>(
-      "SELECT plant_id, data FROM entry WHERE type = 'health' ORDER BY at",
-    ),
-  ]);
+      ),
+      db.getAllAsync<{ plant_id: string; at: number; data: string }>(
+        "SELECT plant_id, at, data FROM entry WHERE type = 'skip' ORDER BY at",
+      ),
+      coverPhotos(db),
+      db.getAllAsync<{ plant_id: string; data: string }>(
+        "SELECT plant_id, data FROM entry WHERE type = 'health' ORDER BY at",
+      ),
+    ]);
 
   const health = new Map<string, HealthStatus>();
   for (const row of healthRows) {
@@ -1118,5 +1198,13 @@ export async function loadGarden(db: SQLiteDatabase): Promise<Garden> {
     if (h.lastDoneAt == null || row.at > h.lastDoneAt) h.skips.push({ at: row.at, days });
   }
 
-  return { rooms, plants, schedules: scheduleRows.map(toSchedule), history, covers, health };
+  return {
+    rooms,
+    plants,
+    archived,
+    schedules: scheduleRows.map(toSchedule),
+    history,
+    covers,
+    health,
+  };
 }

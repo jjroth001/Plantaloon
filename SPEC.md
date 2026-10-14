@@ -192,6 +192,17 @@ Modelled on the depth of Planta's plant pages, in our own words and look
   the pot's spot.
 - Being near a heater warns plants that dislike dry air.
 
+## v1.6 — the archive, and a new icon (2026-10-13)
+
+- Edit plant → "Move to archive" for a plant that died, was given away, or anything else,
+  with an optional note. Archived plants get no reminders and leave the plant list, Today and
+  the light meter; their journal and photos are kept.
+- Plants tab → Archive (shown once something is in it) lists them, newest first. An archived
+  plant's page shows what happened, its photos and journal, with "Bring it back" and
+  "Delete for good".
+- Archiving leaves any shared pot. Deleting a room moves its archived plants to another room.
+- New app icon and splash: a ZZ plant.
+
 ## v2 and later
 - More scheduled tasks (mist, rotate, repot reminders).
 - Home-screen widget ("3 plants need water").

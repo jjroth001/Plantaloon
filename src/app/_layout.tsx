@@ -106,6 +106,7 @@ function RootNavigator() {
           <Stack.Screen name="add/index" options={{ ...sheet, title: 'Add a plant' }} />
           <Stack.Screen name="add/group" options={{ headerShown: true, title: 'Closest match' }} />
           <Stack.Screen name="add/details" options={{ headerShown: true, title: 'Add a plant' }} />
+          <Stack.Screen name="scan" options={{ headerShown: true, title: 'Scan a plant' }} />
           <Stack.Screen name="species/[id]" options={{ headerShown: true, title: '' }} />
           <Stack.Screen name="guide/[id]" options={{ headerShown: true, title: '' }} />
           <Stack.Screen name="credits" options={{ headerShown: true, title: 'Photo credits' }} />

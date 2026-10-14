@@ -8,7 +8,7 @@ import { popularSpecies, searchSpecies } from '@/catalog/search-index';
 import { Icon } from '@/components/icons/icon';
 import { SpeciesRow } from '@/components/species-row';
 import { ThemedText } from '@/components/themed-text';
-import { ListRow } from '@/components/ui';
+import { IconButton, ListRow } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/theme/theme-provider';
 
@@ -41,6 +41,14 @@ export default function AddPlantSearch() {
             accessibilityLabel="Search plants"
           />
         </View>
+        <IconButton
+          icon="camera"
+          label="Scan a plant"
+          onPress={() => router.push('/scan')}
+          background={theme.tint}
+          color={theme.onTint}
+          size={52}
+        />
       </View>
       <FlatList
         data={results}
@@ -80,8 +88,15 @@ export default function AddPlantSearch() {
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
-  searchWrap: { paddingHorizontal: Spacing.three + Spacing.one, paddingBottom: Spacing.two },
+  searchWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    paddingHorizontal: Spacing.three + Spacing.one,
+    paddingBottom: Spacing.two,
+  },
   search: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,

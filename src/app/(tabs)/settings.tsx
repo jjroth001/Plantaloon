@@ -21,6 +21,7 @@ import { setSetting } from '@/db/settings';
 import { useSettings } from '@/db/use-settings';
 import { pickBackup, restoreBackup, shareBackup } from '@/lib/data-transfer';
 import { requestClimatePlace } from '@/lib/location';
+import { removeScanner, SCAN_MODEL_MB, scannerReady, scannerSupported } from '@/lib/scanner';
 import { formatRelativeDay, dateOf } from '@/lib/dates';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
 import { remindersSupported, requestNotificationPermission } from '@/lib/notifications';
@@ -39,6 +40,7 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const settings = useSettings();
   const [busy, setBusy] = useState<'backup' | 'restore' | null>(null);
+  const [scannerOnPhone, setScannerOnPhone] = useState(() => scannerSupported && scannerReady());
   const s = settings.data;
   if (!s) return <Screen title="Settings">{null}</Screen>;
 
@@ -284,6 +286,38 @@ export default function SettingsScreen() {
             subtitle="Replace everything here with a backup"
             onPress={busy ? undefined : restore}
           />
+          {scannerOnPhone && (
+            <>
+              <Divider />
+              <ListRow
+                icon="magnifying-glass-plus"
+                title="Plant scanner"
+                subtitle={`On this phone (${SCAN_MODEL_MB} MB). Remove to free space; you can download it again.`}
+                right={
+                  <Pressable
+                    accessibilityRole="button"
+                    hitSlop={8}
+                    onPress={() =>
+                      Alert.alert('Remove the plant scanner?', `Frees ${SCAN_MODEL_MB} MB.`, [
+                        { text: 'Cancel', style: 'cancel' },
+                        {
+                          text: 'Remove',
+                          style: 'destructive',
+                          onPress: () => {
+                            removeScanner();
+                            setScannerOnPhone(false);
+                          },
+                        },
+                      ])
+                    }>
+                    <ThemedText type="label" color="danger">
+                      Remove
+                    </ThemedText>
+                  </Pressable>
+                }
+              />
+            </>
+          )}
           <Divider />
           <ListRow
             icon="house"

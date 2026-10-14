@@ -389,51 +389,6 @@ export function Field({ label, children }: { label: string; children: ReactNode 
   );
 }
 
-/** A − number + control, for intervals in days. */
-export function Stepper({
-  value,
-  onChange,
-  min = 1,
-  max = 365,
-  unit,
-}: {
-  value: number;
-  onChange: (value: number) => void;
-  min?: number;
-  max?: number;
-  unit: (n: number) => string;
-}) {
-  const theme = useTheme();
-  const step = (delta: number) => {
-    const next = Math.min(max, Math.max(min, value + delta));
-    if (next !== value) {
-      tapFeedback();
-      onChange(next);
-    }
-  };
-  return (
-    <View style={[styles.stepper, { backgroundColor: theme.element }]}>
-      <IconButton
-        icon="caret-left"
-        label="Fewer"
-        onPress={() => step(-1)}
-        background={theme.card}
-        size={40}
-      />
-      <ThemedText type="subheading" style={styles.stepperValue}>
-        {unit(value)}
-      </ThemedText>
-      <IconButton
-        icon="caret-right"
-        label="More"
-        onPress={() => step(1)}
-        background={theme.card}
-        size={40}
-      />
-    </View>
-  );
-}
-
 export function EmptyState({
   icon,
   title,
@@ -537,13 +492,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two,
     fontSize: 17,
   },
-  stepper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: Radius.medium,
-    padding: 6,
-  },
-  stepperValue: { flex: 1, textAlign: 'center' },
   empty: {
     alignItems: 'center',
     gap: Spacing.three,

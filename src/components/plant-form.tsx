@@ -3,6 +3,7 @@ import { StyleSheet, Switch, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { Icon } from '@/components/icons/icon';
+import { IntervalField } from '@/components/interval-field';
 import { ThemedText } from '@/components/themed-text';
 import {
   Card,
@@ -11,7 +12,6 @@ import {
   Field,
   IconButton,
   Segmented,
-  Stepper,
   SwitchRow,
   TextField,
 } from '@/components/ui';
@@ -74,13 +74,6 @@ export function namedExtras(extras: ExtraTask[]): ExtraTask[] {
     .map((e) => ({ ...e, label: e.label?.trim() || null }))
     .filter((e) => kindOf(e.task) !== 'custom' || e.label);
 }
-
-const days = (n: number) =>
-  n === 1
-    ? 'Every day'
-    : n % 365 === 0
-      ? `Every ${n / 365 === 1 ? 'year' : `${n / 365} years`}`
-      : `Every ${n} days`;
 
 const MATERIALS = Object.keys(POT_MATERIAL) as PotMaterial[];
 
@@ -299,11 +292,10 @@ export function PlantForm({
                 }}
               />
             </View>
-            <Stepper
+            <IntervalField
+              kind={kindOf(extra.task)}
               value={extra.intervalDays}
               onChange={(intervalDays) => setExtra(i, { intervalDays })}
-              max={730}
-              unit={days}
             />
           </Animated.View>
         ))}
@@ -369,11 +361,10 @@ function ScheduleField({
         />
       </View>
       {value.enabled && (
-        <Stepper
+        <IntervalField
+          kind={task === 'water' ? 'water' : 'fertilize'}
           value={value.intervalDays}
           onChange={(intervalDays) => onChange({ ...value, intervalDays })}
-          max={task === 'water' ? 90 : 180}
-          unit={days}
         />
       )}
     </View>

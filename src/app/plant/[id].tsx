@@ -60,6 +60,7 @@ import { CuttingsCard } from '@/components/plant/cuttings-card';
 import { HealthChip } from '@/components/plant/health-chip';
 import { SharedPotCard } from '@/components/plant/shared-pot-card';
 import { photoUri } from '@/lib/photos';
+import { describeInterval } from '@/lib/interval';
 import { describeDue, endOfWinter, isWinter } from '@/lib/schedule';
 import { useTheme } from '@/theme/theme-provider';
 
@@ -493,7 +494,7 @@ function ScheduleLine({
       task === 'fertilize' && !(care.fertilize?.winter ?? false) && isWinter(today, hemisphere);
     detail = winterPause
       ? `Resting for winter until ${formatRelativeDay(endOfWinter(today, hemisphere), today)}`
-      : `Every ${intervalDays} days${task === 'water' && isWinter(today, hemisphere) && care.water.winterFactor > 1 ? ' (longer in winter)' : ''}`;
+      : `${describeInterval(intervalDays)}${task === 'water' && isWinter(today, hemisphere) && care.water.winterFactor > 1 ? ' (longer in winter)' : ''}`;
     if (due.lastDoneAt)
       detail += ` · last ${formatRelativeDay(dateOf(due.lastDoneAt), today).toLowerCase()}`;
   }

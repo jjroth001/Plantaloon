@@ -23,6 +23,7 @@ import { Card, IconBadge } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import { DIFFICULTY_TEXT, formatTemp, HUMIDITY_TEXT, petText } from '@/lib/care-text';
 import { describeMonths, MONTH_INITIALS, outdoorMonths } from '@/lib/climate';
+import { describeInterval } from '@/lib/interval';
 import { tapFeedback } from '@/lib/haptics';
 import { LIGHT_LABEL, LIGHT_TIERS, type LightFit } from '@/lib/light';
 import type { SpotCheck } from '@/lib/spot';
@@ -526,7 +527,7 @@ export function CareSection({
           background={theme.fertilizeSoft}
           title={
             care.fertilize && feedDays
-              ? `Every ${feedDays} days, spring to autumn`
+              ? `${describeInterval(feedDays)}, spring to autumn`
               : 'Rarely needs feeding'
           }
           subtitle={

@@ -22,6 +22,8 @@ export type Settings = {
   onboarded: boolean;
   /** Rough place (about 50 km) for outdoor months; only set after the user opts in. */
   climatePlace: ClimatePlace | null;
+  /** Multiplies light sensor readings: phone sensors vary, many read low under the screen. */
+  lightCalibration: number;
 };
 
 function defaultSettings(): Settings {
@@ -39,6 +41,7 @@ function defaultSettings(): Settings {
     lastBackupAt: null,
     onboarded: false,
     climatePlace: null,
+    lightCalibration: 1,
   };
 }
 

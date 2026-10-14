@@ -2,6 +2,7 @@ import { LightSensor } from 'expo-sensors';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 
+import { useSettings } from '@/db/use-settings';
 import { smoothLux } from '@/lib/light';
 
 export type SensorState = 'checking' | 'ready' | 'missing';
@@ -10,6 +11,7 @@ export type SensorState = 'checking' | 'ready' | 'missing';
 export function useLightSensor(active: boolean): { state: SensorState; lux: number | null } {
   const [state, setState] = useState<SensorState>('checking');
   const [lux, setLux] = useState<number | null>(null);
+  const calibration = useSettings().data?.lightCalibration ?? 1;
 
   useEffect(() => {
     if (!active) return;
@@ -35,5 +37,5 @@ export function useLightSensor(active: boolean): { state: SensorState; lux: numb
     };
   }, [active]);
 
-  return { state, lux };
+  return { state, lux: lux == null ? null : lux * calibration };
 }

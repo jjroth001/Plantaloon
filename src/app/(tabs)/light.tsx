@@ -14,6 +14,8 @@ import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Chip, Divider, EmptyState, SectionTitle } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { setPlantLight, setRoomLight } from '@/db/garden';
+import { setSetting } from '@/db/settings';
+import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
 import {
@@ -29,6 +31,9 @@ import { useTheme } from '@/theme/theme-provider';
 
 type SensorState = 'checking' | 'ready' | 'missing';
 
+/** Multipliers for the phone's light sensor (100% = as it reads). */
+const CALIBRATIONS = [0.5, 0.75, 1, 1.5, 2, 3, 4];
+
 const FIT_TEXT: Record<LightFit, string> = {
   ideal: 'Just right',
   ok: 'Fine',
@@ -40,9 +45,10 @@ export default function LightScreen() {
   const db = useSQLiteContext();
   const theme = useTheme();
   const garden = useGarden();
+  const settings = useSettings();
   const { width } = useWindowDimensions();
   const [sensor, setSensor] = useState<SensorState>('checking');
-  const [lux, setLux] = useState<number | null>(null);
+  const [rawLux, setLux] = useState<number | null>(null);
   const [held, setHeld] = useState(false);
   const [savedTo, setSavedTo] = useState<string | null>(null);
   const [savedPlant, setSavedPlant] = useState<string | null>(null);
@@ -76,6 +82,9 @@ export default function LightScreen() {
       };
     }, []),
   );
+
+  const calibration = settings.data?.lightCalibration ?? 1;
+  const lux = rawLux == null ? null : rawLux * calibration;
 
   if (sensor === 'missing') {
     return (
@@ -137,6 +146,25 @@ export default function LightScreen() {
           </ThemedText>
         </View>
       </Card>
+
+      <View style={styles.section}>
+        <SectionTitle>Sensor sensitivity</SectionTitle>
+        <View style={styles.chips}>
+          {CALIBRATIONS.map((c) => (
+            <Chip
+              key={c}
+              label={`${Math.round(c * 100)}%`}
+              selected={Math.abs(calibration - c) < 0.001}
+              onPress={() => setSetting(db, 'lightCalibration', c)}
+            />
+          ))}
+        </View>
+        <ThemedText type="caption" color="textSecondary">
+          Phone light sensors vary, and many sit under the screen and read low. If a bright window
+          reads dim, turn this up; if a dim corner reads bright, turn it down. If you can, compare
+          with a light meter or another phone.
+        </ThemedText>
+      </View>
 
       {tier && tier !== 'too_dark' && rooms.length > 0 && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.section}>

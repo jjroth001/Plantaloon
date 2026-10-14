@@ -86,6 +86,7 @@ export default function EditPlant() {
 
   const spot: SpotValue = spotForm ?? {
     light: plant.spotLight,
+    lux: plant.spotLux,
     growLight: plant.spotGrowLight,
     draught: plant.spotDraught,
     nearHeater: plant.nearHeater,
@@ -121,7 +122,7 @@ export default function EditPlant() {
         potDiameterCm: diameterCm(value.potDiameter, unit),
         spotLight: spot.light,
         // A measured reading only stands while its light is kept.
-        spotLux: spot.light != null && spot.light === plant.spotLight ? plant.spotLux : null,
+        spotLux: spot.light != null ? spot.lux : null,
         spotGrowLight: spot.growLight,
         // Draughts and heaters are indoor things.
         spotDraught: room?.outdoor ? null : spot.draught,

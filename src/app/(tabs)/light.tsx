@@ -184,9 +184,20 @@ export default function LightScreen() {
                     <ThemedText style={styles.flex} numberOfLines={1}>
                       {displayName(plant)}
                     </ThemedText>
-                    <ThemedText type="label" style={{ color: bad ? theme.danger : theme.tint }}>
-                      {FIT_TEXT[fit]}
-                    </ThemedText>
+                    <View
+                      style={[
+                        styles.fit,
+                        { backgroundColor: bad ? theme.dangerSoft : theme.tintSoft },
+                      ]}>
+                      {/* One line, simple breaking: Android can otherwise drop "dark". */}
+                      <ThemedText
+                        type="label"
+                        numberOfLines={1}
+                        textBreakStrategy="simple"
+                        style={{ color: bad ? theme.danger : theme.tint }}>
+                        {FIT_TEXT[fit]}
+                      </ThemedText>
+                    </View>
                     {tier !== 'too_dark' && (
                       <Pressable
                         accessibilityRole="button"
@@ -231,4 +242,10 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   pin: { padding: Spacing.one },
+  fit: {
+    flexShrink: 0,
+    borderRadius: 999,
+    paddingHorizontal: Spacing.two + 2,
+    paddingVertical: 3,
+  },
 });

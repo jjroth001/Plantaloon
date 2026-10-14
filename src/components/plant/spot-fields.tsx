@@ -1,16 +1,23 @@
+import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import type { LightTier } from '@/catalog/types';
+import { Icon } from '@/components/icons/icon';
 import { ThemedText } from '@/components/themed-text';
-import { Card, Chip, Divider, Field, SwitchRow } from '@/components/ui';
+import { Button, Card, Chip, Divider, Field, SwitchRow } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import type { Room } from '@/db/types';
-import { LIGHT_LABEL, LIGHT_TIERS } from '@/lib/light';
+import { useLightSensor } from '@/hooks/use-light-sensor';
+import { successFeedback } from '@/lib/haptics';
+import { formatLux, LIGHT_LABEL, LIGHT_TIERS, tierForLux } from '@/lib/light';
 import { useTheme } from '@/theme/theme-provider';
 
 /** What's different about a plant's spot; null = same as its room. */
 export type SpotValue = {
   light: LightTier | null;
+  /** A light meter reading behind `light`, if it was measured. */
+  lux: number | null;
   growLight: boolean | null;
   draught: boolean | null;
   nearHeater: boolean;
@@ -31,6 +38,7 @@ export function SpotFields({
 }) {
   const set = (patch: Partial<SpotValue>) => onChange({ ...value, ...patch });
   const light = value.light ?? room.lightTier;
+  const [measuring, setMeasuring] = useState(false);
 
   return (
     <Field label="Its spot">
@@ -45,14 +53,37 @@ export function SpotFields({
             label={LIGHT_LABEL[tier]}
             selected={light === tier}
             // Picking the room's own light means "same as the room".
-            onPress={() => set({ light: tier === room.lightTier ? null : tier })}
+            onPress={() => set({ light: tier === room.lightTier ? null : tier, lux: null })}
           />
         ))}
       </View>
+      {measuring ? (
+        <Meter
+          onCancel={() => setMeasuring(false)}
+          onUse={(tier, lux) => {
+            successFeedback();
+            set({ light: tier, lux: Math.round(lux) });
+            setMeasuring(false);
+          }}
+        />
+      ) : (
+        <Button
+          title="Measure the light here"
+          icon="sun"
+          size="small"
+          variant="secondary"
+          onPress={() => setMeasuring(true)}
+        />
+      )}
+      {value.light != null && value.lux != null && !measuring && (
+        <ThemedText type="caption" color="textSecondary">
+          Measured {formatLux(value.lux)} lux.
+        </ThemedText>
+      )}
       {value.light != null && (
         <UseRoom
           text={`Different from ${room.name} (${room.lightTier ? LIGHT_LABEL[room.lightTier].toLowerCase() : 'light not set'}).`}
-          onPress={() => set({ light: null })}
+          onPress={() => set({ light: null, lux: null })}
         />
       )}
       <Card>
@@ -97,6 +128,58 @@ export function SpotFields({
   );
 }
 
+/** A live light reading, to save as this plant's light. */
+function Meter({
+  onCancel,
+  onUse,
+}: {
+  onCancel: () => void;
+  onUse: (tier: LightTier, lux: number) => void;
+}) {
+  const theme = useTheme();
+  const { state, lux } = useLightSensor(true);
+  const reading = lux == null ? null : tierForLux(lux);
+
+  return (
+    <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(150)}>
+      <Card style={{ backgroundColor: theme.tintSoft, borderColor: 'transparent' }}>
+        <View style={styles.meterRow}>
+          <Icon name="sun" size={28} color={theme.tint} />
+          <View style={styles.flex} accessibilityLiveRegion="polite">
+            {state === 'missing' ? (
+              <ThemedText type="body">This phone doesn’t report its light sensor.</ThemedText>
+            ) : (
+              <>
+                <ThemedText type="subheading">
+                  {lux == null ? 'Reading…' : `${formatLux(lux)} lux`}
+                </ThemedText>
+                <ThemedText type="caption" color="textSecondary">
+                  {reading == null
+                    ? 'Hold the phone where the plant sits, screen facing the window.'
+                    : reading === 'too_dark'
+                      ? 'Too dark for most plants. Measure in daylight, around midday.'
+                      : LIGHT_LABEL[reading]}
+                </ThemedText>
+              </>
+            )}
+          </View>
+        </View>
+        <View style={styles.meterButtons}>
+          <Button title="Cancel" size="small" variant="ghost" onPress={onCancel} />
+          {reading != null && reading !== 'too_dark' && lux != null && (
+            <Button
+              title="Use this reading"
+              icon="check"
+              size="small"
+              onPress={() => onUse(reading, lux)}
+            />
+          )}
+        </View>
+      </Card>
+    </Animated.View>
+  );
+}
+
 function UseRoom({ text, onPress }: { text: string; onPress: () => void }) {
   const theme = useTheme();
   return (
@@ -121,4 +204,6 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   useRoom: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
+  meterRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
+  meterButtons: { flexDirection: 'row', justifyContent: 'flex-end', gap: Spacing.two },
 });

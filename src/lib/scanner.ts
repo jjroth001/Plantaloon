@@ -16,7 +16,7 @@ import { decodeBase64 } from './climate';
 
 /** Where the model is published. Must be a public HTTPS link. */
 export const SCAN_MODEL_URL =
-  'https://huggingface.co/plantaloon/plant-scanner/resolve/main/bioclip_image_int8.onnx';
+  'https://github.com/jjroth001/plantaloon-scanner/releases/download/v1/bioclip_image_int8.onnx';
 
 /** Native code is only in installed builds, not Expo Go. */
 export const scannerSupported = PlantScanner != null;

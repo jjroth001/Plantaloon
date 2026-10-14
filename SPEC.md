@@ -157,6 +157,18 @@ Modelled on the depth of Planta's plant pages, in our own words and look
   it rooting → rooted → potted; potting gives it normal reminders.
 - Migration 3; backup format 2 (older backups restore with defaults).
 
+## v1.3 — plant scanner (2026-10-13)
+
+- **Scan a plant** (Add plant › camera button): BioCLIP's image encoder (MIT) runs on the phone
+  via a small Kotlin module and ONNX Runtime (`modules/plant-scanner`). The 87 MB model is
+  downloaded once on request from https://github.com/jjroth001/plantaloon-scanner (release v1),
+  checked by size and SHA-256, and can be removed in Settings. Photos never leave the phone.
+- Matching (`src/lib/scanner.ts`) compares the photo's embedding with a fingerprint per catalog
+  species: name embedding + 2 × the mean of ~18 openly licensed iNaturalist photos for 143
+  popular plants (`src/catalog/scan-data.ts`, 1.3 MB, built by `scripts/build-scan-data.py`).
+- Measured on 175 held-out photos of cultivated plants: right plant first 74%, in top 5 93%.
+- Native libraries are packaged for arm64 only (`plugins/with-arm64-only.js`).
+
 ## v2 and later
 - More scheduled tasks (mist, rotate, repot reminders).
 - Home-screen widget ("3 plants need water").

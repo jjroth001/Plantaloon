@@ -28,6 +28,18 @@ const SOURCES = [
     url: 'https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants',
   },
   {
+    title: 'BioCLIP',
+    detail:
+      'The plant scanner’s recognition model, by the Imageomics Institute. MIT licence. Runs on your phone; photos are never uploaded.',
+    url: 'https://github.com/jjroth001/plantaloon-scanner',
+  },
+  {
+    title: 'iNaturalist contributors',
+    detail:
+      'Openly licensed (CC0, CC BY, CC BY-SA) photos of popular houseplants taught the scanner what they look like at home. Only summaries are in the app, not the photos.',
+    url: 'https://www.inaturalist.org',
+  },
+  {
     title: 'Phosphor Icons',
     detail: 'Icons. MIT licence.',
     url: 'https://phosphoricons.com',

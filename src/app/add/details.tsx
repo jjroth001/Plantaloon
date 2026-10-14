@@ -6,12 +6,13 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { careFor, getGroup, getSpecies } from '@/catalog';
 import { Icon } from '@/components/icons/icon';
-import { namedExtras, PlantForm, type PlantFormValue } from '@/components/plant-form';
+import { diameterCm, namedExtras, PlantForm, type PlantFormValue } from '@/components/plant-form';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Chip, Field } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
-import { addPhoto, createPlant, listRooms } from '@/db/garden';
+import { addPhoto, createPlant, listPlants, listRooms, setPotMates } from '@/db/garden';
+import { useSettings } from '@/db/use-settings';
 import { useDbQuery } from '@/db/use-db-query';
 import { choosePhoto } from '@/lib/add-photo';
 import { LIGHT_LABEL } from '@/lib/light';
@@ -37,6 +38,8 @@ export default function AddPlantDetails() {
   const db = useSQLiteContext();
   const theme = useTheme();
   const rooms = useDbQuery(['room'], listRooms);
+  const plants = useDbQuery(['plant'], listPlants);
+  const unit = useSettings().data?.temperatureUnit === 'F' ? 'in' : 'cm';
   const species = getSpecies(params.speciesId);
   const groupId = species?.groupId ?? params.groupId ?? '';
   const group = getGroup(groupId);
@@ -48,6 +51,8 @@ export default function AddPlantDetails() {
     potSize: 'm',
     potDrainage: true,
     potMaterial: 'plastic',
+    potDiameter: '',
+    potMates: [],
     extras: [],
     water: { enabled: true, intervalDays: care.water.days },
     fertilize: { enabled: care.fertilize != null, intervalDays: care.fertilize?.days ?? 30 },
@@ -73,8 +78,15 @@ export default function AddPlantDetails() {
 
   const update = (next: PlantFormValue) => {
     // A new pot size or material re-suggests the watering interval, unless it was set by hand.
-    const before = suggestedWaterDays(care.water.days, form.potSize, form.potMaterial);
-    const after = suggestedWaterDays(care.water.days, next.potSize, next.potMaterial);
+    const suggest = (v: PlantFormValue) =>
+      suggestedWaterDays(
+        care.water.days,
+        v.potSize,
+        v.potMaterial,
+        diameterCm(v.potDiameter, unit),
+      );
+    const before = suggest(form);
+    const after = suggest(next);
     if (before !== after && form.water.intervalDays === before) {
       next = { ...next, water: { ...next.water, intervalDays: after } };
     }
@@ -110,11 +122,13 @@ export default function AddPlantDetails() {
         potSize: form.potSize,
         potDrainage: form.potDrainage,
         potMaterial: form.potMaterial,
+        potDiameterCm: diameterCm(form.potDiameter, unit),
         extraTasks: namedExtras(form.extras),
         water: form.water,
         fertilize: form.fertilize,
         lastWatered: watered,
       });
+      if (form.potMates.length) await setPotMates(db, id, form.potMates);
       if (photo) await addPhoto(db, { plantId: id, ...photo, takenAt: Date.now() });
       saved.current = true;
       successFeedback();
@@ -179,6 +193,8 @@ export default function AddPlantDetails() {
         value={{ ...form, roomId }}
         onChange={update}
         rooms={roomList}
+        unit={unit}
+        mateCandidates={(plants.data ?? []).filter((p) => !p.propStage)}
         namePlaceholder={species?.common[0] ?? 'e.g. Fern by the window'}
         pausedInWinter={!(care.fertilize?.winter ?? false)}
       />

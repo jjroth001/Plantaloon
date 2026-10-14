@@ -6,6 +6,8 @@ import {
   isWinter,
   nextDue,
   suggestLongerInterval,
+  potSizeFactor,
+  potSizeFor,
   suggestedWaterDays,
   type DueInput,
 } from './schedule';
@@ -113,5 +115,26 @@ describe('suggestions', () => {
     expect(describeDue(4)).toBe('In 4 days');
     expect(describeDue(-1)).toBe('1 day late');
     expect(describeDue(-3)).toBe('3 days late');
+  });
+});
+
+describe('pot diameter', () => {
+  test('bigger pots stay damp longer, gently and within limits', () => {
+    const f = (cm: number) => Math.round(potSizeFactor('m', cm) * 100) / 100;
+    expect(f(8)).toBeCloseTo(0.69, 2);
+    expect(f(10)).toBeCloseTo(0.78, 2);
+    expect(f(15)).toBe(1);
+    expect(f(20)).toBeCloseTo(1.19, 2);
+    expect(f(30)).toBeCloseTo(1.52, 2);
+    expect(f(3)).toBe(0.6);
+    expect(f(80)).toBe(1.6);
+  });
+
+  test('a typed diameter overrides the quick pick in the suggestion', () => {
+    expect(suggestedWaterDays(10, 's', 'plastic', 30)).toBe(15);
+    expect(suggestedWaterDays(10, 'l', 'plastic', null)).toBe(13);
+    expect(potSizeFor(9)).toBe('s');
+    expect(potSizeFor(18)).toBe('m');
+    expect(potSizeFor(28)).toBe('l');
   });
 });

@@ -78,6 +78,28 @@ export function daysUntil(due: string, today: string): number {
 
 export type PotSize = 's' | 'm' | 'l';
 
+/** A 15 cm (6") pot is the reference. */
+export const REFERENCE_POT_CM = 15;
+
+/** Typical diameters for the quick picks. */
+export const POT_SIZE_CM: Record<PotSize, number> = { s: 10, m: 15, l: 25 };
+
+/** The quick pick that best describes a diameter. */
+export function potSizeFor(diameterCm: number): PotSize {
+  return diameterCm <= 12 ? 's' : diameterCm <= 20 ? 'm' : 'l';
+}
+
+/**
+ * How much longer than in a 15 cm pot the soil stays damp. Bigger pots hold more soil for the
+ * surface that dries, so they last longer between waterings, though less than in proportion.
+ */
+export function potSizeFactor(pot: PotSize, diameterCm: number | null = null): number {
+  if (diameterCm && diameterCm > 0) {
+    return Math.min(1.6, Math.max(0.6, (diameterCm / REFERENCE_POT_CM) ** 0.6));
+  }
+  return pot === 's' ? 0.8 : pot === 'l' ? 1.25 : 1;
+}
+
 /**
  * Starting watering interval for a new plant: small pots and terracotta dry out faster, large
  * pots slower. Care profiles assume a medium plastic pot.
@@ -86,8 +108,9 @@ export function suggestedWaterDays(
   groupDays: number,
   pot: PotSize,
   material: 'plastic' | 'terracotta' | 'glazed' | 'glass' | 'other' = 'plastic',
+  diameterCm: number | null = null,
 ): number {
-  const size = pot === 's' ? 0.8 : pot === 'l' ? 1.25 : 1;
+  const size = potSizeFactor(pot, diameterCm);
   // Terracotta breathes and dries faster; glass and glazed pots hold water a little longer.
   const walls =
     material === 'terracotta' ? 0.85 : material === 'glass' || material === 'glazed' ? 1.1 : 1;

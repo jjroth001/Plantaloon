@@ -18,6 +18,8 @@ export type CareTask = {
   days: number;
   intervalDays: number;
   lastDoneAt: number | null;
+  /** For a shared pot: every plant in it (watering and feeding are done for all). */
+  members?: Plant[];
   /** A longer interval to suggest after repeated "not yet"s, or null. */
   suggestion: number | null;
   cover: Photo | undefined;
@@ -79,6 +81,45 @@ export function buildTasks(garden: Garden, hemisphere: Hemisphere, today: string
       a.name.localeCompare(b.name) ||
       taskOrder(a.task) - taskOrder(b.task),
   );
+}
+
+/**
+ * Shows each shared pot's watering and feeding once ("Pothos & Fern (shared pot)"), due when
+ * its thirstiest plant is due. Other tasks stay per plant.
+ */
+export function mergeSharedPots(tasks: readonly CareTask[]): CareTask[] {
+  const merged: CareTask[] = [];
+  const pots = new Map<string, CareTask>();
+  for (const t of tasks) {
+    const pot = t.plant.sharedPot;
+    if (!pot || (t.task !== 'water' && t.task !== 'fertilize')) {
+      merged.push(t);
+      continue;
+    }
+    const key = `${pot}:${t.task}`;
+    const existing = pots.get(key);
+    if (!existing) {
+      const first: CareTask = { ...t, members: [t.plant] };
+      pots.set(key, first);
+      merged.push(first);
+      continue;
+    }
+    existing.members!.push(t.plant);
+    if (t.days < existing.days) {
+      Object.assign(existing, { ...t, members: existing.members });
+    }
+  }
+  for (const t of pots.values()) {
+    if (t.members && t.members.length > 1) {
+      const names = t.members.map((p) => displayName(p));
+      const list =
+        names.length === 2
+          ? names.join(' & ')
+          : `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
+      t.name = `${list} (shared pot)`;
+    }
+  }
+  return merged;
 }
 
 function taskOrder(task: Task): number {

@@ -114,6 +114,19 @@ export default function PlantsScreen() {
                           ? (getSpecies(plant.speciesId)?.common[0] ?? ' ')
                           : (getSpecies(plant.speciesId)?.scientific ?? ' ')}
                       </ThemedText>
+                      {plant.sharedPot && (
+                        <View style={styles.due}>
+                          <Icon
+                            name="potted-plant"
+                            size={13}
+                            color={theme.textSecondary}
+                            duotone={false}
+                          />
+                          <ThemedText type="caption" color="textSecondary">
+                            Shared pot
+                          </ThemedText>
+                        </View>
+                      )}
                       {plant.propStage && (
                         <View style={styles.due}>
                           <Icon name="scissors" size={13} color={theme.tint} duotone={false} />

@@ -40,6 +40,10 @@ export type Plant = {
   potSize: PotSize;
   potDrainage: boolean;
   potMaterial: PotMaterial;
+  /** Exact pot diameter, if typed in (cm). */
+  potDiameterCm: number | null;
+  /** Plants with the same id grow in one pot and are watered and fed together. */
+  sharedPot: string | null;
   coverPhotoId: string | null;
   acquiredOn: string | null;
   notes: string | null;

@@ -57,6 +57,7 @@ import { doneMessage, taskForEntry, taskIcon, taskLabel } from '@/lib/tasks';
 import { useTaskColors } from '@/hooks/use-task-colors';
 import { CuttingsCard } from '@/components/plant/cuttings-card';
 import { HealthChip } from '@/components/plant/health-chip';
+import { SharedPotCard } from '@/components/plant/shared-pot-card';
 import { photoUri } from '@/lib/photos';
 import { describeDue, endOfWinter, isWinter } from '@/lib/schedule';
 import { useTheme } from '@/theme/theme-provider';
@@ -291,6 +292,7 @@ export default function PlantScreen() {
         </View>
       ))}
     </Card>,
+    plant.sharedPot ? <SharedPotCard key="pot" plant={plant} garden={garden.data} /> : null,
     <CuttingsCard key="cuttings" plant={plant} garden={garden.data} today={today} />,
     photos.length > 0 ? (
       <View key="photos" style={styles.section}>

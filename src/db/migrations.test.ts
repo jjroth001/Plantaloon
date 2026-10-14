@@ -22,11 +22,11 @@ it('migrating an up-to-date database changes nothing', async () => {
   const db = openTestDatabase(0);
   await migrateDbIfNeeded(db);
   const version = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-  expect(version?.user_version).toBe(3);
+  expect(version?.user_version).toBe(4);
   await migrateDbIfNeeded(db);
   expect(
     (await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version'))?.user_version,
-  ).toBe(3);
+  ).toBe(4);
 });
 
 it('upgrading from version 1 keeps plants and adds the wishlist', async () => {

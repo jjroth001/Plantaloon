@@ -51,6 +51,8 @@ type PlantRow = {
   pot_size: string;
   pot_drainage: number;
   pot_material: string;
+  pot_diameter_cm: number | null;
+  shared_pot: string | null;
   cover_photo_id: string | null;
   acquired_on: string | null;
   notes: string | null;
@@ -117,6 +119,8 @@ const toPlant = (r: PlantRow): Plant => ({
   potSize: r.pot_size as PotSize,
   potDrainage: r.pot_drainage === 1,
   potMaterial: (r.pot_material ?? 'plastic') as PotMaterial,
+  potDiameterCm: r.pot_diameter_cm,
+  sharedPot: r.shared_pot,
   coverPhotoId: r.cover_photo_id,
   acquiredOn: r.acquired_on,
   notes: r.notes,
@@ -309,6 +313,7 @@ export type NewPlant = {
   potSize: PotSize;
   potDrainage: boolean;
   potMaterial?: PotMaterial;
+  potDiameterCm?: number | null;
   water: { intervalDays: number; enabled: boolean };
   fertilize: { intervalDays: number; enabled: boolean };
   /** More reminders (mist, turn, custom…). */
@@ -328,9 +333,9 @@ export async function createPlant(
   await transaction(db, async () => {
     await db.runAsync(
       `INSERT INTO plant (id, room_id, nickname, species_id, group_id, pot_size, pot_drainage,
-         pot_material, cover_photo_id, acquired_on, notes, parent_id, prop_stage, prop_method,
-         created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, ?, ?, ?, ?, ?)`,
+         pot_material, pot_diameter_cm, cover_photo_id, acquired_on, notes, parent_id, prop_stage,
+         prop_method, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, ?, ?, ?, ?, ?)`,
       id,
       input.roomId,
       input.nickname?.trim() || null,
@@ -339,6 +344,7 @@ export async function createPlant(
       input.potSize,
       input.potDrainage ? 1 : 0,
       input.potMaterial ?? 'plastic',
+      input.potDiameterCm ?? null,
       input.cutting?.parentId ?? null,
       input.cutting ? 'rooting' : null,
       input.cutting?.method ?? null,
@@ -396,6 +402,7 @@ export type PlantPatch = Partial<
     | 'potSize'
     | 'potDrainage'
     | 'potMaterial'
+    | 'potDiameterCm'
     | 'propStage'
     | 'acquiredOn'
     | 'notes'
@@ -411,6 +418,7 @@ const PLANT_COLUMNS: Record<keyof PlantPatch, string> = {
   potSize: 'pot_size',
   potDrainage: 'pot_drainage',
   potMaterial: 'pot_material',
+  potDiameterCm: 'pot_diameter_cm',
   propStage: 'prop_stage',
   acquiredOn: 'acquired_on',
   notes: 'notes',
@@ -445,9 +453,22 @@ export async function deletePlant(db: SQLiteDatabase, id: string): Promise<strin
     'SELECT file FROM photo WHERE plant_id = ?',
     id,
   );
+  const pot = await db.getFirstAsync<{ shared_pot: string | null }>(
+    'SELECT shared_pot FROM plant WHERE id = ?',
+    id,
+  );
   await transaction(db, async () => {
     await db.runAsync('UPDATE plant SET parent_id = NULL WHERE parent_id = ?', id);
     await db.runAsync('DELETE FROM plant WHERE id = ?', id);
+    if (pot?.shared_pot) {
+      const left = await db.getAllAsync<{ id: string }>(
+        'SELECT id FROM plant WHERE shared_pot = ?',
+        pot.shared_pot,
+      );
+      if (left.length === 1) {
+        await db.runAsync('UPDATE plant SET shared_pot = NULL WHERE id = ?', left[0].id);
+      }
+    }
   });
   return photos.map((p) => p.file);
 }
@@ -468,6 +489,19 @@ export async function setSchedule(
   task: Task,
   input: { intervalDays: number; enabled: boolean; label?: string | null },
   now = Date.now(),
+): Promise<void> {
+  // Watering and feeding are the same soil for every plant in a shared pot.
+  for (const id of SHARED_TASKS.has(task) ? await potMates(db, plantId) : [plantId]) {
+    await writeSchedule(db, id, task, input, now);
+  }
+}
+
+async function writeSchedule(
+  db: SQLiteDatabase,
+  plantId: string,
+  task: Task,
+  input: { intervalDays: number; enabled: boolean; label?: string | null },
+  now: number,
 ): Promise<void> {
   await db.runAsync(
     `INSERT INTO schedule (plant_id, task, label, interval_days, enabled, hint_dismissed_at,
@@ -509,12 +543,110 @@ export async function dismissIntervalHint(
   task: Task,
   now = Date.now(),
 ): Promise<void> {
-  await db.runAsync(
-    'UPDATE schedule SET hint_dismissed_at = ? WHERE plant_id = ? AND task = ?',
-    now,
+  for (const id of SHARED_TASKS.has(task) ? await potMates(db, plantId) : [plantId]) {
+    await db.runAsync(
+      'UPDATE schedule SET hint_dismissed_at = ? WHERE plant_id = ? AND task = ?',
+      now,
+      id,
+      task,
+    );
+  }
+}
+
+// --- Shared pots ------------------------------------------------------------
+
+/** Tasks that are really about the pot's soil, so shared pots do them together. */
+const SHARED_TASKS = new Set<Task>(['water', 'fertilize']);
+
+/** Every plant in the same pot as this one (itself included). */
+export async function potMates(db: SQLiteDatabase, plantId: string): Promise<string[]> {
+  const row = await db.getFirstAsync<{ shared_pot: string | null }>(
+    'SELECT shared_pot FROM plant WHERE id = ?',
     plantId,
-    task,
   );
+  if (!row?.shared_pot) return [plantId];
+  const rows = await db.getAllAsync<{ id: string }>(
+    'SELECT id FROM plant WHERE shared_pot = ? ORDER BY created_at',
+    row.shared_pot,
+  );
+  return rows.map((r) => r.id);
+}
+
+/** Expands plant ids to whole pots for watering and feeding. */
+async function withPotMates(db: SQLiteDatabase, plantIds: readonly string[], task: Task) {
+  if (!SHARED_TASKS.has(task)) return [...plantIds];
+  const all = new Set<string>();
+  for (const id of plantIds) for (const mate of await potMates(db, id)) all.add(mate);
+  return [...all];
+}
+
+/**
+ * Puts a plant in a pot with `mateIds` (or on its own when empty). Pots left with a single
+ * plant stop being shared. The pot's watering and feeding are lined up: the shortest interval
+ * among them wins (the thirstiest plant sets the pace), on if any had it on.
+ */
+export async function setPotMates(
+  db: SQLiteDatabase,
+  plantId: string,
+  mateIds: readonly string[],
+  now = Date.now(),
+): Promise<void> {
+  await transaction(db, async () => {
+    const members = [plantId, ...mateIds.filter((id) => id !== plantId)];
+    const affected = new Set<string>();
+    for (const id of members) {
+      const row = await db.getFirstAsync<{ shared_pot: string | null }>(
+        'SELECT shared_pot FROM plant WHERE id = ?',
+        id,
+      );
+      if (row?.shared_pot) affected.add(row.shared_pot);
+    }
+    // Everyone involved leaves their old pots first.
+    await db.runAsync(
+      `UPDATE plant SET shared_pot = NULL, updated_at = ? WHERE id IN (${members.map(() => '?').join(',')})`,
+      now,
+      ...members,
+    );
+    if (members.length > 1) {
+      const pot = newId();
+      await db.runAsync(
+        `UPDATE plant SET shared_pot = ?, updated_at = ? WHERE id IN (${members.map(() => '?').join(',')})`,
+        pot,
+        now,
+        ...members,
+      );
+      for (const task of SHARED_TASKS) {
+        const rows = await db.getAllAsync<{ interval_days: number; enabled: number }>(
+          `SELECT interval_days, enabled FROM schedule
+           WHERE task = ? AND plant_id IN (${members.map(() => '?').join(',')})`,
+          task,
+          ...members,
+        );
+        if (rows.length === 0) continue;
+        const on = rows.filter((r) => r.enabled === 1);
+        const interval = Math.min(...(on.length ? on : rows).map((r) => r.interval_days));
+        for (const id of members) {
+          await writeSchedule(
+            db,
+            id,
+            task,
+            { intervalDays: interval, enabled: on.length > 0 },
+            now,
+          );
+        }
+      }
+    }
+    // A pot someone left with only one plant in it is just that plant's pot again.
+    for (const pot of affected) {
+      const left = await db.getAllAsync<{ id: string }>(
+        'SELECT id FROM plant WHERE shared_pot = ?',
+        pot,
+      );
+      if (left.length === 1) {
+        await db.runAsync('UPDATE plant SET shared_pot = NULL WHERE id = ?', left[0].id);
+      }
+    }
+  });
 }
 
 // --- Journal ----------------------------------------------------------------
@@ -557,8 +689,9 @@ export async function completeTask(
   label: string | null = null,
 ): Promise<string[]> {
   const ids: string[] = [];
+  const everyone = await withPotMates(db, plantIds, task);
   await transaction(db, async () => {
-    for (const plantId of plantIds) {
+    for (const plantId of everyone) {
       const data = kindOf(task) === 'custom' ? { task, label } : {};
       ids.push(
         await insertEntry(db, { plantId, type: entryTypeFor(task), at, note: null, data }, at),
@@ -576,9 +709,13 @@ export async function skipTask(
   days: number,
   at = Date.now(),
   label: string | null = null,
-): Promise<string> {
+): Promise<string[]> {
   const data = label ? { task, days, label } : { task, days };
-  return insertEntry(db, { plantId, type: 'skip', at, note: null, data }, at);
+  const ids: string[] = [];
+  for (const id of await withPotMates(db, [plantId], task)) {
+    ids.push(await insertEntry(db, { plantId: id, type: 'skip', at, note: null, data }, at));
+  }
+  return ids;
 }
 
 /** Records how the plant is doing; the latest one shows on its page. */

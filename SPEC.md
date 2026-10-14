@@ -169,6 +169,18 @@ Modelled on the depth of Planta's plant pages, in our own words and look
 - Measured on 175 held-out photos of cultivated plants: right plant first 74%, in top 5 93%.
 - Native libraries are packaged for arm64 only (`plugins/with-arm64-only.js`).
 
+## v1.4 — pot diameter and shared pots (2026-10-13)
+
+- **Pot diameter**: optional exact width (cm, or inches when temperatures are °F) beside the
+  Small / Medium / Large picks. Watering suggestion scales with (diameter / 15 cm)^0.6, limited
+  to ×0.6–×1.6 (10 cm ×0.8, 20 cm ×1.2, 30 cm ×1.5). Changing the pot re-suggests the interval
+  unless it was set by hand.
+- **Shared pots** (`plant.shared_pot`): link plants in Edit plant › "Shares a pot with". Watering
+  and feeding are one schedule for the pot (shortest interval wins when linking; changing one
+  changes all); Done and "Not yet" record for every plant; Today shows one row per pot. Other
+  reminders stay per plant. A warning appears when pot-mates need very different watering.
+- Migration 4; backup format 3.
+
 ## v2 and later
 - More scheduled tasks (mist, rotate, repot reminders).
 - Home-screen widget ("3 plants need water").

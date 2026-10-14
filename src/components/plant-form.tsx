@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { StyleSheet, Switch, View } from 'react-native';
+import { StyleSheet, Switch, TextInput, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
 import { Icon } from '@/components/icons/icon';
@@ -17,7 +17,16 @@ import {
 } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { newCustomTask } from '@/db/garden';
-import { POT_MATERIAL, type PotMaterial, type PotSize, type Room, type Task } from '@/db/types';
+import { displayName } from '@/catalog';
+import {
+  POT_MATERIAL,
+  type Plant,
+  type PotMaterial,
+  type PotSize,
+  type Room,
+  type Task,
+} from '@/db/types';
+import { potSizeFor } from '@/lib/schedule';
 import { tapFeedback } from '@/lib/haptics';
 import { EXTRA_TASKS, kindOf, TASK_INFO, taskIcon, taskLabel } from '@/lib/tasks';
 import { useTheme } from '@/theme/theme-provider';
@@ -33,10 +42,31 @@ export type PlantFormValue = {
   potSize: PotSize;
   potDrainage: boolean;
   potMaterial: PotMaterial;
+  /** Exact diameter as typed, in the user's unit ('' = not given). */
+  potDiameter: string;
+  /** Other plants growing in the same pot. */
+  potMates: string[];
   water: ScheduleValue;
   fertilize: ScheduleValue;
   extras: ExtraTask[];
 };
+
+export type LengthUnit = 'cm' | 'in';
+
+/** The typed diameter in centimetres, or null if empty or not a sensible number. */
+export function diameterCm(text: string, unit: LengthUnit): number | null {
+  const n = Number.parseFloat(text.replace(',', '.'));
+  if (!Number.isFinite(n) || n <= 0) return null;
+  const cm = unit === 'in' ? n * 2.54 : n;
+  return cm >= 2 && cm <= 200 ? Math.round(cm * 10) / 10 : null;
+}
+
+/** A stored diameter shown in the user's unit ("14", "5.5"). */
+export function formatDiameter(cm: number | null, unit: LengthUnit): string {
+  if (cm == null) return '';
+  const v = unit === 'in' ? cm / 2.54 : cm;
+  return String(Math.round(v * 10) / 10);
+}
 
 /** Extra reminders worth saving: custom ones need a name. */
 export function namedExtras(extras: ExtraTask[]): ExtraTask[] {
@@ -61,10 +91,16 @@ export function PlantForm({
   rooms,
   namePlaceholder,
   pausedInWinter,
+  unit,
+  mateCandidates,
 }: {
   value: PlantFormValue;
   onChange: (value: PlantFormValue) => void;
   rooms: Room[];
+  /** Pot sizes in centimetres or inches. */
+  unit: LengthUnit;
+  /** Other plants that could share this pot (the form shows those in the chosen room). */
+  mateCandidates: Plant[];
   namePlaceholder: string;
   /** Feeding pauses over winter for this kind of plant. */
   pausedInWinter: boolean;
@@ -78,6 +114,10 @@ export function PlantForm({
       value.extras.map((e, i) => (i === index ? { ...e, ...patch } : e)),
     );
   const used = new Set(value.extras.map((e) => kindOf(e.task)));
+  // Pot-mates: plants in the chosen room, plus any already chosen.
+  const mates = mateCandidates.filter(
+    (p) => p.roomId === value.roomId || value.potMates.includes(p.id),
+  );
   const addable = EXTRA_TASKS.filter((k) => k === 'custom' || !used.has(k));
 
   return (
@@ -118,8 +158,34 @@ export function PlantForm({
             { value: 'l', label: 'Large' },
           ]}
           value={value.potSize}
-          onChange={(v) => set('potSize', v)}
+          // A quick pick replaces a typed size.
+          onChange={(v) => onChange({ ...value, potSize: v, potDiameter: '' })}
         />
+        <View style={styles.diameter}>
+          <ThemedText type="body" color="textSecondary" style={styles.flex}>
+            Or the exact width across the top
+          </ThemedText>
+          <TextInput
+            value={value.potDiameter}
+            onChangeText={(text) => {
+              const cm = diameterCm(text, unit);
+              onChange({
+                ...value,
+                potDiameter: text,
+                potSize: cm ? potSizeFor(cm) : value.potSize,
+              });
+            }}
+            keyboardType="decimal-pad"
+            placeholder={unit === 'in' ? '6' : '15'}
+            placeholderTextColor={theme.textSecondary}
+            maxLength={5}
+            accessibilityLabel={`Pot diameter in ${unit === 'in' ? 'inches' : 'centimetres'}`}
+            style={[styles.diameterInput, { backgroundColor: theme.element, color: theme.text }]}
+          />
+          <ThemedText type="body" color="textSecondary">
+            {unit}
+          </ThemedText>
+        </View>
       </Field>
 
       <Field label="Pot material">
@@ -146,6 +212,32 @@ export function PlantForm({
           onChange={(v) => set('potDrainage', v)}
         />
       </Card>
+
+      {mates.length > 0 && (
+        <Field label="Shares a pot with">
+          <View style={styles.chips}>
+            {mates.map((p) => (
+              <Chip
+                key={p.id}
+                label={displayName(p)}
+                icon="potted-plant"
+                selected={value.potMates.includes(p.id)}
+                onPress={() =>
+                  set(
+                    'potMates',
+                    value.potMates.includes(p.id)
+                      ? value.potMates.filter((id) => id !== p.id)
+                      : [...value.potMates, p.id],
+                  )
+                }
+              />
+            ))}
+          </View>
+          <ThemedText type="caption" color="textSecondary">
+            Plants in one pot are watered and fed together, at the pace of the thirstiest.
+          </ThemedText>
+        </Field>
+      )}
 
       <Card>
         <ScheduleField task="water" value={value.water} onChange={(v) => set('water', v)} />
@@ -284,4 +376,13 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   schedule: { gap: Spacing.three },
   scheduleHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
+  diameter: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
+  diameterInput: {
+    width: 72,
+    minHeight: 44,
+    borderRadius: 12,
+    paddingHorizontal: Spacing.two,
+    fontSize: 17,
+    textAlign: 'center',
+  },
 });

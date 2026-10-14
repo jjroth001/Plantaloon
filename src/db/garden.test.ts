@@ -2,7 +2,8 @@ import { randomUUID as mockRandomUUID } from 'crypto';
 
 import { speciesId } from '@/catalog';
 import { CARE_GROUPS } from '@/catalog/groups';
-import { buildTasks } from '@/lib/care-tasks';
+import { buildTasks, mergeSharedPots } from '@/lib/care-tasks';
+import { potMismatch } from '@/lib/pot-mismatch';
 import { planReminders } from '@/lib/reminders';
 import { openTestDatabase } from '@/test-utils/node-sqlite';
 
@@ -11,7 +12,9 @@ import {
   addPhoto,
   advanceCutting,
   newCustomTask,
+  potMates,
   potUpCutting,
+  setPotMates,
   setHealth,
   completeTask,
   createPlant,
@@ -366,4 +369,71 @@ test('potting up a cutting: normal pot and schedules, cutting-only reminders gon
   ]);
   const potted = (await listJournal(db, childId)).filter((e) => e.data.stage === 'potted');
   expect(potted).toHaveLength(1);
+});
+
+test('shared pots: aligned schedules, watered and skipped together, one row on Today', async () => {
+  const { db, roomId } = await setup();
+  const a = await createPlant(db, pothos(roomId, { nickname: 'Pothos' }), T0);
+  const b = await createPlant(
+    db,
+    pothos(roomId, { nickname: 'Philo', water: { intervalDays: 5, enabled: true } }),
+    T0,
+  );
+  await setPotMates(db, a, [b], T0);
+  expect((await potMates(db, a)).sort()).toEqual([a, b].sort());
+  // The thirstiest plant sets the pace.
+  let garden = await loadGarden(db);
+  const water = garden.schedules.filter((x) => x.task === 'water');
+  expect(water.map((x) => x.intervalDays)).toEqual([5, 5]);
+
+  // Watering one waters the pot; changing the interval on one changes both.
+  const ids = await completeTask(db, [a], 'water', T0 + DAY);
+  expect(ids).toHaveLength(2);
+  await setSchedule(db, b, 'water', { intervalDays: 6, enabled: true }, T0 + DAY);
+  garden = await loadGarden(db);
+  expect(garden.schedules.filter((x) => x.task === 'water').map((x) => x.intervalDays)).toEqual([
+    6, 6,
+  ]);
+  expect(await skipTask(db, b, 'water', 2, T0 + 7 * DAY)).toHaveLength(2);
+  // Other reminders stay separate.
+  expect(await skipTask(db, b, 'rotate', 2, T0 + 7 * DAY)).toHaveLength(1);
+
+  const merged = mergeSharedPots(buildTasks(garden, 'north', today(1))).filter(
+    (t) => t.task === 'water',
+  );
+  expect(merged).toHaveLength(1);
+  expect(merged[0].name).toBe('Philo & Pothos (shared pot)');
+  expect(merged[0].members).toHaveLength(2);
+
+  // Leaving (or deleting) leaves a single plant on its own again.
+  await setPotMates(db, a, [], T0 + 2 * DAY);
+  garden = await loadGarden(db);
+  expect(garden.plants.every((p) => p.sharedPot === null)).toBe(true);
+  await setPotMates(db, a, [b], T0 + 3 * DAY);
+  await deletePlant(db, b);
+  expect((await loadGarden(db)).plants[0].sharedPot).toBeNull();
+});
+
+test('a typed pot diameter is stored', async () => {
+  const { db, roomId } = await setup();
+  const id = await createPlant(db, pothos(roomId, { potDiameterCm: 14.5 }), T0);
+  expect((await loadGarden(db)).plants.find((p) => p.id === id)?.potDiameterCm).toBe(14.5);
+});
+
+test('mismatched pot-mates are flagged', async () => {
+  const { db, roomId } = await setup();
+  await createPlant(
+    db,
+    pothos(roomId, { nickname: 'Fern', groupId: 'prayer-plants', speciesId: null }),
+    T0,
+  );
+  await createPlant(
+    db,
+    pothos(roomId, { nickname: 'Snake', groupId: 'snake-plants', speciesId: null }),
+    T0,
+  );
+  await createPlant(db, pothos(roomId, { nickname: 'Pothos' }), T0);
+  const [fern, snake, pot] = (await loadGarden(db)).plants;
+  expect(potMismatch([fern, snake])).toMatch(/Fern likes moist soil/);
+  expect(potMismatch([pot, fern])).toBeNull();
 });

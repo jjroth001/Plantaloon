@@ -27,7 +27,7 @@ import { doneMessage, kindOf, TASK_INFO, taskIcon, taskLabel } from '@/lib/tasks
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { useToday } from '@/hooks/use-today';
-import { buildTasks, groupByRoom, type CareTask } from '@/lib/care-tasks';
+import { buildTasks, groupByRoom, mergeSharedPots, type CareTask } from '@/lib/care-tasks';
 import { formatLongDate } from '@/lib/dates';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
 import { describeDue } from '@/lib/schedule';
@@ -47,7 +47,7 @@ export default function TodayScreen() {
 
   if (!garden.data || !settings.data) return <Screen title="Today">{null}</Screen>;
 
-  const tasks = buildTasks(garden.data, settings.data.hemisphere, today);
+  const tasks = mergeSharedPots(buildTasks(garden.data, settings.data.hemisphere, today));
   const due = tasks.filter((t) => t.days <= 0);
   const upcoming = tasks.filter((t) => t.days > 0 && t.days <= 7);
   const suggestions = tasks.filter((t) => t.suggestion != null && t.days <= 0).slice(0, 2);
@@ -87,10 +87,10 @@ export default function TodayScreen() {
 
   const skip = async (task: CareTask, days: number) => {
     tapFeedback();
-    const id = await skipTask(db, task.plant.id, task.task, days, undefined, task.label);
+    const ids = await skipTask(db, task.plant.id, task.task, days, undefined, task.label);
     setUndo({
       message: `${task.name}: check again ${days === 1 ? 'tomorrow' : `in ${days} days`}`,
-      entryIds: [id],
+      entryIds: ids,
     });
   };
 

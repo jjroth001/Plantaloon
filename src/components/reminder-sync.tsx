@@ -4,7 +4,7 @@ import { AppState } from 'react-native';
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { useToday } from '@/hooks/use-today';
-import { buildTasks } from '@/lib/care-tasks';
+import { buildTasks, mergeSharedPots } from '@/lib/care-tasks';
 import {
   onPermissionGranted,
   requestNotificationPermission,
@@ -56,7 +56,7 @@ export function ReminderSync() {
       syncReminders([]).catch(() => {});
       return;
     }
-    const tasks = buildTasks(garden.data, hemisphere, today);
+    const tasks = mergeSharedPots(buildTasks(garden.data, hemisphere, today));
     const plans = planReminders(tasks, today, minute);
     syncReminders(plans).catch(() => {});
   }, [garden.data, settings.data, enabled, minute, hemisphere, today, granted]);

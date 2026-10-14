@@ -101,6 +101,12 @@ const MIGRATIONS: string[] = [
   ALTER TABLE room ADD COLUMN draught INTEGER NOT NULL DEFAULT 0;
   ALTER TABLE room ADD COLUMN outdoor INTEGER NOT NULL DEFAULT 0;
   `,
+
+  // 4: exact pot diameter; plants sharing one pot
+  `
+  ALTER TABLE plant ADD COLUMN pot_diameter_cm REAL; -- NULL = only the small/medium/large pick
+  ALTER TABLE plant ADD COLUMN shared_pot TEXT;      -- plants with the same id share a pot
+  `,
 ];
 
 /** The migration SQL in order (for tests that build a database from scratch). */

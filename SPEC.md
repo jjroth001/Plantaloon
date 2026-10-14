@@ -181,6 +181,17 @@ Modelled on the depth of Planta's plant pages, in our own words and look
   reminders stay per plant. A warning appears when pot-mates need very different watering.
 - Migration 4; backup format 3.
 
+## v1.5 — a plant's own spot (2026-10-13)
+
+- A room sets the usual conditions; any plant can differ. On Edit plant, "Its spot" sets the
+  plant's own light, grow light, draught, and whether it sits near a heater. Anything not
+  changed follows the room, and "Use the room's" goes back.
+- Humidity, warmth and outdoors stay room-wide (air mixes through a room).
+- The light meter can save a reading for one plant (the pin beside it), as well as a room.
+- A shared pot is one spot: its plants share these settings, and a plant joining a pot takes
+  the pot's spot.
+- Being near a heater warns plants that dislike dry air.
+
 ## v2 and later
 - More scheduled tasks (mist, rotate, repot reminders).
 - Home-screen widget ("3 plants need water").

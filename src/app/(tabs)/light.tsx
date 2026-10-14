@@ -2,7 +2,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { LightSensor } from 'expo-sensors';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { careFor, displayName } from '@/catalog';
@@ -13,7 +13,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Chip, Divider, EmptyState, SectionTitle } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
-import { setRoomLight } from '@/db/garden';
+import { setPlantLight, setRoomLight } from '@/db/garden';
 import { useGarden } from '@/hooks/use-garden';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
 import {
@@ -45,6 +45,7 @@ export default function LightScreen() {
   const [lux, setLux] = useState<number | null>(null);
   const [held, setHeld] = useState(false);
   const [savedTo, setSavedTo] = useState<string | null>(null);
+  const [savedPlant, setSavedPlant] = useState<string | null>(null);
   const heldRef = useRef(false);
   useEffect(() => {
     heldRef.current = held;
@@ -161,6 +162,11 @@ export default function LightScreen() {
       {tier && plants.length > 0 && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.section}>
           <SectionTitle>How your plants would like it here</SectionTitle>
+          {tier !== 'too_dark' && (
+            <ThemedText type="caption" color="textSecondary">
+              Measuring right where one plant sits? Tap its pin to save this as its own light.
+            </ThemedText>
+          )}
           <Card>
             {plants.map((plant, i) => {
               const fit = lightFit(tier, careFor(plant.groupId, plant.speciesId).light);
@@ -181,6 +187,24 @@ export default function LightScreen() {
                     <ThemedText type="label" style={{ color: bad ? theme.danger : theme.tint }}>
                       {FIT_TEXT[fit]}
                     </ThemedText>
+                    {tier !== 'too_dark' && (
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`Save as ${displayName(plant)}’s own light`}
+                        hitSlop={8}
+                        onPress={async () => {
+                          await setPlantLight(db, plant.id, tier, lux!);
+                          successFeedback();
+                          setSavedPlant(plant.id);
+                        }}
+                        style={({ pressed }) => [styles.pin, pressed && { opacity: 0.6 }]}>
+                        <Icon
+                          name={savedPlant === plant.id ? 'check' : 'map-pin'}
+                          size={20}
+                          color={theme.textSecondary}
+                        />
+                      </Pressable>
+                    )}
                   </View>
                 </View>
               );
@@ -206,4 +230,5 @@ const styles = StyleSheet.create({
   section: { gap: Spacing.three },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
+  pin: { padding: Spacing.one },
 });

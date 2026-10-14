@@ -1,6 +1,6 @@
 import type { Room } from '@/db/types';
 
-import { checkSpot, effectiveLight } from './spot';
+import { checkSpot, effectiveLight, spotOf } from './spot';
 
 const room: Room = {
   id: 'r',
@@ -34,6 +34,45 @@ test('a grow light counts as at least bright light', () => {
   expect(effectiveLight({ lightTier: null, growLight: true })).toBe('high');
   expect(effectiveLight({ lightTier: 'very_high', growLight: true })).toBe('very_high');
   expect(effectiveLight({ lightTier: 'low', growLight: false })).toBe('low');
+});
+
+const sameAsRoom = {
+  spotLight: null,
+  spotLux: null,
+  spotGrowLight: null,
+  spotDraught: null,
+  nearHeater: false,
+};
+
+test('a plant follows its room unless its spot is set differently', () => {
+  const draughty = { ...room, draught: true, lightLux: 900 };
+  expect(spotOf(draughty, sameAsRoom)).toMatchObject({
+    lightTier: 'medium',
+    lightLux: 900,
+    draught: true,
+    ownLight: false,
+  });
+  const sill = spotOf(draughty, {
+    ...sameAsRoom,
+    spotLight: 'very_high',
+    spotLux: 20000,
+    spotDraught: false,
+  });
+  expect(sill).toMatchObject({
+    lightTier: 'very_high',
+    lightLux: 20000,
+    draught: false,
+    ownLight: true,
+  });
+  // Its own grow light, in a room without one.
+  expect(effectiveLight(spotOf(room, { ...sameAsRoom, spotGrowLight: true }))).toBe('high');
+});
+
+test('a heater is flagged for plants that dislike dry air', () => {
+  const byHeater = spotOf(room, { ...sameAsRoom, nearHeater: true });
+  expect(checkSpot(fern, byHeater, opts).map((c) => c.icon)).toEqual(['thermometer-hot']);
+  // Cacti don't mind; nothing to warn about.
+  expect(checkSpot(cactus, byHeater, opts).some((c) => c.tone === 'warn')).toBe(false);
 });
 
 test('nothing to say about a room with no conditions set', () => {

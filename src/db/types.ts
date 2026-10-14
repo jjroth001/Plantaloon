@@ -44,6 +44,13 @@ export type Plant = {
   potDiameterCm: number | null;
   /** Plants with the same id grow in one pot and are watered and fed together. */
   sharedPot: string | null;
+  /** Its own spot, where it differs from the room; null = same as the room. */
+  spotLight: LightTier | null;
+  spotLux: number | null;
+  spotGrowLight: boolean | null;
+  spotDraught: boolean | null;
+  /** Next to a heater or radiator. */
+  nearHeater: boolean;
   coverPhotoId: string | null;
   acquiredOn: string | null;
   notes: string | null;

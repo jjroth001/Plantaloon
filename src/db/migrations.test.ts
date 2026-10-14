@@ -22,11 +22,11 @@ it('migrating an up-to-date database changes nothing', async () => {
   const db = openTestDatabase(0);
   await migrateDbIfNeeded(db);
   const version = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-  expect(version?.user_version).toBe(4);
+  expect(version?.user_version).toBe(5);
   await migrateDbIfNeeded(db);
   expect(
     (await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version'))?.user_version,
-  ).toBe(4);
+  ).toBe(5);
 });
 
 it('upgrading from version 1 keeps plants and adds the wishlist', async () => {
@@ -40,6 +40,22 @@ it('upgrading from version 1 keeps plants and adds the wishlist', async () => {
   expect(await db.getAllAsync('SELECT species_id FROM wish')).toEqual([
     { species_id: 'ficus-lyrata' },
   ]);
+});
+
+it('upgrading from version 4 leaves existing plants following their room', async () => {
+  const db = openTestDatabase(4);
+  await db.runAsync(
+    "INSERT INTO room (id, name, icon, sort_order, created_at, updated_at) VALUES ('r', 'Hall', 'door', 0, 1, 1)",
+  );
+  await db.runAsync(
+    `INSERT INTO plant (id, room_id, group_id, created_at, updated_at) VALUES ('p', 'r', 'pothos', 1, 1)`,
+  );
+  await runMigrations(db, 4);
+  expect(
+    await db.getFirstAsync(
+      'SELECT spot_light_tier, spot_grow_light, spot_draught, near_heater FROM plant',
+    ),
+  ).toEqual({ spot_light_tier: null, spot_grow_light: null, spot_draught: null, near_heater: 0 });
 });
 
 it('upgrading from version 2 gives existing plants and rooms sensible defaults', async () => {

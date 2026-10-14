@@ -26,8 +26,10 @@ import {
   listJournal,
   loadGarden,
   setSchedule,
+  setPlantLight,
   skipTask,
   syncPotDetails,
+  adoptSpot,
   updatePlant,
   type NewPlant,
 } from './garden';
@@ -441,6 +443,34 @@ test('editing a pot-mate: lining up uses the new edit, and the pot moves as one'
   expect(mate?.roomId).toBe(other);
   expect(mate?.potSize).toBe('l');
   expect(mate?.potDiameterCm).toBe(28);
+});
+
+test("a plant's own spot is stored, shared with its pot, and taken by newcomers", async () => {
+  const { db, roomId } = await setup();
+  const a = await createPlant(db, pothos(roomId, { nickname: 'Pothos' }), T0);
+  const b = await createPlant(db, pothos(roomId, { nickname: 'Philo' }), T0);
+  await setPotMates(db, a, [b], T0);
+  // A light meter reading saved for one plant covers its pot.
+  await setPlantLight(db, a, 'high', 2400.4, T0);
+  let plants = (await loadGarden(db)).plants;
+  expect(plants.map((p) => [p.spotLight, p.spotLux])).toEqual([
+    ['high', 2400],
+    ['high', 2400],
+  ]);
+  await updatePlant(db, a, { spotDraught: true, nearHeater: true, spotGrowLight: null }, T0);
+  await syncPotDetails(db, a, T0);
+  plants = (await loadGarden(db)).plants;
+  expect(plants.map((p) => [p.spotDraught, p.nearHeater, p.spotGrowLight])).toEqual([
+    [true, true, null],
+    [true, true, null],
+  ]);
+  // A new plant joining the pot keeps the pot's spot rather than resetting it.
+  const c = await createPlant(db, pothos(roomId, { nickname: 'Ivy' }), T0);
+  await setPotMates(db, c, [a, b], T0);
+  await adoptSpot(db, c, a, T0);
+  await syncPotDetails(db, c, T0);
+  plants = (await loadGarden(db)).plants;
+  expect(plants.every((p) => p.spotLight === 'high' && p.nearHeater)).toBe(true);
 });
 
 test('a typed pot diameter is stored', async () => {

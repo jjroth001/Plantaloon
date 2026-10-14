@@ -13,6 +13,7 @@ import { Button, Card, Chip, Field } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import {
   addPhoto,
+  adoptSpot,
   createPlant,
   listPlants,
   listRooms,
@@ -138,6 +139,8 @@ export default function AddPlantDetails() {
       });
       if (form.potMates.length) {
         await setPotMates(db, id, form.potMates);
+        // The pot already has a spot; the new plant's pot details are shared from here.
+        await adoptSpot(db, id, form.potMates[0]);
         await syncPotDetails(db, id);
       }
       if (photo) await addPhoto(db, { plantId: id, ...photo, takenAt: Date.now() });

@@ -53,6 +53,11 @@ type PlantRow = {
   pot_material: string;
   pot_diameter_cm: number | null;
   shared_pot: string | null;
+  spot_light_tier: string | null;
+  spot_light_lux: number | null;
+  spot_grow_light: number | null;
+  spot_draught: number | null;
+  near_heater: number | null;
   cover_photo_id: string | null;
   acquired_on: string | null;
   notes: string | null;
@@ -121,6 +126,11 @@ const toPlant = (r: PlantRow): Plant => ({
   potMaterial: (r.pot_material ?? 'plastic') as PotMaterial,
   potDiameterCm: r.pot_diameter_cm,
   sharedPot: r.shared_pot,
+  spotLight: r.spot_light_tier as LightTier | null,
+  spotLux: r.spot_light_lux,
+  spotGrowLight: r.spot_grow_light == null ? null : r.spot_grow_light === 1,
+  spotDraught: r.spot_draught == null ? null : r.spot_draught === 1,
+  nearHeater: r.near_heater === 1,
   coverPhotoId: r.cover_photo_id,
   acquiredOn: r.acquired_on,
   notes: r.notes,
@@ -240,6 +250,25 @@ export async function updateRoom(
     input.outdoor ? 1 : 0,
     now,
     id,
+  );
+}
+
+/** Saves a light meter reading as one plant's own light (and its pot-mates', same spot). */
+export async function setPlantLight(
+  db: SQLiteDatabase,
+  plantId: string,
+  tier: LightTier,
+  lux: number,
+  now = Date.now(),
+): Promise<void> {
+  const ids = await potMates(db, plantId);
+  await db.runAsync(
+    `UPDATE plant SET spot_light_tier = ?, spot_light_lux = ?, updated_at = ?
+     WHERE id IN (${ids.map(() => '?').join(',')})`,
+    tier,
+    Math.round(lux),
+    now,
+    ...ids,
   );
 }
 
@@ -403,6 +432,11 @@ export type PlantPatch = Partial<
     | 'potDrainage'
     | 'potMaterial'
     | 'potDiameterCm'
+    | 'spotLight'
+    | 'spotLux'
+    | 'spotGrowLight'
+    | 'spotDraught'
+    | 'nearHeater'
     | 'propStage'
     | 'acquiredOn'
     | 'notes'
@@ -419,6 +453,11 @@ const PLANT_COLUMNS: Record<keyof PlantPatch, string> = {
   potDrainage: 'pot_drainage',
   potMaterial: 'pot_material',
   potDiameterCm: 'pot_diameter_cm',
+  spotLight: 'spot_light_tier',
+  spotLux: 'spot_light_lux',
+  spotGrowLight: 'spot_grow_light',
+  spotDraught: 'spot_draught',
+  nearHeater: 'near_heater',
   propStage: 'prop_stage',
   acquiredOn: 'acquired_on',
   notes: 'notes',
@@ -581,9 +620,43 @@ async function withPotMates(db: SQLiteDatabase, plantIds: readonly string[], tas
 }
 
 /**
- * It's one pot: its room, size, material and drainage are the same for every plant in it.
+ * It's one pot: its room, spot, size, material and drainage are the same for every plant in it.
  * Copies this plant's to its pot-mates.
  */
+const SPOT_COLUMNS = [
+  'spot_light_tier',
+  'spot_light_lux',
+  'spot_grow_light',
+  'spot_draught',
+  'near_heater',
+];
+
+/** A new plant joining a pot takes the spot its pot-mates already have. */
+export async function adoptSpot(
+  db: SQLiteDatabase,
+  plantId: string,
+  fromId: string,
+  now = Date.now(),
+): Promise<void> {
+  await db.runAsync(
+    `UPDATE plant SET (${SPOT_COLUMNS.join(', ')}, updated_at) =
+       (SELECT ${SPOT_COLUMNS.join(', ')}, ? FROM plant WHERE id = ?)
+     WHERE id = ?`,
+    now,
+    fromId,
+    plantId,
+  );
+}
+
+const POT_COLUMNS = [
+  'room_id',
+  'pot_size',
+  'pot_diameter_cm',
+  'pot_material',
+  'pot_drainage',
+  ...SPOT_COLUMNS,
+];
+
 export async function syncPotDetails(
   db: SQLiteDatabase,
   plantId: string,
@@ -592,8 +665,8 @@ export async function syncPotDetails(
   const mates = (await potMates(db, plantId)).filter((id) => id !== plantId);
   if (mates.length === 0) return;
   await db.runAsync(
-    `UPDATE plant SET (room_id, pot_size, pot_diameter_cm, pot_material, pot_drainage, updated_at) =
-       (SELECT room_id, pot_size, pot_diameter_cm, pot_material, pot_drainage, ? FROM plant WHERE id = ?)
+    `UPDATE plant SET (${POT_COLUMNS.join(', ')}, updated_at) =
+       (SELECT ${POT_COLUMNS.join(', ')}, ? FROM plant WHERE id = ?)
      WHERE id IN (${mates.map(() => '?').join(',')})`,
     now,
     plantId,

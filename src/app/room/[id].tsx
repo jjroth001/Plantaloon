@@ -207,6 +207,10 @@ export default function RoomScreen() {
           </>
         )}
       </Card>
+      <ThemedText type="caption" color="textSecondary">
+        These are the room’s usual conditions. A plant that sits somewhere different, like a sunny
+        sill or beside a radiator, can have its own spot on Edit plant.
+      </ThemedText>
       {!value.outdoor && (
         <>
           <Field label="Air">

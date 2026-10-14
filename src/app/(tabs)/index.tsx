@@ -22,7 +22,7 @@ import {
 import { careFor, displayName } from '@/catalog';
 import { useClimateLows } from '@/hooks/use-climate';
 import { useTaskColors } from '@/hooks/use-task-colors';
-import { checkSpot } from '@/lib/spot';
+import { checkSpot, spotOf } from '@/lib/spot';
 import { doneMessage, kindOf, TASK_INFO, taskIcon, taskLabel } from '@/lib/tasks';
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
@@ -58,7 +58,7 @@ export default function TodayScreen() {
     const room = garden.data!.rooms.find((r) => r.id === plant.roomId);
     if (!room?.outdoor || !lows) return [];
     const care = careFor(plant.groupId, plant.speciesId);
-    const urgent = checkSpot(care, room, {
+    const urgent = checkSpot(care, spotOf(room, plant), {
       lows,
       month,
       unit: settings.data!.temperatureUnit,

@@ -52,7 +52,7 @@ import { buildTasks, type CareTask } from '@/lib/care-tasks';
 import { dateOf, formatRelativeDay, formatTime } from '@/lib/dates';
 import { successFeedback } from '@/lib/haptics';
 import { lightFit } from '@/lib/light';
-import { checkSpot, effectiveLight } from '@/lib/spot';
+import { checkSpot, effectiveLight, spotOf } from '@/lib/spot';
 import { doneMessage, taskForEntry, taskIcon, taskLabel } from '@/lib/tasks';
 import { useTaskColors } from '@/hooks/use-task-colors';
 import { CuttingsCard } from '@/components/plant/cuttings-card';
@@ -86,7 +86,9 @@ export default function PlantScreen() {
     // Deleted: leave quietly.
     return <Screen belowHeader>{null}</Screen>;
   }
-  const room = garden.data.rooms.find((r) => r.id === plant.roomId);
+  const roomRow = garden.data.rooms.find((r) => r.id === plant.roomId);
+  // The room, with anything set differently for this plant.
+  const room = roomRow && spotOf(roomRow, plant);
   const care = careFor(plant.groupId, plant.speciesId);
   const details = detailsFor(plant.groupId);
   const species = getSpecies(plant.speciesId);
@@ -134,7 +136,13 @@ export default function PlantScreen() {
     roomFit:
       room && effectiveLight(room) != null
         ? {
-            room: room.growLight ? `${room.name} (with its grow light)` : room.name,
+            room: room.ownLight
+              ? room.growLight
+                ? 'Its spot (with a grow light)'
+                : 'Its spot'
+              : room.growLight
+                ? `${room.name} (with its grow light)`
+                : room.name,
             fit: lightFit(effectiveLight(room)!, care.light),
           }
         : undefined,

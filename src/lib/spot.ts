@@ -1,7 +1,7 @@
 import type { Care } from '@/catalog';
 import type { LightTier } from '@/catalog/types';
 import type { IconName } from '@/components/icons/icon';
-import type { Room } from '@/db/types';
+import type { Plant, Room } from '@/db/types';
 
 import { formatTemp } from './care-text';
 import { LIGHT_TIERS } from './light';
@@ -13,6 +13,30 @@ export type SpotCheck = {
   /** Needs doing now (bring an outdoor plant in). */
   urgent?: boolean;
 };
+
+/** Where a plant sits: its room, with anything set differently for the plant. */
+export type Spot = Room & {
+  nearHeater: boolean;
+  /** The plant's own light (or grow light) differs from the room's. */
+  ownLight: boolean;
+};
+
+type PlantSpot = Pick<
+  Plant,
+  'spotLight' | 'spotLux' | 'spotGrowLight' | 'spotDraught' | 'nearHeater'
+>;
+
+export function spotOf(room: Room, plant: PlantSpot): Spot {
+  return {
+    ...room,
+    lightTier: plant.spotLight ?? room.lightTier,
+    lightLux: plant.spotLight != null ? plant.spotLux : room.lightLux,
+    growLight: plant.spotGrowLight ?? room.growLight,
+    draught: plant.spotDraught ?? room.draught,
+    nearHeater: plant.nearHeater,
+    ownLight: plant.spotLight != null || plant.spotGrowLight != null,
+  };
+}
 
 /** A room's light, counting a grow light as at least bright, indirect light. */
 export function effectiveLight(room: Pick<Room, 'lightTier' | 'growLight'>): LightTier | null {
@@ -28,7 +52,7 @@ export function effectiveLight(room: Pick<Room, 'lightTier' | 'growLight'>): Lig
  */
 export function checkSpot(
   care: Pick<Care, 'humidity' | 'minTempC' | 'light'>,
-  room: Room,
+  room: Room & { nearHeater?: boolean },
   options: { lows: number[] | null; month: number; unit: 'C' | 'F'; idealMaxC?: number },
 ): SpotCheck[] {
   const { lows, month, unit } = options;
@@ -78,6 +102,14 @@ export function checkSpot(
     });
   }
 
+  if (indoor && room.nearHeater && care.humidity !== 'low') {
+    checks.push({
+      icon: 'thermometer-hot',
+      tone: 'warn',
+      text: 'Heaters dry the air and can scorch nearby leaves. Move it a little further away.',
+    });
+  }
+
   if (room.outdoor) {
     if (lows) {
       const now = lows[month];
@@ -114,7 +146,7 @@ export function checkSpot(
     }
   }
 
-  const described = room.humidity || room.warmth || room.draught || room.outdoor;
+  const described = room.humidity || room.warmth || room.draught || room.outdoor || room.nearHeater;
   if (described && !checks.some((c) => c.tone === 'warn')) {
     if (!checks.length)
       checks.push({ icon: 'check-circle', tone: 'good', text: `${room.name} suits it well.` });

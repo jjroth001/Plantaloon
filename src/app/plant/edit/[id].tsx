@@ -11,6 +11,7 @@ import {
   PlantForm,
   type PlantFormValue,
 } from '@/components/plant-form';
+import { SpotFields, type SpotValue } from '@/components/plant/spot-fields';
 import { Screen } from '@/components/screen';
 import { Button } from '@/components/ui';
 import {
@@ -48,6 +49,7 @@ export default function EditPlant() {
     [id],
   );
   const [form, setForm] = useState<PlantFormValue | null>(null);
+  const [spotForm, setSpot] = useState<SpotValue | null>(null);
   const [busy, setBusy] = useState(false);
 
   const plant = loaded.data?.plant;
@@ -81,6 +83,14 @@ export default function EditPlant() {
     extras: initialExtras,
   };
 
+  const spot: SpotValue = spotForm ?? {
+    light: plant.spotLight,
+    growLight: plant.spotGrowLight,
+    draught: plant.spotDraught,
+    nearHeater: plant.nearHeater,
+  };
+  const room = rooms.data.find((r) => r.id === (value.roomId ?? plant.roomId));
+
   // A new pot re-suggests the watering interval, unless it was set by hand.
   const update = (next: PlantFormValue) => {
     const suggest = (v: PlantFormValue) =>
@@ -108,6 +118,13 @@ export default function EditPlant() {
         potDrainage: value.potDrainage,
         potMaterial: value.potMaterial,
         potDiameterCm: diameterCm(value.potDiameter, unit),
+        spotLight: spot.light,
+        // A measured reading only stands while its light is kept.
+        spotLux: spot.light != null && spot.light === plant.spotLight ? plant.spotLux : null,
+        spotGrowLight: spot.growLight,
+        // Draughts and heaters are indoor things.
+        spotDraught: room?.outdoor ? null : spot.draught,
+        nearHeater: room?.outdoor ? false : spot.nearHeater,
       });
       const matesChanged =
         value.potMates.length !== initialMates.length ||
@@ -116,7 +133,7 @@ export default function EditPlant() {
       await setSchedule(db, plant.id, 'fertilize', value.fertilize);
       // After the schedules, so lining up the pot takes this edit into account.
       if (matesChanged) await setPotMates(db, plant.id, value.potMates);
-      // One pot: the same room, size and material for every plant in it.
+      // One pot: the same room, spot, size and material for every plant in it.
       await syncPotDetails(db, plant.id);
       for (const extra of namedExtras(value.extras)) {
         await setSchedule(db, plant.id, extra.task, {
@@ -170,6 +187,7 @@ export default function EditPlant() {
         namePlaceholder={displayName({ ...plant, nickname: null })}
         pausedInWinter={!(care.fertilize?.winter ?? false)}
       />
+      {room && <SpotFields value={spot} onChange={setSpot} room={room} />}
       <Button title="Delete plant" icon="trash" variant="ghost" onPress={remove} />
     </Screen>
   );

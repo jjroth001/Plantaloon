@@ -230,7 +230,7 @@ export default function PlantScreen() {
             <Icon name={room.icon} size={16} color={theme.textSecondary} />
             <ThemedText type="caption" color="textSecondary">
               {room.name}
-              {room.outdoor ? ' · outdoors' : ''}
+              {room.outdoor ? (plant.inGround ? ' · in the ground' : ' · outdoors') : ''}
             </ThemedText>
           </View>
         )}

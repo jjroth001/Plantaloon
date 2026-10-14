@@ -6,7 +6,13 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { careFor, getGroup, getSpecies } from '@/catalog';
 import { Icon } from '@/components/icons/icon';
-import { diameterCm, namedExtras, PlantForm, type PlantFormValue } from '@/components/plant-form';
+import {
+  diameterCm,
+  isInGround,
+  namedExtras,
+  PlantForm,
+  type PlantFormValue,
+} from '@/components/plant-form';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Chip, Field } from '@/components/ui';
@@ -61,6 +67,7 @@ export default function AddPlantDetails() {
     potDrainage: true,
     potMaterial: 'plastic',
     potDiameter: '',
+    inGround: false,
     potMates: [],
     extras: [],
     water: { enabled: true, intervalDays: care.water.days },
@@ -93,6 +100,7 @@ export default function AddPlantDetails() {
         v.potSize,
         v.potMaterial,
         diameterCm(v.potDiameter, unit),
+        isInGround({ ...v, roomId: v.roomId ?? roomId }, roomList),
       );
     const before = suggest(form);
     const after = suggest(next);
@@ -109,6 +117,8 @@ export default function AddPlantDetails() {
       setPhoto(picked);
     }
   };
+
+  const ground = isInGround({ ...form, roomId }, roomList);
 
   const save = async () => {
     if (!roomId) return;
@@ -132,12 +142,13 @@ export default function AddPlantDetails() {
         potDrainage: form.potDrainage,
         potMaterial: form.potMaterial,
         potDiameterCm: diameterCm(form.potDiameter, unit),
+        inGround: ground,
         extraTasks: namedExtras(form.extras),
         water: form.water,
         fertilize: form.fertilize,
         lastWatered: watered,
       });
-      if (form.potMates.length) {
+      if (form.potMates.length && !ground) {
         await setPotMates(db, id, form.potMates);
         // The pot already has a spot; the new plant's pot details are shared from here.
         await adoptSpot(db, id, form.potMates[0]);

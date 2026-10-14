@@ -521,6 +521,14 @@ test('deleting a room with only archived plants moves them to another room', asy
   expect((await loadGarden(db)).archived[0].roomId).toBe(other);
 });
 
+test('an outdoor plant can be in the ground', async () => {
+  const { db, roomId } = await setup();
+  const id = await createPlant(db, pothos(roomId, { inGround: true }), T0);
+  expect((await loadGarden(db)).plants[0].inGround).toBe(true);
+  await updatePlant(db, id, { inGround: false }, T0);
+  expect((await loadGarden(db)).plants[0].inGround).toBe(false);
+});
+
 test('a typed pot diameter is stored', async () => {
   const { db, roomId } = await setup();
   const id = await createPlant(db, pothos(roomId, { potDiameterCm: 14.5 }), T0);

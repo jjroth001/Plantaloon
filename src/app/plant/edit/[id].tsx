@@ -6,6 +6,7 @@ import { Alert } from 'react-native';
 import { careFor, displayName } from '@/catalog';
 import {
   diameterCm,
+  isInGround,
   formatDiameter,
   namedExtras,
   PlantForm,
@@ -78,6 +79,7 @@ export default function EditPlant() {
     potDrainage: plant.potDrainage,
     potMaterial: plant.potMaterial,
     potDiameter: formatDiameter(plant.potDiameterCm, unit),
+    inGround: plant.inGround,
     potMates: initialMates,
     water: schedule('water'),
     fertilize: schedule('fertilize'),
@@ -101,6 +103,7 @@ export default function EditPlant() {
         v.potSize,
         v.potMaterial,
         diameterCm(v.potDiameter, unit),
+        isInGround(v, rooms.data!),
       );
     const before = suggest(value);
     const after = suggest(next);
@@ -109,6 +112,8 @@ export default function EditPlant() {
     }
     setForm(next);
   };
+
+  const ground = isInGround(value, rooms.data);
 
   const save = async () => {
     setBusy(true);
@@ -120,6 +125,7 @@ export default function EditPlant() {
         potDrainage: value.potDrainage,
         potMaterial: value.potMaterial,
         potDiameterCm: diameterCm(value.potDiameter, unit),
+        inGround: ground,
         spotLight: spot.light,
         // A measured reading only stands while its light is kept.
         spotLux: spot.light != null ? spot.lux : null,
@@ -128,13 +134,14 @@ export default function EditPlant() {
         spotDraught: room?.outdoor ? null : spot.draught,
         nearHeater: room?.outdoor ? false : spot.nearHeater,
       });
+      // A plant in the ground isn't in anyone's pot.
+      const mates = ground ? [] : value.potMates;
       const matesChanged =
-        value.potMates.length !== initialMates.length ||
-        value.potMates.some((m) => !initialMates.includes(m));
+        mates.length !== initialMates.length || mates.some((m) => !initialMates.includes(m));
       await setSchedule(db, plant.id, 'water', value.water);
       await setSchedule(db, plant.id, 'fertilize', value.fertilize);
       // After the schedules, so lining up the pot takes this edit into account.
-      if (matesChanged) await setPotMates(db, plant.id, value.potMates);
+      if (matesChanged) await setPotMates(db, plant.id, mates);
       // One pot: the same room, spot, size and material for every plant in it.
       await syncPotDetails(db, plant.id);
       for (const extra of namedExtras(value.extras)) {

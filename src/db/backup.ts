@@ -7,7 +7,7 @@ import { transaction } from './transaction';
  * one photo, base64-encoded. One line per photo keeps memory use down while writing.
  */
 /** 2: custom tasks, pot material, room conditions, health, cuttings. 3: pot diameter, shared pots. */
-export const BACKUP_FORMAT = 5;
+export const BACKUP_FORMAT = 6;
 
 const TABLES = ['room', 'plant', 'schedule', 'entry', 'photo', 'setting', 'wish'] as const;
 /** Tables older backups may not have (added after the first release). */
@@ -64,6 +64,7 @@ const COLUMNS: Record<TableName, readonly string[]> = {
     'pot_material',
     'pot_diameter_cm',
     'shared_pot',
+    'in_ground',
     'spot_light_tier',
     'spot_light_lux',
     'spot_grow_light',
@@ -104,6 +105,7 @@ const COLUMN_DEFAULTS: Record<string, string | number> = {
   draught: 0,
   outdoor: 0,
   near_heater: 0,
+  in_ground: 0,
 };
 
 /** Parses and checks the first line. Throws an Error with a user-facing message. */

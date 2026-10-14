@@ -54,6 +54,7 @@ type PlantRow = {
   pot_material: string;
   pot_diameter_cm: number | null;
   shared_pot: string | null;
+  in_ground: number | null;
   spot_light_tier: string | null;
   spot_light_lux: number | null;
   spot_grow_light: number | null;
@@ -130,6 +131,7 @@ const toPlant = (r: PlantRow): Plant => ({
   potMaterial: (r.pot_material ?? 'plastic') as PotMaterial,
   potDiameterCm: r.pot_diameter_cm,
   sharedPot: r.shared_pot,
+  inGround: r.in_ground === 1,
   spotLight: r.spot_light_tier as LightTier | null,
   spotLux: r.spot_light_lux,
   spotGrowLight: r.spot_grow_light == null ? null : r.spot_grow_light === 1,
@@ -362,6 +364,7 @@ export type NewPlant = {
   potDrainage: boolean;
   potMaterial?: PotMaterial;
   potDiameterCm?: number | null;
+  inGround?: boolean;
   water: { intervalDays: number; enabled: boolean };
   fertilize: { intervalDays: number; enabled: boolean };
   /** More reminders (mist, turn, custom…). */
@@ -381,9 +384,9 @@ export async function createPlant(
   await transaction(db, async () => {
     await db.runAsync(
       `INSERT INTO plant (id, room_id, nickname, species_id, group_id, pot_size, pot_drainage,
-         pot_material, pot_diameter_cm, cover_photo_id, acquired_on, notes, parent_id, prop_stage,
-         prop_method, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, ?, ?, ?, ?, ?)`,
+         pot_material, pot_diameter_cm, in_ground, cover_photo_id, acquired_on, notes, parent_id,
+         prop_stage, prop_method, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, ?, ?, ?, ?, ?)`,
       id,
       input.roomId,
       input.nickname?.trim() || null,
@@ -393,6 +396,7 @@ export async function createPlant(
       input.potDrainage ? 1 : 0,
       input.potMaterial ?? 'plastic',
       input.potDiameterCm ?? null,
+      input.inGround ? 1 : 0,
       input.cutting?.parentId ?? null,
       input.cutting ? 'rooting' : null,
       input.cutting?.method ?? null,
@@ -451,6 +455,7 @@ export type PlantPatch = Partial<
     | 'potDrainage'
     | 'potMaterial'
     | 'potDiameterCm'
+    | 'inGround'
     | 'spotLight'
     | 'spotLux'
     | 'spotGrowLight'
@@ -472,6 +477,7 @@ const PLANT_COLUMNS: Record<keyof PlantPatch, string> = {
   potDrainage: 'pot_drainage',
   potMaterial: 'pot_material',
   potDiameterCm: 'pot_diameter_cm',
+  inGround: 'in_ground',
   spotLight: 'spot_light_tier',
   spotLux: 'spot_light_lux',
   spotGrowLight: 'spot_grow_light',

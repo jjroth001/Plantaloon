@@ -50,6 +50,8 @@ export type Plant = {
   potMaterial: PotMaterial;
   /** Exact pot diameter, if typed in (cm). */
   potDiameterCm: number | null;
+  /** Growing in the ground outdoors, not in a pot (pot details don't apply). */
+  inGround: boolean;
   /** Plants with the same id grow in one pot and are watered and fed together. */
   sharedPot: string | null;
   /** Its own spot, where it differs from the room; null = same as the room. */

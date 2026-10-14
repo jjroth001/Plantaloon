@@ -203,6 +203,14 @@ Modelled on the depth of Planta's plant pages, in our own words and look
 - Archiving leaves any shared pot. Deleting a room moves its archived plants to another room.
 - New app icon and splash: a ZZ plant.
 
+## v1.6.1–1.6.2 — reminder lengths, light, in the ground (2026-10-14)
+
+- Reminder intervals: quick picks per task (repotting every 1–4 years), a typed number, and
+  days / weeks / months / years.
+- Measure a plant's light from Edit plant; adjustable light sensor sensitivity.
+- Outdoor plants can be "Planted in the ground": no pot details or shared pots, no repotting
+  reminder offered, and watering starts 1.5× less often than the care profile's pot interval.
+
 ## v2 and later
 - More scheduled tasks (mist, rotate, repot reminders).
 - Home-screen widget ("3 plants need water").

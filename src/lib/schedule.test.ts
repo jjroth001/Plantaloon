@@ -102,6 +102,11 @@ describe('suggestions', () => {
     expect(suggestedWaterDays(1, 's')).toBe(1);
   });
 
+  test('plants in the ground are watered less often, whatever the pot fields say', () => {
+    expect(suggestedWaterDays(10, 's', 'terracotta', 9, true)).toBe(15);
+    expect(suggestedWaterDays(10, 'l', 'plastic', null, true)).toBe(15);
+  });
+
   test('three skips in a row suggest a longer interval', () => {
     expect(suggestLongerInterval(7, 2)).toBeNull();
     expect(suggestLongerInterval(7, 3)).toBe(9);

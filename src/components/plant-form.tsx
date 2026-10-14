@@ -44,6 +44,8 @@ export type PlantFormValue = {
   potMaterial: PotMaterial;
   /** Exact diameter as typed, in the user's unit ('' = not given). */
   potDiameter: string;
+  /** Outdoors, planted in the ground (only counts in an outdoor room). */
+  inGround: boolean;
   /** Other plants growing in the same pot. */
   potMates: string[];
   water: ScheduleValue;
@@ -52,6 +54,11 @@ export type PlantFormValue = {
 };
 
 export type LengthUnit = 'cm' | 'in';
+
+/** In the ground for real: the switch is on and the chosen room is outdoors. */
+export function isInGround(value: PlantFormValue, rooms: readonly Room[]): boolean {
+  return value.inGround && rooms.some((r) => r.id === value.roomId && r.outdoor);
+}
 
 /** The typed diameter in centimetres, or null if empty or not a sensible number. */
 export function diameterCm(text: string, unit: LengthUnit): number | null {
@@ -116,7 +123,12 @@ export function PlantForm({
       (p.sharedPot != null &&
         mateCandidates.some((m) => m.sharedPot === p.sharedPot && value.potMates.includes(m.id))),
   );
-  const addable = EXTRA_TASKS.filter((k) => k === 'custom' || !used.has(k));
+  const outdoors = rooms.some((r) => r.id === value.roomId && r.outdoor);
+  const ground = isInGround(value, rooms);
+  // Nothing to repot in a garden bed.
+  const addable = EXTRA_TASKS.filter(
+    (k) => (k === 'custom' || !used.has(k)) && !(ground && k === 'repot'),
+  );
 
   return (
     <>
@@ -148,97 +160,115 @@ export function PlantForm({
         </View>
       </Field>
 
-      <Field label="Pot size">
-        <Segmented
-          options={[
-            { value: 's', label: 'Small' },
-            { value: 'm', label: 'Medium' },
-            { value: 'l', label: 'Large' },
-          ]}
-          value={value.potSize}
-          // A quick pick replaces a typed size.
-          onChange={(v) => onChange({ ...value, potSize: v, potDiameter: '' })}
-        />
-        <View style={styles.diameter}>
-          <ThemedText type="body" color="textSecondary" style={styles.flex}>
-            Or the exact width across the top
-          </ThemedText>
-          <TextInput
-            value={value.potDiameter}
-            onChangeText={(text) => {
-              const cm = diameterCm(text, unit);
-              onChange({
-                ...value,
-                potDiameter: text,
-                potSize: cm ? potSizeFor(cm) : value.potSize,
-              });
-            }}
-            keyboardType="decimal-pad"
-            placeholder={unit === 'in' ? '6' : '15'}
-            placeholderTextColor={theme.textSecondary}
-            maxLength={5}
-            accessibilityLabel={`Pot diameter in ${unit === 'in' ? 'inches' : 'centimetres'}`}
-            style={[styles.diameterInput, { backgroundColor: theme.element, color: theme.text }]}
+      {outdoors && (
+        <Card>
+          <SwitchRow
+            title="Planted in the ground"
+            subtitle="In a garden bed rather than a pot"
+            value={value.inGround}
+            onChange={(v) => set('inGround', v)}
           />
-          <ThemedText type="body" color="textSecondary">
-            {unit}
-          </ThemedText>
-        </View>
-      </Field>
+        </Card>
+      )}
 
-      <Field label="Pot material">
-        <View style={styles.chips}>
-          {MATERIALS.map((m) => (
-            <Chip
-              key={m}
-              label={POT_MATERIAL[m].label}
-              selected={value.potMaterial === m}
-              onPress={() => set('potMaterial', m)}
+      {!ground && (
+        <>
+          <Field label="Pot size">
+            <Segmented
+              options={[
+                { value: 's', label: 'Small' },
+                { value: 'm', label: 'Medium' },
+                { value: 'l', label: 'Large' },
+              ]}
+              value={value.potSize}
+              // A quick pick replaces a typed size.
+              onChange={(v) => onChange({ ...value, potSize: v, potDiameter: '' })}
             />
-          ))}
-        </View>
-        <ThemedText type="caption" color="textSecondary">
-          {POT_MATERIAL[value.potMaterial].hint}
-        </ThemedText>
-      </Field>
-
-      <Card>
-        <SwitchRow
-          title="Drainage hole"
-          subtitle="The pot lets extra water drain out"
-          value={value.potDrainage}
-          onChange={(v) => set('potDrainage', v)}
-        />
-      </Card>
-
-      {mates.length > 0 && (
-        <Field label="Shares a pot with">
-          <View style={styles.chips}>
-            {mates.map((p) => (
-              <Chip
-                key={p.id}
-                label={displayName(p)}
-                icon="potted-plant"
-                selected={value.potMates.includes(p.id)}
-                onPress={() => {
-                  // A plant already in a pot comes with its whole pot.
-                  const pot = p.sharedPot
-                    ? mates.filter((m) => m.sharedPot === p.sharedPot).map((m) => m.id)
-                    : [p.id];
-                  set(
-                    'potMates',
-                    value.potMates.includes(p.id)
-                      ? value.potMates.filter((id) => !pot.includes(id))
-                      : [...new Set([...value.potMates, ...pot])],
-                  );
+            <View style={styles.diameter}>
+              <ThemedText type="body" color="textSecondary" style={styles.flex}>
+                Or the exact width across the top
+              </ThemedText>
+              <TextInput
+                value={value.potDiameter}
+                onChangeText={(text) => {
+                  const cm = diameterCm(text, unit);
+                  onChange({
+                    ...value,
+                    potDiameter: text,
+                    potSize: cm ? potSizeFor(cm) : value.potSize,
+                  });
                 }}
+                keyboardType="decimal-pad"
+                placeholder={unit === 'in' ? '6' : '15'}
+                placeholderTextColor={theme.textSecondary}
+                maxLength={5}
+                accessibilityLabel={`Pot diameter in ${unit === 'in' ? 'inches' : 'centimetres'}`}
+                style={[
+                  styles.diameterInput,
+                  { backgroundColor: theme.element, color: theme.text },
+                ]}
               />
-            ))}
-          </View>
-          <ThemedText type="caption" color="textSecondary">
-            Plants in one pot are watered and fed together, at the pace of the thirstiest.
-          </ThemedText>
-        </Field>
+              <ThemedText type="body" color="textSecondary">
+                {unit}
+              </ThemedText>
+            </View>
+          </Field>
+
+          <Field label="Pot material">
+            <View style={styles.chips}>
+              {MATERIALS.map((m) => (
+                <Chip
+                  key={m}
+                  label={POT_MATERIAL[m].label}
+                  selected={value.potMaterial === m}
+                  onPress={() => set('potMaterial', m)}
+                />
+              ))}
+            </View>
+            <ThemedText type="caption" color="textSecondary">
+              {POT_MATERIAL[value.potMaterial].hint}
+            </ThemedText>
+          </Field>
+
+          <Card>
+            <SwitchRow
+              title="Drainage hole"
+              subtitle="The pot lets extra water drain out"
+              value={value.potDrainage}
+              onChange={(v) => set('potDrainage', v)}
+            />
+          </Card>
+
+          {mates.length > 0 && (
+            <Field label="Shares a pot with">
+              <View style={styles.chips}>
+                {mates.map((p) => (
+                  <Chip
+                    key={p.id}
+                    label={displayName(p)}
+                    icon="potted-plant"
+                    selected={value.potMates.includes(p.id)}
+                    onPress={() => {
+                      // A plant already in a pot comes with its whole pot.
+                      const pot = p.sharedPot
+                        ? mates.filter((m) => m.sharedPot === p.sharedPot).map((m) => m.id)
+                        : [p.id];
+                      set(
+                        'potMates',
+                        value.potMates.includes(p.id)
+                          ? value.potMates.filter((id) => !pot.includes(id))
+                          : [...new Set([...value.potMates, ...pot])],
+                      );
+                    }}
+                  />
+                ))}
+              </View>
+              <ThemedText type="caption" color="textSecondary">
+                Plants in one pot are watered and fed together, at the pace of the thirstiest.
+              </ThemedText>
+            </Field>
+          )}
+        </>
       )}
 
       <Card>

@@ -123,6 +123,11 @@ const MIGRATIONS: string[] = [
   ALTER TABLE plant ADD COLUMN archive_reason TEXT; -- 'died' | 'gave_away' | 'other'
   ALTER TABLE plant ADD COLUMN archive_note TEXT;
   `,
+
+  // 7: outdoor plants growing in the ground rather than in a pot
+  `
+  ALTER TABLE plant ADD COLUMN in_ground INTEGER NOT NULL DEFAULT 0;
+  `,
 ];
 
 /** The migration SQL in order (for tests that build a database from scratch). */

@@ -104,12 +104,17 @@ export function potSizeFactor(pot: PotSize, diameterCm: number | null = null): n
  * Starting watering interval for a new plant: small pots and terracotta dry out faster, large
  * pots slower. Care profiles assume a medium plastic pot.
  */
+const IN_GROUND_FACTOR = 1.5;
+
 export function suggestedWaterDays(
   groupDays: number,
   pot: PotSize,
   material: 'plastic' | 'terracotta' | 'glazed' | 'glass' | 'other' = 'plastic',
   diameterCm: number | null = null,
+  inGround = false,
 ): number {
+  // Garden soil holds far more water than a pot, and rain helps: water less often.
+  if (inGround) return Math.max(1, Math.round(groupDays * IN_GROUND_FACTOR));
   const size = potSizeFactor(pot, diameterCm);
   // Terracotta breathes and dries faster; glass and glazed pots hold water a little longer.
   const walls =

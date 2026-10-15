@@ -13,12 +13,10 @@ import {
   GrowingSection,
   ProblemsSection,
   QuickFacts,
-  Section,
-  SectionTabs,
-  useSections,
+  sectionLines,
   type CareContext,
-  type SectionName,
 } from '@/components/care/care-sections';
+import { Fold } from '@/components/fold';
 import { Icon, type IconName } from '@/components/icons/icon';
 import { PlantAvatar } from '@/components/plant-avatar';
 import { Screen } from '@/components/screen';
@@ -66,8 +64,6 @@ import { useTheme } from '@/theme/theme-provider';
 
 type Undo = { message: string; entryIds: string[] };
 
-const SECTIONS: SectionName[] = ['care', 'about', 'growing', 'problems', 'journal'];
-
 /** What an archived plant's page keeps: no care, just its story. */
 const ARCHIVED_KEYS = new Set(['hero', 'archived', 'photos', 'description', 'journal']);
 
@@ -80,8 +76,8 @@ export default function PlantScreen() {
   const today = useToday();
   const journal = useDbQuery(['entry', 'photo'], (d) => listJournal(d, id), [id]);
   const [undo, setUndo] = useState<Undo | null>(null);
-  const { scrollRef, register, scrollTo, onScroll, onScrollBeginDrag, onTabsLayout, active } =
-    useSections(SECTIONS);
+  // Care, About, Growing, Problems and Journal start closed.
+  const [openFolds, setOpenFolds] = useState<string[]>([]);
   const lows = useClimateLows();
   const hideUndo = useCallback(() => setUndo(null), []);
 
@@ -182,15 +178,16 @@ export default function PlantScreen() {
   const labels = new Map(schedules.map((x) => [x.task, x.label]));
   const suggestions = tasks.filter((t) => t.suggestion != null);
 
-  const tabs = (
-    <SectionTabs
-      key="tabs"
-      sections={SECTIONS}
-      active={active}
-      onPress={scrollTo}
-      onLayout={onTabsLayout}
-    />
-  );
+  const lines = sectionLines(care, details, context, settings.data.temperatureUnit);
+  const entries = journal.data ?? [];
+  const fold = (key: string, title: string, line: { text: string; alert?: boolean }) => ({
+    title,
+    summary: line.text,
+    alert: line.alert,
+    open: openFolds.includes(key),
+    onToggle: () =>
+      setOpenFolds((o) => (o.includes(key) ? o.filter((k) => k !== key) : [...o, key])),
+  });
   const children = [
     <View key="hero" style={styles.hero}>
       <Pressable
@@ -359,25 +356,30 @@ export default function PlantScreen() {
       </ThemedText>
     ) : null,
     <QuickFacts key="facts" care={care} waterDays={waterDays} />,
-    tabs,
-    <Section key="care" onLayout={register('care')}>
+    <Fold key="care" {...fold('care', 'Care', lines.care)}>
       <CareSection care={care} details={details} context={context} />
-    </Section>,
-    <Section key="about" title="About" onLayout={register('about')}>
+    </Fold>,
+    <Fold key="about" {...fold('about', 'About', lines.about)}>
       <AboutSection care={care} details={details} />
-    </Section>,
-    <Section key="growing" title="Growing" onLayout={register('growing')}>
+    </Fold>,
+    <Fold key="growing" {...fold('growing', 'Growing', lines.growing)}>
       <GrowingSection
         care={care}
         details={details}
         unit={settings.data.temperatureUnit}
         lows={lows}
       />
-    </Section>,
-    <Section key="problems" title="Problems" onLayout={register('problems')}>
+    </Fold>,
+    <Fold key="problems" {...fold('problems', 'Problems', lines.problems)}>
       <ProblemsSection details={details} />
-    </Section>,
-    <Section key="journal" title="Journal" onLayout={register('journal')}>
+    </Fold>,
+    <Fold
+      key="journal"
+      {...fold('journal', 'Journal', {
+        text: entries.length
+          ? `${entries.length === 1 ? '1 entry' : `${entries.length} entries`} · latest ${formatRelativeDay(dateOf(entries[0].at), today).toLowerCase()}`
+          : 'Nothing yet',
+      })}>
       <Card>
         {(journal.data ?? []).length === 0 ? (
           <ThemedText type="body" color="textSecondary">
@@ -397,9 +399,8 @@ export default function PlantScreen() {
           ))
         )}
       </Card>
-    </Section>,
+    </Fold>,
   ].filter((child) => child != null && (!isArchived || ARCHIVED_KEYS.has(String(child.key))));
-  const stickyIndex = children.indexOf(tabs);
 
   return (
     <View style={styles.fill}>
@@ -419,14 +420,7 @@ export default function PlantScreen() {
               ),
         }}
       />
-      <Screen
-        belowHeader
-        ref={scrollRef}
-        onScroll={onScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        stickyHeaderIndices={stickyIndex >= 0 ? [stickyIndex] : []}>
-        {children}
-      </Screen>
+      <Screen belowHeader>{children}</Screen>
       {undo && (
         <UndoBar
           key={undo.entryIds.join()}

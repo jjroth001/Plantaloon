@@ -785,6 +785,57 @@ const PROPAGATION_TITLE: Record<CareDetails['propagation'][number], string> = {
   seed: 'From seed',
 };
 
+/** One line per section, for the closed folds on a plant's page. */
+export function sectionLines(
+  care: Care,
+  details: CareDetails | undefined,
+  context: CareContext,
+  unit: 'C' | 'F',
+): Record<'care' | 'about' | 'growing' | 'problems', { text: string; alert?: boolean }> {
+  // Anything that needs attention leads the Care line, so it's seen while closed.
+  const fit = context.roomFit;
+  const warning =
+    fit?.fit === 'too_dark'
+      ? `${fit.room} is probably too dark`
+      : fit?.fit === 'too_bright'
+        ? `${fit.room} may be too sunny`
+        : context.spotChecks?.find((c) => c.tone === 'warn')?.text;
+  const feed = context.feedDays ?? care.fertilize?.days;
+  const label = (id: string) => getGuide(id as GuideId)?.title ?? id;
+  return {
+    care: warning
+      ? { text: warning, alert: true }
+      : {
+          text: [
+            `Water ${describeInterval(context.waterDays).toLowerCase()}`,
+            LIGHT_LABEL[care.light.best].toLowerCase(),
+            feed ? `feed ${describeInterval(feed).toLowerCase()}` : null,
+          ]
+            .filter(Boolean)
+            .join(' · '),
+        },
+    about: { text: `${DIFFICULTY_TEXT[care.difficulty]} · ${petText(care.pets).toLowerCase()}` },
+    growing: {
+      text: details
+        ? [
+            `Ideal ${formatTemp(details.idealTempC[0], unit)}–${formatTemp(details.idealTempC[1], unit)}`,
+            details.propagation[0] ? PROPAGATION_TITLE[details.propagation[0]].toLowerCase() : null,
+          ]
+            .filter(Boolean)
+            .join(' · ')
+        : 'Warmth and outdoor months',
+    },
+    problems: {
+      text: details
+        ? `${details.signs
+            .slice(0, 2)
+            .map((id) => label(id).toLowerCase())
+            .join(', ')}, ${details.pests.length} common pests`
+        : 'Common signs and pests',
+    },
+  };
+}
+
 export function GrowingSection({
   care,
   details,

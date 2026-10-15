@@ -2,7 +2,7 @@
  * Small shared building blocks: cards, buttons, chips, rows, fields. Plain solid surfaces
  * in the theme's colors.
  */
-import type { ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -25,8 +25,16 @@ import { useTheme } from '@/theme/theme-provider';
 
 // --- Card -------------------------------------------------------------------
 
+/** Set inside a card (a fold): plain cards within it lose their own box and get a divider. */
+export const InsideCard = createContext(false);
+
 export function Card({ style, ...rest }: ViewProps) {
   const theme = useTheme();
+  const inside = useContext(InsideCard);
+  // Tinted boxes (tips, warnings) keep their look; plain cards become divided sections.
+  if (inside && StyleSheet.flatten(style)?.backgroundColor == null) {
+    return <View style={[styles.innerCard, { borderTopColor: theme.border }, style]} {...rest} />;
+  }
   return (
     <View
       style={[
@@ -421,6 +429,11 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth * 2,
     padding: Spacing.three,
     gap: Spacing.three,
+  },
+  innerCard: {
+    gap: Spacing.three,
+    paddingTop: Spacing.three,
+    borderTopWidth: StyleSheet.hairlineWidth * 2,
   },
   cardShadow: { boxShadow: '0px 1px 8px rgba(30,36,28,0.05)' },
   button: {

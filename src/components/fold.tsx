@@ -12,7 +12,7 @@ import Animated, {
 
 import { Icon } from '@/components/icons/icon';
 import { ThemedText } from '@/components/themed-text';
-import { Card } from '@/components/ui';
+import { Card, InsideCard } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { tapFeedback } from '@/lib/haptics';
 import { useTheme } from '@/theme/theme-provider';
@@ -28,10 +28,13 @@ export function Fold({
   summary,
   open,
   onToggle,
+  alert,
   children,
 }: {
   title: string;
   summary: string;
+  /** The summary is a warning (shown in red with an icon), so it's seen while closed. */
+  alert?: boolean;
   open: boolean;
   onToggle: () => void;
   children: ReactNode;
@@ -61,11 +64,22 @@ export function Fold({
           style={({ pressed }) => [styles.header, pressed && { opacity: 0.7 }]}>
           <View style={styles.flex}>
             <ThemedText type="subheading">{title}</ThemedText>
-            {!open && (
-              <ThemedText type="caption" color="textSecondary" numberOfLines={1}>
-                {summary}
-              </ThemedText>
-            )}
+            {!open &&
+              (alert ? (
+                <View style={styles.alert}>
+                  <Icon name="warning" size={16} color={theme.danger} />
+                  <ThemedText
+                    type="caption"
+                    numberOfLines={1}
+                    style={[styles.flex, { color: theme.danger }]}>
+                    {summary}
+                  </ThemedText>
+                </View>
+              ) : (
+                <ThemedText type="caption" color="textSecondary" numberOfLines={1}>
+                  {summary}
+                </ThemedText>
+              ))}
           </View>
           <Animated.View style={caret}>
             <Icon name="caret-down" size={20} color={theme.textSecondary} duotone={false} />
@@ -76,7 +90,7 @@ export function Fold({
             entering={FadeIn.duration(200).delay(60)}
             exiting={FadeOut.duration(120)}
             style={styles.body}>
-            {children}
+            <InsideCard.Provider value={true}>{children}</InsideCard.Provider>
           </Animated.View>
         )}
       </Card>
@@ -88,4 +102,5 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   body: { gap: Spacing.four },
+  alert: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one },
 });

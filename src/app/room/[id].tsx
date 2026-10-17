@@ -5,6 +5,7 @@ import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import type { LightTier } from '@/catalog/types';
 import { Icon, type IconName } from '@/components/icons/icon';
+import { LightScale } from '@/components/light-scale';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Chip, Divider, Field, SwitchRow, TextField } from '@/components/ui';
@@ -14,7 +15,7 @@ import { ROOM_ICONS, type RoomHumidity, type RoomWarmth } from '@/db/types';
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
-import { formatLux, LIGHT_LABEL, LIGHT_TIERS } from '@/lib/light';
+import { formatLux, LIGHT_HINT, LIGHT_LABEL } from '@/lib/light';
 import { useTheme } from '@/theme/theme-provider';
 
 type Form = {
@@ -160,26 +161,29 @@ export default function RoomScreen() {
         </View>
       </Field>
       <Field label="Light">
-        <View style={styles.chips}>
-          <Chip
-            label="Not set"
-            selected={value.lightTier == null}
-            onPress={() => set({ lightTier: null })}
-          />
-          {LIGHT_TIERS.map((tier) => (
-            <Chip
-              key={tier}
-              label={LIGHT_LABEL[tier]}
-              selected={value.lightTier === tier}
-              onPress={() => set({ lightTier: tier })}
-            />
-          ))}
-        </View>
-        {room?.lightLux != null && (
-          <ThemedText type="caption" color="textSecondary">
-            Last measured: {formatLux(room.lightLux)} lux
+        <LightScale value={value.lightTier} onChange={(lightTier) => set({ lightTier })} />
+        <View style={styles.lightNote}>
+          <ThemedText type="caption" color="textSecondary" style={styles.flex}>
+            {value.lightTier
+              ? `${LIGHT_LABEL[value.lightTier]}: ${LIGHT_HINT[value.lightTier].toLowerCase()}`
+              : 'Not set yet. Tap the scale, or measure it with the Light tab.'}
+            {room?.lightLux != null && value.lightTier === room.lightTier
+              ? ` Last measured ${formatLux(room.lightLux)} lux.`
+              : ''}
           </ThemedText>
-        )}
+          {value.lightTier != null && (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Clear the light"
+              hitSlop={8}
+              onPress={() => set({ lightTier: null })}
+              style={({ pressed }) => pressed && { opacity: 0.6 }}>
+              <ThemedText type="caption" style={{ color: theme.tint }}>
+                Clear
+              </ThemedText>
+            </Pressable>
+          )}
+        </View>
       </Field>
       <Card>
         <SwitchRow
@@ -276,6 +280,8 @@ export default function RoomScreen() {
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  lightNote: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.two },
   icons: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   iconCell: {
     width: 56,

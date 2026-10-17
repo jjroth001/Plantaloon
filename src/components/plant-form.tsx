@@ -19,13 +19,7 @@ import {
 import { Spacing } from '@/constants/theme';
 import { newCustomTask } from '@/db/garden';
 import { displayName } from '@/catalog';
-import {
-  POT_MATERIAL,
-  type Plant,
-  type PotMaterial,
-  type Room,
-  type Task,
-} from '@/db/types';
+import { POT_MATERIAL, type Plant, type PotMaterial, type Room, type Task } from '@/db/types';
 import {
   diameterCm,
   isInGround,
@@ -299,6 +293,7 @@ export function PlantForm({
               </View>
               <IntervalField
                 kind={kindOf(extra.task)}
+                title={`${taskLabel(extra.task, extra.label)} every…`}
                 value={extra.intervalDays}
                 onChange={(intervalDays) => setExtra(i, { intervalDays })}
               />
@@ -373,6 +368,7 @@ function ScheduleField({
       {value.enabled && (
         <IntervalField
           kind={task === 'water' ? 'water' : 'fertilize'}
+          title={task === 'water' ? 'Water every…' : 'Feed every…'}
           value={value.intervalDays}
           onChange={(intervalDays) => onChange({ ...value, intervalDays })}
         />

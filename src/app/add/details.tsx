@@ -17,7 +17,7 @@ import {
 } from '@/components/plant-form';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Chip, Field } from '@/components/ui';
+import { Button, Card, Field, RadioList } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import {
   addPhoto,
@@ -324,16 +324,7 @@ export default function AddPlantDetails() {
 
         {step === 'care' && (
           <Field label="When was it last watered?">
-            <View style={styles.chips}>
-              {LAST_WATERED.map((option) => (
-                <Chip
-                  key={option.value}
-                  label={option.label}
-                  selected={lastWatered === option.value}
-                  onPress={() => setLastWatered(option.value)}
-                />
-              ))}
-            </View>
+            <RadioList options={LAST_WATERED} value={lastWatered} onChange={setLastWatered} />
             <ThemedText type="caption" color="textSecondary">
               {lastWatered === 'unknown'
                 ? 'It’ll show up today, so you can check the soil.'

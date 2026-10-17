@@ -230,6 +230,51 @@ export function Segmented<T extends string>({
   );
 }
 
+/** A round radio mark, filled when chosen. */
+export function RadioMark({ selected }: { selected: boolean }) {
+  const theme = useTheme();
+  return (
+    <View style={[styles.radio, { borderColor: selected ? theme.tint : theme.textSecondary }]}>
+      {selected && <View style={[styles.radioDot, { backgroundColor: theme.tint }]} />}
+    </View>
+  );
+}
+
+/** Choices stacked one under another, each a full-width row with a radio mark. */
+export function RadioList<T extends string | number>({
+  options,
+  value,
+  onChange,
+  boxed = true,
+}: {
+  options: readonly { value: T; label: string }[];
+  value: T | null;
+  onChange: (value: T) => void;
+  /** In its own card (default), or bare when already inside one. */
+  boxed?: boolean;
+}) {
+  const rows = options.map((option, i) => {
+    const selected = option.value === value;
+    return (
+      <View key={String(option.value)}>
+        {i > 0 && <Divider />}
+        <Pressable
+          accessibilityRole="radio"
+          accessibilityState={{ selected }}
+          onPress={() => {
+            if (!selected) tapFeedback();
+            onChange(option.value);
+          }}
+          style={({ pressed }) => [styles.radioRow, pressed && styles.pressed]}>
+          <RadioMark selected={selected} />
+          <ThemedText style={styles.flexOne}>{option.label}</ThemedText>
+        </Pressable>
+      </View>
+    );
+  });
+  return boxed ? <Card style={styles.radioCard}>{rows}</Card> : <View>{rows}</View>;
+}
+
 // --- Rows -------------------------------------------------------------------
 
 export function IconBadge({
@@ -430,6 +475,24 @@ const styles = StyleSheet.create({
     padding: Spacing.three,
     gap: Spacing.three,
   },
+  radio: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioDot: { width: 10, height: 10, borderRadius: 5 },
+  radioRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    minHeight: 48,
+    paddingVertical: Spacing.two,
+  },
+  radioCard: { gap: 0, paddingVertical: Spacing.one },
+  flexOne: { flex: 1 },
   innerCard: {
     gap: Spacing.three,
     paddingTop: Spacing.three,

@@ -81,7 +81,8 @@
       ],
       "expo-sharing",
       "./plugins/with-release-signing",
-      "./plugins/with-arm64-only"
+      "./plugins/with-arm64-only",
+      "react-native-android-widget"
     ],
     "experiments": {
       "typedRoutes": true,

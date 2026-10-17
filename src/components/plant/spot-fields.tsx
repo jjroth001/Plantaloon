@@ -4,14 +4,15 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import type { LightTier } from '@/catalog/types';
 import { Icon } from '@/components/icons/icon';
+import { LightScale, SUN, SUN_SOFT } from '@/components/light-scale';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Chip, Divider, Field, SwitchRow } from '@/components/ui';
+import { Button, Card, Divider, Field, SwitchRow } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import type { Room } from '@/db/types';
 import type { SpotValue } from '@/lib/plant-form-value';
 import { useLightSensor } from '@/hooks/use-light-sensor';
 import { successFeedback } from '@/lib/haptics';
-import { formatLux, LIGHT_LABEL, LIGHT_TIERS, tierForLux } from '@/lib/light';
+import { formatLux, LIGHT_HINT, LIGHT_LABEL, tierForLux } from '@/lib/light';
 import { useTheme } from '@/theme/theme-provider';
 
 export { spotSummary, type SpotValue } from '@/lib/plant-form-value';
@@ -32,6 +33,7 @@ export function SpotFields({
   /** Inside a fold that has its own title. */
   inFold?: boolean;
 }) {
+  const theme = useTheme();
   const set = (patch: Partial<SpotValue>) => onChange({ ...value, ...patch });
   const light = value.light ?? room.lightTier;
   const [measuring, setMeasuring] = useState(false);
@@ -40,19 +42,47 @@ export function SpotFields({
   return (
     <Wrap label="Its spot">
       <ThemedText type="caption" color="textSecondary">
-        Same as {room.name} unless you change something here. Useful for a plant on a sunny sill or
-        in a dim corner.
+        Starts the same as {room.name}. Change anything that’s different where this plant sits.
       </ThemedText>
-      <View style={styles.chips}>
-        {LIGHT_TIERS.map((tier) => (
-          <Chip
-            key={tier}
-            label={LIGHT_LABEL[tier]}
-            selected={light === tier}
-            // Picking the room's own light means "same as the room".
-            onPress={() => set({ light: tier === room.lightTier ? null : tier, lux: null })}
-          />
-        ))}
+      <ThemedText type="subheading">Light</ThemedText>
+      <LightScale
+        value={light}
+        // Picking the room's own light means "same as the room".
+        onChange={(tier) => set({ light: tier === room.lightTier ? null : tier, lux: null })}
+      />
+      <View
+        style={[
+          styles.lightNote,
+          { backgroundColor: theme.dark ? SUN_SOFT.dark : SUN_SOFT.light },
+        ]}>
+        <View style={styles.flex}>
+          <ThemedText type="label" style={{ color: theme.dark ? SUN.dark : SUN.light }}>
+            {light == null
+              ? 'Not set yet'
+              : `${LIGHT_LABEL[light]} · ${
+                  value.light == null
+                    ? `same as ${room.name}`
+                    : value.lux != null
+                      ? `measured ${formatLux(value.lux)} lux`
+                      : 'just this plant'
+                }`}
+          </ThemedText>
+          <ThemedText type="caption" color="textSecondary">
+            {light == null ? 'Tap the scale, or measure it.' : LIGHT_HINT[light]}
+          </ThemedText>
+        </View>
+        {value.light != null && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Use ${room.name}'s light`}
+            hitSlop={8}
+            onPress={() => set({ light: null, lux: null })}
+            style={({ pressed }) => pressed && { opacity: 0.6 }}>
+            <ThemedText type="caption" style={{ color: theme.tint }}>
+              Use the room’s
+            </ThemedText>
+          </Pressable>
+        )}
       </View>
       {measuring ? (
         <Meter
@@ -64,24 +94,15 @@ export function SpotFields({
           }}
         />
       ) : (
-        <Button
-          title="Measure the light here"
-          icon="sun"
-          size="small"
-          variant="secondary"
+        <Pressable
+          accessibilityRole="button"
           onPress={() => setMeasuring(true)}
-        />
-      )}
-      {value.light != null && value.lux != null && !measuring && (
-        <ThemedText type="caption" color="textSecondary">
-          Measured {formatLux(value.lux)} lux.
-        </ThemedText>
-      )}
-      {value.light != null && (
-        <UseRoom
-          text={`Different from ${room.name} (${room.lightTier ? LIGHT_LABEL[room.lightTier].toLowerCase() : 'light not set'}).`}
-          onPress={() => set({ light: null, lux: null })}
-        />
+          style={({ pressed }) => [styles.measure, pressed && { opacity: 0.6 }]}>
+          <Icon name="sun" size={22} color={theme.dark ? SUN.dark : SUN.light} />
+          <ThemedText type="label" style={{ color: theme.tint }}>
+            Measure the light here
+          </ThemedText>
+        </Pressable>
       )}
       <Card>
         <SwitchRow
@@ -205,6 +226,20 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   bare: { gap: Spacing.three },
+  lightNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    borderRadius: 12,
+    padding: Spacing.three,
+  },
+  measure: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    alignSelf: 'flex-start',
+    paddingVertical: Spacing.one,
+  },
   useRoom: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   meterRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   meterButtons: { flexDirection: 'row', justifyContent: 'flex-end', gap: Spacing.two },

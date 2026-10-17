@@ -37,6 +37,7 @@ Plantaloon has no accounts, no analytics, no ads and no servers. Everything is s
 | Approximate location | Optional, only if you turn on outdoor months: your rough area, rounded to about 50 km and stored only on the phone. Precise and background location are not requested. |
 | Notifications, run at startup, wake lock | The daily care reminder (set again after the phone restarts), and its Watered / Remind me later buttons. |
 | Internet, network state | Only to download the plant scanner's model from this project's [scanner repository](https://github.com/jjroth001/plantaloon-scanner), once, when you ask for it. Nothing else is sent or fetched. |
+| Foreground service | Lets Android run the widget and the reminder's buttons for a moment while the app is closed. |
 | Vibrate | Gentle haptic feedback when you tick something off. |
 
 The notifications library Plantaloon uses (expo-notifications) includes Google's Firebase messaging code, because it also supports push notifications. Plantaloon doesn't use push notifications and has no Firebase configuration, so that code is never set up and no push service is contacted.

@@ -34,13 +34,16 @@ fine for a quick local test, not for phones you'll keep updating.
 ```bash
 npx expo prebuild --platform android --clean --no-install
 cd android
-./gradlew.bat assembleRelease -PreactNativeArchitectures=arm64-v8a --no-daemon
+./gradlew.bat assembleRelease -PreactNativeArchitectures=arm64-v8a --no-daemon "-Dorg.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
 ```
 
 with `JAVA_HOME` and `ANDROID_HOME` set. Note: `prebuild` rewrites the `android`/`ios` npm
 scripts in package.json to `expo run:*`; undo just those two lines (we develop in Expo Go)
 rather than `git checkout package.json`, which also drops any uncommitted dependency
 changes. Output: `android/app/build/outputs/apk/release/app-release.apk`.
+
+The extra memory matters: with the widget and background-task libraries, merging the app's
+code runs out of Gradle's default 2 GB (`OutOfMemoryError` in `mergeExtDexRelease`).
 
 `--no-daemon` matters on Windows: a lingering Gradle daemon keeps files in `android/` locked,
 and the next `prebuild --clean` then fails half-way (EBUSY). If that happens, stop the

@@ -2,14 +2,14 @@
   "expo": {
     "name": "Plantaloon",
     "slug": "plantaloon",
-    "version": "1.7.2",
+    "version": "1.7.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "plantaloon",
     "userInterfaceStyle": "automatic",
     "android": {
       "package": "org.plantaloon.app",
-      "versionCode": 12,
+      "versionCode": 13,
       "adaptiveIcon": {
         "backgroundColor": "#2E6B48",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

@@ -8,7 +8,15 @@ import { Icon, type IconName } from '@/components/icons/icon';
 import { LightScale } from '@/components/light-scale';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Chip, Divider, Field, SwitchRow, TextField } from '@/components/ui';
+import {
+  Button,
+  Card,
+  Divider,
+  Field,
+  Segmented,
+  SwitchRow,
+  TextField,
+} from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import { createRoom, deleteRoom, updateRoom } from '@/db/garden';
 import { ROOM_ICONS, type RoomHumidity, type RoomWarmth } from '@/db/types';
@@ -218,59 +226,35 @@ export default function RoomScreen() {
       {!value.outdoor && (
         <>
           <Field label="Air">
-            <View style={styles.chips}>
-              <Chip
-                label="Not set"
-                selected={value.humidity == null}
-                onPress={() => set({ humidity: null })}
-              />
-              <Chip
-                label="Dry"
-                icon="sun"
-                selected={value.humidity === 'dry'}
-                onPress={() => set({ humidity: 'dry' })}
-              />
-              <Chip
-                label="Normal"
-                selected={value.humidity === 'normal'}
-                onPress={() => set({ humidity: 'normal' })}
-              />
-              <Chip
-                label="Humid"
-                icon="drop-half"
-                selected={value.humidity === 'humid'}
-                onPress={() => set({ humidity: 'humid' })}
-              />
-            </View>
+            <Segmented
+              options={[
+                { value: 'unset', label: 'Not set' },
+                { value: 'dry', label: 'Dry' },
+                { value: 'normal', label: 'Normal' },
+                { value: 'humid', label: 'Humid' },
+              ]}
+              value={value.humidity ?? 'unset'}
+              onChange={(v) => set({ humidity: v === 'unset' ? null : v })}
+            />
             <ThemedText type="caption" color="textSecondary">
               Heated rooms in winter are often dry; bathrooms and kitchens are usually humid.
             </ThemedText>
           </Field>
           <Field label="Warmth">
-            <View style={styles.chips}>
-              <Chip
-                label="Not set"
-                selected={value.warmth == null}
-                onPress={() => set({ warmth: null })}
-              />
-              <Chip
-                label={`Cool (under ${unit === 'F' ? '59 °F' : '15 °C'})`}
-                icon="thermometer-cold"
-                selected={value.warmth === 'cool'}
-                onPress={() => set({ warmth: 'cool' })}
-              />
-              <Chip
-                label="Average"
-                selected={value.warmth === 'normal'}
-                onPress={() => set({ warmth: 'normal' })}
-              />
-              <Chip
-                label={`Warm (over ${unit === 'F' ? '75 °F' : '24 °C'})`}
-                icon="thermometer-hot"
-                selected={value.warmth === 'warm'}
-                onPress={() => set({ warmth: 'warm' })}
-              />
-            </View>
+            <Segmented
+              options={[
+                { value: 'unset', label: 'Not set' },
+                { value: 'cool', label: 'Cool' },
+                { value: 'normal', label: 'Average' },
+                { value: 'warm', label: 'Warm' },
+              ]}
+              value={value.warmth ?? 'unset'}
+              onChange={(v) => set({ warmth: v === 'unset' ? null : v })}
+            />
+            <ThemedText type="caption" color="textSecondary">
+              Cool means under {unit === 'F' ? '59 °F' : '15 °C'}; warm means over{' '}
+              {unit === 'F' ? '75 °F' : '24 °C'}.
+            </ThemedText>
           </Field>
         </>
       )}

@@ -1,13 +1,11 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 
 import { displayName } from '@/catalog';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Chip, Field, TextField } from '@/components/ui';
-import { Spacing } from '@/constants/theme';
+import { Button, Field, RadioList, TextField } from '@/components/ui';
 import { archivePlant, getPlant } from '@/db/garden';
 import { ARCHIVE_REASON, type ArchiveReason } from '@/db/types';
 import { useDbQuery } from '@/db/use-db-query';
@@ -47,16 +45,11 @@ export default function ArchivePlant() {
         in the archive, and you can bring it back any time.
       </ThemedText>
       <Field label="What happened">
-        <View style={styles.chips}>
-          {REASONS.map((r) => (
-            <Chip
-              key={r}
-              label={ARCHIVE_REASON[r]}
-              selected={reason === r}
-              onPress={() => setReason(r)}
-            />
-          ))}
-        </View>
+        <RadioList
+          options={REASONS.map((r) => ({ value: r, label: ARCHIVE_REASON[r] }))}
+          value={reason}
+          onChange={setReason}
+        />
       </Field>
       <TextField
         label="Note (optional)"
@@ -75,7 +68,3 @@ export default function ArchivePlant() {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
-});

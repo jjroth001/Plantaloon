@@ -7,6 +7,7 @@ import { Icon } from '@/components/icons/icon';
 import { IntervalField } from '@/components/interval-field';
 import { ThemedText } from '@/components/themed-text';
 import {
+  Button,
   Card,
   Chip,
   Divider,
@@ -107,23 +108,24 @@ export function PlantForm({
 
       {show('room') && (
         <Field label="Room">
-          <View style={styles.chips}>
-            {rooms.map((room) => (
-              <Chip
-                key={room.id}
-                label={room.name}
-                icon={room.icon}
-                selected={value.roomId === room.id}
-                onPress={() => set('roomId', room.id)}
-              />
-            ))}
-            <Chip
-              label="New room"
-              icon="plus"
-              selected={false}
-              onPress={() => router.push({ pathname: '/room/[id]', params: { id: 'new' } })}
-            />
-          </View>
+          <RadioList
+            options={rooms.map((room) => ({
+              value: room.id,
+              label: room.name,
+              icon: room.icon,
+              hint: room.outdoor ? 'Outdoors' : undefined,
+            }))}
+            value={value.roomId}
+            onChange={(id) => set('roomId', id)}
+          />
+          <Button
+            title="New room"
+            icon="plus"
+            size="small"
+            variant="ghost"
+            onPress={() => router.push({ pathname: '/room/[id]', params: { id: 'new' } })}
+            style={styles.newRoom}
+          />
         </Field>
       )}
 
@@ -373,6 +375,7 @@ function ScheduleField({
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+  newRoom: { alignSelf: 'flex-start' },
   schedule: { gap: Spacing.three },
   scheduleHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   diameter: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },

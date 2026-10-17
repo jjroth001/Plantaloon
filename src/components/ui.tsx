@@ -248,12 +248,13 @@ export function RadioList<T extends string | number>({
   boxed = true,
 }: {
   /** `hint`: an optional second line saying what the choice means. */
-  options: readonly { value: T; label: string; hint?: string }[];
+  options: readonly { value: T; label: string; hint?: string; icon?: IconName }[];
   value: T | null;
   onChange: (value: T) => void;
   /** In its own card (default), or bare when already inside one. */
   boxed?: boolean;
 }) {
+  const theme = useTheme();
   const rows = options.map((option, i) => {
     const selected = option.value === value;
     return (
@@ -268,6 +269,7 @@ export function RadioList<T extends string | number>({
           }}
           style={({ pressed }) => [styles.radioRow, pressed && styles.pressed]}>
           <RadioMark selected={selected} />
+          {option.icon && <Icon name={option.icon} size={22} color={theme.textSecondary} />}
           <View style={styles.flexOne}>
             <ThemedText>{option.label}</ThemedText>
             {option.hint && (

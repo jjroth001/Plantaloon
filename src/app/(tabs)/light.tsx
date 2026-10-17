@@ -169,21 +169,37 @@ export default function LightScreen() {
       {tier && tier !== 'too_dark' && rooms.length > 0 && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.section}>
           <SectionTitle>Save as a room’s light</SectionTitle>
-          <View style={styles.chips}>
-            {rooms.map((room) => (
-              <Chip
-                key={room.id}
-                label={room.name}
-                icon={savedTo === room.id ? 'check' : room.icon}
-                selected={room.lightTier === tier}
-                onPress={async () => {
-                  await setRoomLight(db, room.id, tier, lux!);
-                  successFeedback();
-                  setSavedTo(room.id);
-                }}
-              />
+          <Card>
+            {rooms.map((room, i) => (
+              <View key={room.id} style={styles.gap}>
+                {i > 0 && <Divider />}
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Save as ${room.name}’s light`}
+                  onPress={async () => {
+                    await setRoomLight(db, room.id, tier, lux!);
+                    successFeedback();
+                    setSavedTo(room.id);
+                  }}
+                  style={({ pressed }) => [styles.row, pressed && { opacity: 0.6 }]}>
+                  <Icon name={room.icon} size={22} color={theme.textSecondary} />
+                  <View style={styles.flex}>
+                    <ThemedText numberOfLines={1}>{room.name}</ThemedText>
+                    <ThemedText type="caption" color="textSecondary">
+                      {room.lightTier ? `Now: ${LIGHT_LABEL[room.lightTier]}` : 'Light not set'}
+                    </ThemedText>
+                  </View>
+                  {savedTo === room.id ? (
+                    <Icon name="check-circle" size={24} color={theme.tint} />
+                  ) : (
+                    <ThemedText type="label" style={{ color: theme.tint }}>
+                      Save
+                    </ThemedText>
+                  )}
+                </Pressable>
+              </View>
             ))}
-          </View>
+          </Card>
         </Animated.View>
       )}
 

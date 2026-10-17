@@ -4,6 +4,14 @@ type NotificationsModule = typeof import('expo-notifications');
 
 const CHANNEL_ID = 'daily-care';
 
+/** Buttons on the daily reminder (no ':' or '-' allowed in these names). */
+export const CATEGORY = { withWater: 'care_water', plain: 'care' } as const;
+export const ACTION = { watered: 'watered', later: 'later' } as const;
+/** How long "Remind me later" waits. */
+const LATER_MINUTES = 120;
+const DAILY_PREFIX = 'daily';
+const LATER_ID = 'later';
+
 /**
  * Expo Go on Android raises an error as soon as expo-notifications is loaded, so reminders
  * only run in an installed build. The module is loaded lazily so Expo Go never touches it.
@@ -35,6 +43,21 @@ async function ensureChannel(Notifications: NotificationsModule) {
     description: 'One reminder a day when plants need water or food',
     importance: Notifications.AndroidImportance.DEFAULT,
   });
+  // Both buttons work without opening the app (see notification-task.ts).
+  const later = {
+    identifier: ACTION.later,
+    buttonTitle: 'Remind me later',
+    options: { opensAppToForeground: false },
+  };
+  await Notifications.setNotificationCategoryAsync(CATEGORY.withWater, [
+    {
+      identifier: ACTION.watered,
+      buttonTitle: 'Watered',
+      options: { opensAppToForeground: false },
+    },
+    later,
+  ]);
+  await Notifications.setNotificationCategoryAsync(CATEGORY.plain, [later]);
 }
 
 const grantedListeners = new Set<() => void>();
@@ -64,7 +87,7 @@ export async function hasNotificationPermission(): Promise<boolean> {
   return (await Notifications.getPermissionsAsync()).granted;
 }
 
-export type DailyReminder = { at: number; title: string; body: string };
+export type DailyReminder = { at: number; title: string; body: string; water?: boolean };
 
 // Reschedules run one at a time so a burst of changes can't leave stale reminders behind.
 let queue: Promise<unknown> = Promise.resolve();
@@ -74,14 +97,23 @@ export function syncReminders(reminders: readonly DailyReminder[]): Promise<void
   if (!remindersSupported) return Promise.resolve();
   const next = queue.then(async () => {
     const Notifications = await notifications();
-    await Notifications.cancelAllScheduledNotificationsAsync();
+    // Replace the daily ones only; a "remind me later" stays.
+    for (const scheduled of await Notifications.getAllScheduledNotificationsAsync()) {
+      if (!scheduled.identifier.startsWith(DAILY_PREFIX)) continue;
+      await Notifications.cancelScheduledNotificationAsync(scheduled.identifier);
+    }
     const upcoming = reminders.filter((r) => r.at > Date.now());
     if (upcoming.length === 0) return;
     if (!(await Notifications.getPermissionsAsync()).granted) return;
     await ensureChannel(Notifications);
     for (const reminder of upcoming) {
       await Notifications.scheduleNotificationAsync({
-        content: { title: reminder.title, body: reminder.body },
+        identifier: `${DAILY_PREFIX}${reminder.at}`,
+        content: {
+          title: reminder.title,
+          body: reminder.body,
+          categoryIdentifier: reminder.water ? CATEGORY.withWater : CATEGORY.plain,
+        },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
           date: reminder.at,
@@ -92,4 +124,35 @@ export function syncReminders(reminders: readonly DailyReminder[]): Promise<void
   });
   queue = next.catch(() => {});
   return next;
+}
+
+/** Shows the same reminder again in a couple of hours. */
+export async function remindLater(content: {
+  title: string | null;
+  body: string | null;
+  categoryIdentifier?: string | null;
+}): Promise<void> {
+  if (!remindersSupported) return;
+  const Notifications = await notifications();
+  await ensureChannel(Notifications);
+  await Notifications.scheduleNotificationAsync({
+    identifier: LATER_ID,
+    content: {
+      title: content.title ?? 'Your plants could use some care',
+      body: content.body ?? '',
+      categoryIdentifier: content.categoryIdentifier ?? CATEGORY.plain,
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: Date.now() + LATER_MINUTES * 60_000,
+      channelId: CHANNEL_ID,
+    },
+  });
+}
+
+/** Takes a shown notification off the screen. */
+export async function dismissNotification(id: string): Promise<void> {
+  if (!remindersSupported) return;
+  const Notifications = await notifications();
+  await Notifications.dismissNotificationAsync(id);
 }

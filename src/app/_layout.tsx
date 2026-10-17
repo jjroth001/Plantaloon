@@ -12,6 +12,7 @@ import { Suspense, useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { ReminderSync } from '@/components/reminder-sync';
+import { WidgetSync } from '@/widget/widget-sync';
 import { migrateDbIfNeeded } from '@/db/migrations';
 import { useSettings } from '@/db/use-settings';
 import { ThemeProvider, useTheme } from '@/theme/theme-provider';
@@ -79,6 +80,7 @@ function RootNavigator() {
     <NavigationThemeProvider value={navigationTheme}>
       <StatusBar style={theme.dark ? 'light' : 'dark'} />
       {onboarded && <ReminderSync />}
+      {onboarded && <WidgetSync />}
       <Stack
         screenOptions={{
           headerShown: false,

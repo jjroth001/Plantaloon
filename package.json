@@ -1,7 +1,7 @@
 {
   "name": "plantaloon",
   "license": "GPL-3.0-or-later",
-  "main": "expo-router/entry",
+  "main": "index.js",
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.23",

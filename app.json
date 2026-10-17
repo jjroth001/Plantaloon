@@ -82,7 +82,25 @@
       "expo-sharing",
       "./plugins/with-release-signing",
       "./plugins/with-arm64-only",
-      "react-native-android-widget"
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "Plantaloon",
+              "label": "Plantaloon",
+              "description": "What your plants need today, with a Watered button",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "previewImage": "./assets/images/widget-preview.png",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

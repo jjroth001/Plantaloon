@@ -17,7 +17,8 @@
 - **Today:** what needs watering, feeding, misting, turning, cleaning, pruning or repotting, plus your own named tasks. Mark them done or "not yet" in a tap, with undo.
 - **Schedules that adapt:** slower watering in winter, a feeding pause where the plant rests, and a suggestion to water less often when the soil keeps being too damp.
 - **Outdoor months:** share a rough area (optional) and Plantaloon says when outdoor plants should come in, from local climate data kept on the phone.
-- **One daily reminder** notification, at a time you choose.
+- **One daily reminder** notification, at a time you choose, with **Watered** and **Remind me later** buttons that work without opening the app.
+- **Home-screen widget:** what needs doing today, with a Watered button.
 - **Journal** of every watering, feed, note, health check and photo.
 
 **Your data**
@@ -34,7 +35,7 @@ Plantaloon has no accounts, no analytics, no ads and no servers. Everything is s
 |---|---|
 | Camera | Taking photos of your plants, and the plant scanner. Photos stay on the phone. |
 | Approximate location | Optional, only if you turn on outdoor months: your rough area, rounded to about 50 km and stored only on the phone. Precise and background location are not requested. |
-| Notifications, run at startup, wake lock | The daily care reminder, which is set again after the phone restarts. |
+| Notifications, run at startup, wake lock | The daily care reminder (set again after the phone restarts), and its Watered / Remind me later buttons. |
 | Internet, network state | Only to download the plant scanner's model from this project's [scanner repository](https://github.com/jjroth001/plantaloon-scanner), once, when you ask for it. Nothing else is sent or fetched. |
 | Vibrate | Gentle haptic feedback when you tick something off. |
 
@@ -84,7 +85,7 @@ npx expo lint       # lint
 npx jest            # tests
 ```
 
-Expo Go runs most of the app, but not reminders or the plant scanner, which need Plantaloon's own native code. For those, build an APK: see [BUILDING.md](BUILDING.md).
+Expo Go runs most of the app, but not reminders, the widget or the plant scanner, which need Plantaloon's own native code. For those, build an APK: see [BUILDING.md](BUILDING.md).
 
 | Where | What |
 |---|---|
@@ -93,6 +94,7 @@ Expo Go runs most of the app, but not reminders or the plant scanner, which need
 | `src/db/` | SQLite schema, migrations, queries and backups |
 | `src/lib/` | Pure logic: schedules, light, spots, shared pots, reminders, the scanner |
 | `src/catalog/` | Plants, care groups, guides, pet safety, photos and climate data |
+| `src/widget/` | The home-screen widget (drawn by react-native-android-widget) |
 | `modules/plant-scanner/` | Small native Android module that runs the scanner model |
 | `scripts/` | Build scripts for the catalog, photos, climate, pet safety, scanner data and icons |
 | `data/` | Source data the catalog is built from |

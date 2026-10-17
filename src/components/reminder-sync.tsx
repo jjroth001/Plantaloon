@@ -1,16 +1,18 @@
+import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { useToday } from '@/hooks/use-today';
-import { buildTasks, mergeSharedPots } from '@/lib/care-tasks';
+import { remindersFor } from '@/lib/care-actions';
+import { handleNotificationAction } from '@/lib/notification-actions';
 import {
   onPermissionGranted,
+  remindersSupported,
   requestNotificationPermission,
   syncReminders,
 } from '@/lib/notifications';
-import { planReminders } from '@/lib/reminders';
 
 /**
  * Keeps the daily care notifications in step with the plants: whenever anything changes,
@@ -20,6 +22,7 @@ export function ReminderSync() {
   const garden = useGarden();
   const settings = useSettings();
   const today = useToday();
+  const db = useSQLiteContext();
   const asked = useRef(false);
   // Bumped when permission is granted (here, in Settings, or in Android's own settings
   // while the app was in the background), so reminders get scheduled straight away.
@@ -37,9 +40,26 @@ export function ReminderSync() {
     };
   }, []);
 
+  // A reminder's button tapped while the app is open (closed: see notification-task.ts).
+  useEffect(() => {
+    if (!remindersSupported) return;
+    let sub: { remove: () => void } | null = null;
+    let live = true;
+    import('expo-notifications').then((Notifications) => {
+      if (!live) return;
+      sub = Notifications.addNotificationResponseReceivedListener((response) => {
+        handleNotificationAction(db, response.actionIdentifier, response.notification).catch(
+          () => {},
+        );
+      });
+    });
+    return () => {
+      live = false;
+      sub?.remove();
+    };
+  }, [db]);
+
   const enabled = settings.data?.reminders ?? false;
-  const minute = settings.data?.reminderMinute ?? 540;
-  const hemisphere = settings.data?.hemisphere ?? 'north';
   const hasPlants = (garden.data?.plants.length ?? 0) > 0;
 
   // Ask for permission once there's a plant to be reminded about, not at first launch.
@@ -56,10 +76,8 @@ export function ReminderSync() {
       syncReminders([]).catch(() => {});
       return;
     }
-    const tasks = mergeSharedPots(buildTasks(garden.data, hemisphere, today));
-    const plans = planReminders(tasks, today, minute);
-    syncReminders(plans).catch(() => {});
-  }, [garden.data, settings.data, enabled, minute, hemisphere, today, granted]);
+    syncReminders(remindersFor(garden.data, settings.data, today)).catch(() => {});
+  }, [garden.data, settings.data, enabled, today, granted]);
 
   return null;
 }

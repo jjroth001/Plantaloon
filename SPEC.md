@@ -211,6 +211,17 @@ Modelled on the depth of Planta's plant pages, in our own words and look
 - Outdoor plants can be "Planted in the ground": no pot details or shared pots, no repotting
   reminder offered, and watering starts 1.5× less often than the care profile's pot interval.
 
+## v1.8 — calmer pickers, reminder buttons, widget (2026-10-16)
+
+- Remaining chip pickers replaced: rooms as a list, air and warmth as one-row segmented
+  controls, archive reasons as a list, light meter rooms as rows with Save.
+- The daily reminder has "Watered" (marks every plant that needs water today as done) and
+  "Remind me later" (shows it again in 2 hours). Both work with the app closed, through an
+  expo-task-manager background task; with the app open, a response listener does the same.
+- Home-screen widget (react-native-android-widget, 4×2, resizable): today's tasks, "+N more",
+  "All caught up · next: …", and a Watered button. Redrawn by the app on every change and by
+  Android every 30 minutes.
+
 ## v2 and later
 - More scheduled tasks (mist, rotate, repot reminders).
 - Home-screen widget ("3 plants need water").

@@ -4,7 +4,14 @@ import { taskLabel } from './tasks';
 
 const DAYS_AHEAD = 14;
 
-export type PlannedReminder = { date: string; at: number; title: string; body: string };
+export type PlannedReminder = {
+  date: string;
+  at: number;
+  title: string;
+  body: string;
+  /** Something needs water that day (the notification offers a Watered button). */
+  water: boolean;
+};
 
 function names(list: CareTask[]): string {
   const shown = list.slice(0, 3).map((t) => t.name);
@@ -52,6 +59,7 @@ export function planReminders(
       at,
       title: plants === 1 ? '1 plant could use some care' : `${plants} plants could use some care`,
       body: parts.join(' · '),
+      water: water.length > 0,
     });
   }
   return plans;

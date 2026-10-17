@@ -247,7 +247,8 @@ export function RadioList<T extends string | number>({
   onChange,
   boxed = true,
 }: {
-  options: readonly { value: T; label: string }[];
+  /** `hint`: an optional second line saying what the choice means. */
+  options: readonly { value: T; label: string; hint?: string }[];
   value: T | null;
   onChange: (value: T) => void;
   /** In its own card (default), or bare when already inside one. */
@@ -267,7 +268,14 @@ export function RadioList<T extends string | number>({
           }}
           style={({ pressed }) => [styles.radioRow, pressed && styles.pressed]}>
           <RadioMark selected={selected} />
-          <ThemedText style={styles.flexOne}>{option.label}</ThemedText>
+          <View style={styles.flexOne}>
+            <ThemedText>{option.label}</ThemedText>
+            {option.hint && (
+              <ThemedText type="caption" color="textSecondary">
+                {option.hint}
+              </ThemedText>
+            )}
+          </View>
         </Pressable>
       </View>
     );

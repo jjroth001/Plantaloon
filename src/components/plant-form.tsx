@@ -12,6 +12,7 @@ import {
   Divider,
   Field,
   IconButton,
+  RadioList,
   Segmented,
   SwitchRow,
   TextField,
@@ -181,19 +182,11 @@ export function PlantForm({
           </Field>
 
           <Field label="Pot material">
-            <View style={styles.chips}>
-              {MATERIALS.map((m) => (
-                <Chip
-                  key={m}
-                  label={POT_MATERIAL[m].label}
-                  selected={value.potMaterial === m}
-                  onPress={() => set('potMaterial', m)}
-                />
-              ))}
-            </View>
-            <ThemedText type="caption" color="textSecondary">
-              {POT_MATERIAL[value.potMaterial].hint}
-            </ThemedText>
+            <RadioList
+              options={MATERIALS.map((m) => ({ value: m, ...POT_MATERIAL[m] }))}
+              value={value.potMaterial}
+              onChange={(m) => set('potMaterial', m)}
+            />
           </Field>
 
           <Card>

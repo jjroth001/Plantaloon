@@ -84,6 +84,7 @@ export default function LogEntry() {
                 setPhotos((list) => list.filter((p) => p !== photo));
               }}>
               <Image
+                cachePolicy="memory-disk"
                 source={{ uri: photoUri(photo.file) }}
                 style={styles.thumb}
                 contentFit="cover"

@@ -1,6 +1,7 @@
 import { getSettings } from './settings';
-import { useDbQuery } from './use-db-query';
+import { useSharedQuery } from './use-shared-query';
 
+/** Settings, live; loaded once and shared by every screen. */
 export function useSettings() {
-  return useDbQuery(['setting'], getSettings);
+  return useSharedQuery('settings', ['setting'], getSettings);
 }

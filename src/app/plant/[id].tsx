@@ -40,7 +40,7 @@ import {
   type Schedule,
   type Task,
 } from '@/db/types';
-import { useDbQuery } from '@/db/use-db-query';
+import { useSharedQuery } from '@/db/use-shared-query';
 import { useSettings } from '@/db/use-settings';
 import { useClimateLows } from '@/hooks/use-climate';
 import { useGarden } from '@/hooks/use-garden';
@@ -74,7 +74,8 @@ export default function PlantScreen() {
   const garden = useGarden();
   const settings = useSettings();
   const today = useToday();
-  const journal = useDbQuery(['entry', 'photo'], (d) => listJournal(d, id), [id]);
+  // Shared per plant, so coming back to a plant shows its journal straight away.
+  const journal = useSharedQuery(`journal:${id}`, ['entry', 'photo'], (d) => listJournal(d, id));
   const [undo, setUndo] = useState<Undo | null>(null);
   // Care, About, Growing, Problems and Journal start closed.
   const [openFolds, setOpenFolds] = useState<string[]>([]);
@@ -337,6 +338,7 @@ export default function PlantScreen() {
               accessibilityLabel={`Photo from ${formatRelativeDay(dateOf(photo.takenAt), today)}`}
               onPress={() => openPhotos(photo.id)}>
               <Image
+                cachePolicy="memory-disk"
                 source={{ uri: photoUri(photo.file) }}
                 style={[styles.thumb, { backgroundColor: theme.element }]}
                 contentFit="cover"
@@ -579,6 +581,7 @@ function JournalRow({
           <View style={styles.journalPhotos}>
             {entry.photos.map((photo) => (
               <Image
+                cachePolicy="memory-disk"
                 key={photo.id}
                 source={{ uri: photoUri(photo.file) }}
                 style={[styles.journalThumb, { backgroundColor: theme.element }]}

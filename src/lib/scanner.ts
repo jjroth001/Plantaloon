@@ -4,7 +4,7 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 
 import { ALL_SPECIES, getSpecies, speciesId, type Species } from '@/catalog';
 import { baseSpecies } from '@/catalog/media';
-import { SCAN_DIM, SCAN_MODEL, SCAN_SCALES, SCAN_SPECIES, SCAN_VECTORS } from '@/catalog/scan-data';
+import type * as ScanDataModule from '@/catalog/scan-data';
 
 import { decodeBase64 } from './climate';
 
@@ -13,6 +13,14 @@ import { decodeBase64 } from './climate';
  * photo into a fingerprint; this file matches it against every catalog species. The model
  * (87 MB) is downloaded once on request; photos never leave the phone.
  */
+
+// The fingerprints are 1.3 MB of code: loaded the first time they're needed, not at startup.
+let scanData: typeof ScanDataModule | null = null;
+function data(): typeof ScanDataModule {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  scanData ??= require('@/catalog/scan-data') as typeof ScanDataModule;
+  return scanData;
+}
 
 /** Where the model is published. Must be a public HTTPS link. */
 export const SCAN_MODEL_URL =
@@ -27,10 +35,13 @@ function modelFile(): File {
 
 export function scannerReady(): boolean {
   const file = modelFile();
-  return file.exists && file.size === SCAN_MODEL.bytes;
+  return file.exists && file.size === data().SCAN_MODEL.bytes;
 }
 
-export const SCAN_MODEL_MB = Math.round(SCAN_MODEL.bytes / 1e6);
+/** The model's download size in MB. */
+export function scanModelMb(): number {
+  return Math.round(data().SCAN_MODEL.bytes / 1e6);
+}
 
 /** Downloads the model once, checks it's intact, and keeps it in the app's storage. */
 export async function downloadScanner(
@@ -45,14 +56,16 @@ export async function downloadScanner(
   const task = new DownloadTask(SCAN_MODEL_URL, partial, {
     signal,
     onProgress: ({ bytesWritten, totalBytes }) =>
-      onProgress(Math.min(1, bytesWritten / (totalBytes > 0 ? totalBytes : SCAN_MODEL.bytes))),
+      onProgress(
+        Math.min(1, bytesWritten / (totalBytes > 0 ? totalBytes : data().SCAN_MODEL.bytes)),
+      ),
   });
   try {
     const file = await task.downloadAsync();
     if (!file) throw new Error('The download was interrupted. Try again.');
     if (
-      file.size !== SCAN_MODEL.bytes ||
-      (await PlantScanner.sha256(file.uri)) !== SCAN_MODEL.sha256
+      file.size !== data().SCAN_MODEL.bytes ||
+      (await PlantScanner.sha256(file.uri)) !== data().SCAN_MODEL.sha256
     ) {
       file.delete();
       throw new Error('The downloaded file was damaged. Please try again.');
@@ -78,8 +91,8 @@ let fingerprints: { vectors: Int8Array; scales: Float32Array } | null = null;
 
 function loadFingerprints() {
   if (!fingerprints) {
-    const v = decodeBase64(SCAN_VECTORS);
-    const s = decodeBase64(SCAN_SCALES);
+    const v = decodeBase64(data().SCAN_VECTORS);
+    const s = decodeBase64(data().SCAN_SCALES);
     fingerprints = {
       vectors: new Int8Array(v.buffer, v.byteOffset, v.byteLength),
       scales: new Float32Array(s.slice().buffer),
@@ -98,6 +111,7 @@ export type ScanMatch = { species: Species; score: number };
 /** The closest catalog species to a photo's fingerprint, best first. */
 export function rankMatches(embedding: ArrayLike<number>, count = 5): ScanMatch[] {
   const { vectors, scales } = loadFingerprints();
+  const { SCAN_DIM, SCAN_SPECIES } = data();
   const scores = new Float32Array(SCAN_SPECIES.length);
   for (let i = 0; i < SCAN_SPECIES.length; i++) {
     let dot = 0;

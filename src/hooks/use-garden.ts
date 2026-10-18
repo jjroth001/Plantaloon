@@ -1,7 +1,7 @@
 import { loadGarden } from '@/db/garden';
-import { useDbQuery } from '@/db/use-db-query';
+import { useSharedQuery } from '@/db/use-shared-query';
 
-/** Rooms, plants, schedules and care history, live. */
+/** Rooms, plants, schedules and care history, live; loaded once and shared by every screen. */
 export function useGarden() {
-  return useDbQuery(['room', 'plant', 'schedule', 'entry', 'photo'], loadGarden);
+  return useSharedQuery('garden', ['room', 'plant', 'schedule', 'entry', 'photo'], loadGarden);
 }

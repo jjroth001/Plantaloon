@@ -25,6 +25,7 @@ export function CatalogImage({
   if (photo) {
     return (
       <Image
+        cachePolicy="memory-disk"
         source={photo.image}
         style={{ width: size, height: size, borderRadius, backgroundColor: theme.element }}
         contentFit="cover"

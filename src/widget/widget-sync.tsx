@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 
-import { useDbQuery } from '@/db/use-db-query';
+import { useSettings } from '@/db/use-settings';
+import { useGarden } from '@/hooks/use-garden';
 import { useToday } from '@/hooks/use-today';
 
-import { loadWidgetModel } from './load-widget-model';
 import { redrawWidgets, widgetsSupported } from './refresh';
-import type { WidgetModel } from './widget-model';
+import { buildWidgetModel, type WidgetModel } from './widget-model';
 
 /**
  * Redraws any home-screen widgets whenever what they show changes, so watering a plant in
@@ -19,12 +19,13 @@ export function WidgetSync() {
 
 function WidgetSyncInner() {
   const today = useToday();
-  const model = useDbQuery(
-    ['room', 'plant', 'schedule', 'entry', 'setting'],
-    (db) => loadWidgetModel(db),
-    [today],
-  );
-  const key = model.status === 'success' ? JSON.stringify(model.data) : null;
+  // The garden the screens already share: no extra loading after each change.
+  const garden = useGarden();
+  const settings = useSettings();
+  const key =
+    garden.data && settings.data
+      ? JSON.stringify(buildWidgetModel(garden.data, settings.data, today))
+      : null;
 
   useEffect(() => {
     if (key === null) return;

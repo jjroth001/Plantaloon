@@ -22,18 +22,14 @@ import { ThemedText } from '@/components/themed-text';
 import { Button } from '@/components/ui';
 import {
   deletePlant,
-  getPlant,
-  getSchedules,
-  listPlants,
-  listRooms,
   removeSchedule,
   setPotMates,
   setSchedule,
   syncPotDetails,
   updatePlant,
 } from '@/db/garden';
-import { useDbQuery } from '@/db/use-db-query';
 import { useSettings } from '@/db/use-settings';
+import { useGarden } from '@/hooks/use-garden';
 import { suggestedWaterDays } from '@/lib/schedule';
 import { successFeedback } from '@/lib/haptics';
 import { deletePhotoFiles } from '@/lib/photos';
@@ -41,40 +37,32 @@ import { deletePhotoFiles } from '@/lib/photos';
 export default function EditPlant() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const db = useSQLiteContext();
-  const rooms = useDbQuery(['room'], listRooms);
-  const plants = useDbQuery(['plant'], listPlants);
+  // The shared garden is usually loaded already, so the screen opens with everything in place.
+  const garden = useGarden();
   const settings = useSettings();
   const unit: LengthUnit = settings.data?.temperatureUnit === 'F' ? 'in' : 'cm';
-  const loaded = useDbQuery(
-    [],
-    async (d) => {
-      const plant = await getPlant(d, id);
-      const schedules = await getSchedules(d, id);
-      return { plant, schedules };
-    },
-    [id],
-  );
+  const rooms = garden.data?.rooms;
+  const plants = garden.data?.plants;
+  const schedules = garden.data?.schedules.filter((x) => x.plantId === id) ?? [];
   const [form, setForm] = useState<PlantFormValue | null>(null);
   const [spotForm, setSpot] = useState<SpotValue | null>(null);
   const [openFolds, setOpenFolds] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
 
-  const plant = loaded.data?.plant;
+  const plant = plants?.find((p) => p.id === id);
   // Wait for settings too, so a typed diameter is read in the right unit.
-  if (!plant || !rooms.data || !plants.data || !settings.data) {
+  if (!plant || !rooms || !plants || !settings.data) {
     return <Screen belowHeader>{null}</Screen>;
   }
   const initialMates = plant.sharedPot
-    ? plants.data
-        .filter((p) => p.sharedPot === plant.sharedPot && p.id !== plant.id)
-        .map((p) => p.id)
+    ? plants.filter((p) => p.sharedPot === plant.sharedPot && p.id !== plant.id).map((p) => p.id)
     : [];
   const care = careFor(plant.groupId, plant.speciesId);
-  const initialExtras = loaded
-    .data!.schedules.filter((x) => x.task !== 'water' && x.task !== 'fertilize' && x.enabled)
+  const initialExtras = schedules
+    .filter((x) => x.task !== 'water' && x.task !== 'fertilize' && x.enabled)
     .map((x) => ({ task: x.task, label: x.label, intervalDays: x.intervalDays }));
   const schedule = (task: 'water' | 'fertilize') => {
-    const s = loaded.data!.schedules.find((x) => x.task === task);
+    const s = schedules.find((x) => x.task === task);
     return { enabled: s?.enabled ?? false, intervalDays: s?.intervalDays ?? 7 };
   };
   const value: PlantFormValue = form ?? {
@@ -98,7 +86,7 @@ export default function EditPlant() {
     draught: plant.spotDraught,
     nearHeater: plant.nearHeater,
   };
-  const room = rooms.data.find((r) => r.id === (value.roomId ?? plant.roomId));
+  const room = rooms.find((r) => r.id === (value.roomId ?? plant.roomId));
 
   // A new pot re-suggests the watering interval, unless it was set by hand.
   const update = (next: PlantFormValue) => {
@@ -108,7 +96,7 @@ export default function EditPlant() {
         v.potSize,
         v.potMaterial,
         diameterCm(v.potDiameter, unit),
-        isInGround(v, rooms.data!),
+        isInGround(v, rooms),
       );
     const before = suggest(value);
     const after = suggest(next);
@@ -118,16 +106,16 @@ export default function EditPlant() {
     setForm(next);
   };
 
-  const ground = isInGround(value, rooms.data);
+  const ground = isInGround(value, rooms);
 
   // A cutting is still rooting on its own, so it can't share a pot yet.
   const mateCandidates = plant.propStage
     ? []
-    : plants.data.filter((p) => p.id !== plant.id && !p.propStage);
+    : plants.filter((p) => p.id !== plant.id && !p.propStage);
   const formProps = {
     value,
     onChange: update,
-    rooms: rooms.data,
+    rooms: rooms,
     unit,
     mateCandidates,
     namePlaceholder: displayName({ ...plant, nickname: null }),
@@ -136,7 +124,7 @@ export default function EditPlant() {
   };
   const summary = (section: FormSection) =>
     sectionSummary(section, value, {
-      rooms: rooms.data!,
+      rooms: rooms,
       unit,
       plants: mateCandidates,
       name: displayName({ ...plant, nickname: null }),

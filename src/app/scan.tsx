@@ -16,7 +16,7 @@ import { pickImage, type PickedImage } from '@/lib/photos';
 import {
   downloadScanner,
   scanPhoto,
-  SCAN_MODEL_MB,
+  scanModelMb,
   scannerReady,
   scannerSupported,
   type ScanMatch,
@@ -96,12 +96,12 @@ export default function ScanScreen() {
           </ThemedText>
           <ThemedText type="body" color="textSecondary" style={styles.center}>
             The scanner runs entirely on your phone: photos are never uploaded. It needs a one-time
-            download of {SCAN_MODEL_MB} MB, so Wi-Fi is best.
+            download of {scanModelMb()} MB, so Wi-Fi is best.
           </ThemedText>
         </View>
         {progress == null ? (
           <Button
-            title={`Download the scanner (${SCAN_MODEL_MB} MB)`}
+            title={`Download the scanner (${scanModelMb()} MB)`}
             icon="download-simple"
             onPress={download}
           />
@@ -165,7 +165,12 @@ export default function ScanScreen() {
 
       {state.kind !== 'idle' && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.photoWrap}>
-          <Image source={{ uri: state.photo.uri }} style={styles.photo} contentFit="cover" />
+          <Image
+            cachePolicy="memory-disk"
+            source={{ uri: state.photo.uri }}
+            style={styles.photo}
+            contentFit="cover"
+          />
           {state.kind === 'scanning' && (
             <ThemedText type="label" color="textSecondary">
               Looking closely…

@@ -21,7 +21,7 @@ import { setSetting } from '@/db/settings';
 import { useSettings } from '@/db/use-settings';
 import { pickBackup, restoreBackup, shareBackup } from '@/lib/data-transfer';
 import { requestClimatePlace } from '@/lib/location';
-import { removeScanner, SCAN_MODEL_MB, scannerReady, scannerSupported } from '@/lib/scanner';
+import { removeScanner, scanModelMb, scannerReady, scannerSupported } from '@/lib/scanner';
 import { formatRelativeDay, dateOf } from '@/lib/dates';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
 import { remindersSupported, requestNotificationPermission } from '@/lib/notifications';
@@ -292,13 +292,13 @@ export default function SettingsScreen() {
               <ListRow
                 icon="magnifying-glass-plus"
                 title="Plant scanner"
-                subtitle={`On this phone (${SCAN_MODEL_MB} MB). Remove to free space; you can download it again.`}
+                subtitle={`On this phone (${scanModelMb()} MB). Remove to free space; you can download it again.`}
                 right={
                   <Pressable
                     accessibilityRole="button"
                     hitSlop={8}
                     onPress={() =>
-                      Alert.alert('Remove the plant scanner?', `Frees ${SCAN_MODEL_MB} MB.`, [
+                      Alert.alert('Remove the plant scanner?', `Frees ${scanModelMb()} MB.`, [
                         { text: 'Cancel', style: 'cancel' },
                         {
                           text: 'Remove',

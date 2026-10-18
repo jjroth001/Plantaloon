@@ -18,6 +18,8 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         animation: 'fade',
+        // Tabs out of sight don't redraw on every change; they catch up when shown.
+        freezeOnBlur: true,
         sceneStyle: { backgroundColor: theme.background },
         tabBarActiveTintColor: theme.tint,
         tabBarInactiveTintColor: theme.textSecondary,

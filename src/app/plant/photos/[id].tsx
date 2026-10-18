@@ -83,6 +83,7 @@ export default function PlantPhotos() {
           onMomentumScrollEnd={(e) => setIndex(Math.round(e.nativeEvent.contentOffset.x / width))}
           renderItem={({ item }) => (
             <Image
+              cachePolicy="memory-disk"
               source={{ uri: photoUri(item.file) }}
               style={{ width, height }}
               contentFit="contain"

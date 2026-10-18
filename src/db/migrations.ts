@@ -128,6 +128,11 @@ const MIGRATIONS: string[] = [
   `
   ALTER TABLE plant ADD COLUMN in_ground INTEGER NOT NULL DEFAULT 0;
   `,
+
+  // 8: faster "when was each task last done" lookups (run every time the garden loads)
+  `
+  CREATE INDEX IF NOT EXISTS entry_type_plant_at ON entry (type, plant_id, at);
+  `,
 ];
 
 /** The migration SQL in order (for tests that build a database from scratch). */

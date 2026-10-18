@@ -19,17 +19,9 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Button, Card, Field, RadioList } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
-import {
-  addPhoto,
-  adoptSpot,
-  createPlant,
-  listPlants,
-  listRooms,
-  setPotMates,
-  syncPotDetails,
-} from '@/db/garden';
+import { addPhoto, adoptSpot, createPlant, setPotMates, syncPotDetails } from '@/db/garden';
 import { useSettings } from '@/db/use-settings';
-import { useDbQuery } from '@/db/use-db-query';
+import { useGarden } from '@/hooks/use-garden';
 import { choosePhoto } from '@/lib/add-photo';
 import { LIGHT_LABEL } from '@/lib/light';
 import { addDays, todayString } from '@/lib/dates';
@@ -70,8 +62,10 @@ export default function AddPlantDetails() {
   const params = useLocalSearchParams<{ speciesId?: string; groupId?: string; name?: string }>();
   const db = useSQLiteContext();
   const theme = useTheme();
-  const rooms = useDbQuery(['room'], listRooms);
-  const plants = useDbQuery(['plant'], listPlants);
+  // Shared and usually loaded already, so each step opens with its choices in place.
+  const garden = useGarden();
+  const rooms = { data: garden.data?.rooms };
+  const plants = { data: garden.data?.plants };
   const settings = useSettings();
   const unit = settings.data?.temperatureUnit === 'F' ? 'in' : 'cm';
   const species = getSpecies(params.speciesId);
@@ -271,6 +265,7 @@ export default function AddPlantDetails() {
                 style={[styles.photo, { backgroundColor: theme.tintSoft }]}>
                 {photo ? (
                   <Image
+                    cachePolicy="memory-disk"
                     source={{ uri: photoUri(photo.file) }}
                     style={styles.photoImage}
                     contentFit="cover"

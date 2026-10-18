@@ -29,6 +29,7 @@ export function PlantAvatar({
   if (photo) {
     return (
       <Image
+        cachePolicy="memory-disk"
         source={{ uri: photoUri(photo.file) }}
         style={{ width: size, height: size, borderRadius, backgroundColor: theme.element }}
         contentFit="cover"
@@ -41,6 +42,7 @@ export function PlantAvatar({
   if (fallback) {
     return (
       <Image
+        cachePolicy="memory-disk"
         source={fallback.image}
         style={{ width: size, height: size, borderRadius, backgroundColor: theme.element }}
         contentFit="cover"

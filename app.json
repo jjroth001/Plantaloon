@@ -8,6 +8,7 @@
     "scheme": "plantaloon",
     "userInterfaceStyle": "automatic",
     "android": {
+      "allowBackup": false,
       "package": "org.plantaloon.app",
       "versionCode": 16,
       "adaptiveIcon": {

@@ -17,12 +17,23 @@ function photoDir(): Directory {
   return dir;
 }
 
+/**
+ * A photo's file name, as stored: a plain name in the photos folder, never a path. Names come
+ * from the database, which a restored backup fills, so anything else is refused.
+ */
+export function isSafePhotoName(name: string): boolean {
+  return /^[\w-]+\.(jpg|jpeg|png|webp)$/i.test(name);
+}
+
+/** A name that never exists, for a stored name that isn't safe to use as a path. */
+const MISSING = 'missing.jpg';
+
 export function photoUri(file: string): string {
-  return new File(photoDir(), file).uri;
+  return new File(photoDir(), isSafePhotoName(file) ? file : MISSING).uri;
 }
 
 export function photoFile(file: string): File {
-  return new File(photoDir(), file);
+  return new File(photoDir(), isSafePhotoName(file) ? file : MISSING);
 }
 
 export type StoredPhoto = { file: string; width: number; height: number };
@@ -47,7 +58,7 @@ export async function storePhoto(uri: string, width: number, height: number): Pr
 
 export function deletePhotoFiles(files: readonly (string | null | undefined)[]) {
   for (const name of files) {
-    if (!name) continue;
+    if (!name || !isSafePhotoName(name)) continue;
     try {
       const file = new File(photoDir(), name);
       if (file.exists) file.delete();

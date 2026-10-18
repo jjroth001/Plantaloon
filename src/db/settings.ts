@@ -45,13 +45,43 @@ function defaultSettings(): Settings {
   };
 }
 
+/** A stored value is used only if it has the same shape as the default. */
+function isValid(key: keyof Settings, value: unknown, defaults: Settings): boolean {
+  if (key === 'climatePlace') {
+    if (value === null) return true;
+    const place = value as { lat?: unknown; lon?: unknown };
+    return (
+      typeof place === 'object' &&
+      Number.isFinite(place.lat) &&
+      Number.isFinite(place.lon) &&
+      Math.abs(place.lat as number) <= 90 &&
+      Math.abs(place.lon as number) <= 180
+    );
+  }
+  if (key === 'lastBackupAt') return value === null || Number.isFinite(value);
+  const fallback = defaults[key];
+  if (typeof fallback === 'number') return Number.isFinite(value);
+  return typeof value === typeof fallback;
+}
+
 /** All settings, with defaults filled in for anything never set. Values are stored as JSON. */
 export async function getSettings(db: SQLiteDatabase): Promise<Settings> {
   const rows = await db.getAllAsync<{ key: string; value: string }>(
     'SELECT key, value FROM setting',
   );
-  const stored = Object.fromEntries(rows.map((row) => [row.key, JSON.parse(row.value)]));
-  return { ...defaultSettings(), ...stored };
+  const defaults = defaultSettings();
+  const settings: Record<string, unknown> = { ...defaults };
+  for (const row of rows) {
+    if (!(row.key in defaults)) continue;
+    let value: unknown;
+    try {
+      value = JSON.parse(row.value);
+    } catch {
+      continue; // Damaged (or from a tampered backup): keep the default.
+    }
+    if (isValid(row.key as keyof Settings, value, defaults)) settings[row.key] = value;
+  }
+  return settings as Settings;
 }
 
 export async function setSetting<K extends keyof Settings>(

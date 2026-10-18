@@ -1,3 +1,4 @@
+import { isSafePhotoName } from '@/lib/photos';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 import { transaction } from './transaction';
@@ -148,7 +149,7 @@ export function parsePhotoLine(line: string): PhotoLine | null {
     const value = JSON.parse(line);
     if (typeof value?.photo === 'string' && typeof value?.data === 'string') {
       // Only plain file names: never write outside the photos folder.
-      if (!/^[\w-]+\.(jpg|jpeg|png|webp)$/i.test(value.photo)) return null;
+      if (!isSafePhotoName(value.photo)) return null;
       return value;
     }
   } catch {
@@ -169,6 +170,8 @@ export async function restoreTables(db: SQLiteDatabase, backup: BackupHeader): P
       const sql = `INSERT OR REPLACE INTO ${table} (${columns.join(', ')}) VALUES (${columns.map(() => '?').join(', ')})`;
       for (const row of backup.tables[table]) {
         if (table === 'setting' && LOCAL_SETTINGS.has(String(row.key))) continue;
+        // A photo's file name later becomes a path: plain names only.
+        if (table === 'photo' && !isSafePhotoName(String(row.file))) continue;
         await db.runAsync(sql, ...columns.map((c) => row[c] ?? COLUMN_DEFAULTS[c] ?? null));
       }
     }

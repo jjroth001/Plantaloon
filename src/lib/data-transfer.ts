@@ -20,8 +20,11 @@ import { photoFile } from './photos';
 /** Writes a backup file (data + photos) to the cache and opens Android's share sheet. */
 export async function shareBackup(db: SQLiteDatabase): Promise<void> {
   const header = await backupHeader(db);
+  // Earlier backups waiting in the cache are copies of everything, photos included: clear them.
+  for (const old of new Directory(Paths.cache).list()) {
+    if (old instanceof File && /^plantaloon-backup-.*\.jsonl$/.test(old.name)) old.delete();
+  }
   const file = new File(Paths.cache, `plantaloon-backup-${todayString()}.jsonl`);
-  if (file.exists) file.delete();
   file.create();
   file.write(JSON.stringify(header) + '\n');
   for (const row of header.tables.photo) {

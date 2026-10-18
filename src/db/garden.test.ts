@@ -35,7 +35,7 @@ import {
   updatePlant,
   type NewPlant,
 } from './garden';
-import { setSetting } from './settings';
+import { getSettings, setSetting } from './settings';
 
 // expo-crypto is native; use Node's UUIDs in tests. (`mock` prefix: allowed in jest.mock.)
 jest.mock('expo-crypto', () => ({ randomUUID: () => mockRandomUUID() }));
@@ -216,6 +216,35 @@ test('backups made before the wishlist existed still restore', async () => {
   const parsed = parseBackupHeader(JSON.stringify(old));
   expect(parsed.tables.wish).toEqual([]);
   await restoreTables(openTestDatabase(), parsed);
+});
+
+test("a tampered backup can't point at other files or break the app", async () => {
+  const { db, roomId } = await setup();
+  const plantId = await createPlant(db, pothos(roomId), T0);
+  await addPhoto(db, { plantId, file: 'ok.jpg', width: 10, height: 10, takenAt: T0 }, T0);
+  const header = JSON.parse(JSON.stringify(await backupHeader(db, T0)));
+  // A photo row naming a file outside the photos folder, and nonsense choices and settings.
+  header.tables.photo.push({ ...header.tables.photo[0], id: 'evil', file: '../plantaloon.db' });
+  header.tables.plant[0].pot_material = 'lava';
+  header.tables.plant[0].pot_size = 'xl';
+  header.tables.room[0].icon = 'not-an-icon';
+  header.tables.setting.push(
+    { key: 'reminderMinute', value: 'not json' },
+    { key: 'haptics', value: '"yes"' },
+    { key: 'climatePlace', value: '{"lat":999,"lon":0}' },
+  );
+
+  const fresh = openTestDatabase();
+  await restoreTables(fresh, parseBackupHeader(JSON.stringify(header)));
+  const files = await fresh.getAllAsync<{ file: string }>('SELECT file FROM photo');
+  expect(files.map((f) => f.file)).toEqual(['ok.jpg']);
+  const garden = await loadGarden(fresh);
+  expect(garden.plants[0]).toMatchObject({ potMaterial: 'plastic', potSize: 'm' });
+  expect(garden.rooms[0].icon).toBe('house');
+  const settings = await getSettings(fresh);
+  expect(settings.reminderMinute).toBe(9 * 60);
+  expect(settings.haptics).toBe(true);
+  expect(settings.climatePlace).toBeNull();
 });
 
 test('backup parsing rejects other files and unsafe photo names', () => {

@@ -27,7 +27,7 @@
 
 ## Privacy
 
-Plantaloon has no accounts, no analytics, no ads and no servers. Everything is stored in a database on your phone and leaves it only when you share a backup file yourself.
+Plantaloon has no accounts, no analytics, no ads and no servers. Everything is stored in a database on your phone and leaves it only when you share a backup file yourself. Android's own automatic cloud backup is turned off for Plantaloon, so your plants, photos and rough location aren't copied to your Google account behind your back; use Settings › Back up instead. Your rough location is never included in backups.
 
 **Why each permission:**
 

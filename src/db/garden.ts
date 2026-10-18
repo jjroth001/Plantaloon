@@ -3,10 +3,11 @@ import type { SQLiteDatabase } from 'expo-sqlite';
 import type { LightTier, PropagationId } from '@/catalog/types';
 import type { IconName } from '@/components/icons/icon';
 
+import { LIGHT_TIERS } from '@/lib/light';
 import { entryTypeFor, kindOf, taskForEntry } from '@/lib/tasks';
 
 import { newId } from './ids';
-import { HEALTH } from './types';
+import { ARCHIVE_REASON, HEALTH, POT_MATERIAL, ROOM_ICONS } from './types';
 import { transaction } from './transaction';
 import type {
   ArchiveReason,
@@ -104,15 +105,20 @@ type PhotoRow = {
   taken_at: number;
 };
 
+/** A stored choice, if it's one of `allowed` (a restored backup could hold anything). */
+function oneOf<T extends string, F>(value: unknown, allowed: readonly T[], fallback: F): T | F {
+  return allowed.includes(value as T) ? (value as T) : fallback;
+}
+
 const toRoom = (r: RoomRow): Room => ({
   id: r.id,
   name: r.name,
-  icon: r.icon as IconName,
-  lightTier: r.light_tier as LightTier | null,
+  icon: oneOf(r.icon, ROOM_ICONS, 'house'),
+  lightTier: oneOf(r.light_tier, LIGHT_TIERS, null),
   lightLux: r.light_lux,
   growLight: r.grow_light === 1,
-  humidity: r.humidity as RoomHumidity | null,
-  warmth: r.warmth as RoomWarmth | null,
+  humidity: oneOf(r.humidity, ['dry', 'normal', 'humid'] as const, null),
+  warmth: oneOf(r.warmth, ['cool', 'normal', 'warm'] as const, null),
   draught: r.draught === 1,
   outdoor: r.outdoor === 1,
   sortOrder: r.sort_order,
@@ -126,19 +132,19 @@ const toPlant = (r: PlantRow): Plant => ({
   nickname: r.nickname,
   speciesId: r.species_id,
   groupId: r.group_id,
-  potSize: r.pot_size as PotSize,
+  potSize: oneOf(r.pot_size, ['s', 'm', 'l'] as const, 'm'),
   potDrainage: r.pot_drainage === 1,
-  potMaterial: (r.pot_material ?? 'plastic') as PotMaterial,
+  potMaterial: oneOf(r.pot_material, Object.keys(POT_MATERIAL) as PotMaterial[], 'plastic'),
   potDiameterCm: r.pot_diameter_cm,
   sharedPot: r.shared_pot,
   inGround: r.in_ground === 1,
-  spotLight: r.spot_light_tier as LightTier | null,
+  spotLight: oneOf(r.spot_light_tier, LIGHT_TIERS, null),
   spotLux: r.spot_light_lux,
   spotGrowLight: r.spot_grow_light == null ? null : r.spot_grow_light === 1,
   spotDraught: r.spot_draught == null ? null : r.spot_draught === 1,
   nearHeater: r.near_heater === 1,
   archivedAt: r.archived_at ?? null,
-  archiveReason: (r.archive_reason ?? null) as ArchiveReason | null,
+  archiveReason: oneOf(r.archive_reason, Object.keys(ARCHIVE_REASON) as ArchiveReason[], null),
   archiveNote: r.archive_note ?? null,
   coverPhotoId: r.cover_photo_id,
   acquiredOn: r.acquired_on,

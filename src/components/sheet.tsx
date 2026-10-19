@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -43,7 +43,8 @@ export function Sheet({
       statusBarTranslucent
       navigationBarTranslucent
       onRequestClose={onClose}>
-      <View style={styles.fill}>
+      {/* The modal's window doesn't resize for the keyboard, so lift the sheet above it. */}
+      <KeyboardAvoidingView behavior="padding" style={styles.fill}>
         {/* Each layer is added and removed by itself, so its fade or slide runs both ways. */}
         {open && (
           <Animated.View
@@ -73,7 +74,7 @@ export function Sheet({
             {children}
           </Animated.View>
         )}
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

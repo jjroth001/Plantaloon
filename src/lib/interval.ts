@@ -42,7 +42,7 @@ export const INTERVAL_PRESETS: Record<TaskKind, readonly number[]> = {
   rotate: [7, 14, 30],
   clean: [30, 60, 90],
   prune: [90, 180, 365],
-  repot: [365, 730, 1095, 1460],
+  repot: [180, 365, 730, 1095, 1460],
   custom: [7, 30, 365],
 };
 

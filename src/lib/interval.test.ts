@@ -26,9 +26,9 @@ test('the most natural unit is picked', () => {
   expect(unitFor(45)).toBe('day');
 });
 
-test('every quick pick is allowed, and repotting goes up to 4 years', () => {
+test('every quick pick is allowed, and repotting goes from 6 months to 4 years', () => {
   for (const [kind, presets] of Object.entries(INTERVAL_PRESETS)) {
     for (const days of presets) expect(days).toBeLessThanOrEqual(INTERVAL_MAX[kind as 'water']);
   }
-  expect(INTERVAL_PRESETS.repot).toEqual([365, 730, 1095, 1460]);
+  expect(INTERVAL_PRESETS.repot).toEqual([180, 365, 730, 1095, 1460]);
 });

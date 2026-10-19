@@ -102,6 +102,8 @@ function Picker({
   const count = days / per;
   const clamp = (d: number) => Math.min(max, Math.max(1, d));
   const step = (delta: number) => {
+    // Never below one of the current unit: 1 year less shouldn't jump to 1 day.
+    if (count + delta < 1) return;
     const next = clamp((count + delta) * per);
     if (next !== days) {
       tapFeedback();

@@ -92,6 +92,24 @@ describe('nextDue', () => {
     expect(nextDue({ ...feed, care: { ...care, fertilizeInWinter: true } })).toBe('2031-11-14');
     expect(nextDue({ ...feed, hemisphere: 'south' })).toBe('2031-11-14');
   });
+
+  test('a restarted reminder ignores history that would make it due before the restart', () => {
+    const back = { addedOn: '2031-06-01', historyBeforeStart: true };
+    // Watered long before it came back: check the soil the day it returns.
+    expect(nextDue(input({ ...back, lastDone: '2031-02-01' }))).toBe('2031-06-01');
+    // Other tasks wait a full interval from then.
+    expect(
+      nextDue(input({ ...back, task: 'fertilize', intervalDays: 30, lastDone: '2031-02-01' })),
+    ).toBe('2031-07-01');
+    // An old "not yet" is out of date too.
+    expect(
+      nextDue(input({ ...back, lastDone: '2031-02-01', lastSkip: { on: '2031-02-08', days: 3 } })),
+    ).toBe('2031-06-01');
+    // History that's still good is kept: watered two days before the restart.
+    expect(nextDue(input({ ...back, lastDone: '2031-05-30' }))).toBe('2031-06-06');
+    // Without a restart, late is late.
+    expect(nextDue(input({ lastDone: '2031-02-01' }))).toBe('2031-02-15');
+  });
 });
 
 describe('suggestions', () => {

@@ -9,7 +9,7 @@ import { syncReminders } from './notifications';
 import { planReminders } from './reminders';
 
 /**
- * The daily reminders for the next two weeks, as the app schedules them, and whether nothing
+ * The daily reminders ahead (see planReminders), as the app schedules them, and whether nothing
  * needs care today (so a reminder still showing is out of date).
  */
 export function reminderPlan(garden: Garden, settings: Settings, today: string, now = Date.now()) {

@@ -92,12 +92,14 @@ export type DailyReminder = { at: number; title: string; body: string; water?: b
 // Reschedules run one at a time so a burst of changes can't leave stale reminders behind.
 let queue: Promise<unknown> = Promise.resolve();
 
-// What was last scheduled, so an unchanged plan (most changes: a photo, a note, coming back
-// to the app) doesn't cancel and re-create two weeks of notifications. Null = unknown.
-let lastSynced: string | null = null;
+const dailyId = (reminder: DailyReminder) => `${DAILY_PREFIX}${reminder.at}`;
+const categoryOf = (reminder: DailyReminder) =>
+  reminder.water ? CATEGORY.withWater : CATEGORY.plain;
 
 /**
- * Replaces every scheduled reminder with `reminders` (an empty list just cancels them).
+ * Makes the scheduled reminders match `reminders` (an empty list just cancels them). Only
+ * what changed is touched: most changes (a photo, a note, coming back to the app) leave the
+ * plan as it was, and nothing is cancelled and re-created for those.
  * `nothingDue`: nothing needs care today any more, so a reminder still on screen and a
  * pending "remind me later" are out of date and are taken away too.
  */
@@ -112,29 +114,31 @@ export function syncReminders(
       await Notifications.cancelScheduledNotificationAsync(LATER_ID).catch(() => {});
       await Notifications.dismissAllNotificationsAsync().catch(() => {});
     }
-    const upcoming = reminders.filter((r) => r.at > Date.now());
-    const plan = JSON.stringify(upcoming.map((r) => [r.at, r.title, r.body, r.water === true]));
-    if (plan === lastSynced) return;
-    lastSynced = null;
-    // Replace the daily ones only; a "remind me later" stays.
+    const wanted = new Map(
+      reminders.filter((r) => r.at > Date.now()).map((r) => [dailyId(r), r] as const),
+    );
+    // The daily ones only; a "remind me later" stays.
     for (const scheduled of await Notifications.getAllScheduledNotificationsAsync()) {
       if (!scheduled.identifier.startsWith(DAILY_PREFIX)) continue;
-      await Notifications.cancelScheduledNotificationAsync(scheduled.identifier);
+      const reminder = wanted.get(scheduled.identifier);
+      const same =
+        reminder != null &&
+        scheduled.content.title === reminder.title &&
+        scheduled.content.body === reminder.body &&
+        scheduled.content.categoryIdentifier === categoryOf(reminder);
+      if (same) wanted.delete(scheduled.identifier);
+      else await Notifications.cancelScheduledNotificationAsync(scheduled.identifier);
     }
-    if (upcoming.length === 0) {
-      lastSynced = plan;
-      return;
-    }
-    // Not remembered as done: it's tried again once permission is granted.
+    if (wanted.size === 0) return;
     if (!(await Notifications.getPermissionsAsync()).granted) return;
     await ensureChannel(Notifications);
-    for (const reminder of upcoming) {
+    for (const [identifier, reminder] of wanted) {
       await Notifications.scheduleNotificationAsync({
-        identifier: `${DAILY_PREFIX}${reminder.at}`,
+        identifier,
         content: {
           title: reminder.title,
           body: reminder.body,
-          categoryIdentifier: reminder.water ? CATEGORY.withWater : CATEGORY.plain,
+          categoryIdentifier: categoryOf(reminder),
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -143,7 +147,6 @@ export function syncReminders(
         },
       });
     }
-    lastSynced = plan;
   });
   queue = next.catch(() => {});
   return next;
@@ -154,7 +157,6 @@ export function clearAllReminders(): Promise<void> {
   if (!remindersSupported) return Promise.resolve();
   const next = queue.then(async () => {
     const Notifications = await notifications();
-    lastSynced = null;
     await Notifications.cancelAllScheduledNotificationsAsync();
     await Notifications.dismissAllNotificationsAsync().catch(() => {});
   });

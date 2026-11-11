@@ -19,9 +19,12 @@ export const widgetTaskHandler: WidgetTaskHandler = async ({
     const model: WidgetModel = await withBackgroundDb(async (db) => {
       // "Watered"; the rest of the widget uses OPEN_APP, handled natively.
       if (widgetAction === 'WIDGET_CLICK' && clickAction === WATER_ACTION) {
-        const watered = await waterEverythingDue(db).catch(() => 0);
-        if (watered > 0) await rescheduleReminders(db).catch(() => {});
+        await waterEverythingDue(db).catch(() => 0);
       }
+      // Every refresh, not just after "Watered": it keeps reminders planned ahead (and
+      // overdue plants coming up again) even if the app itself isn't opened for weeks.
+      // Nothing is rescheduled when the plan hasn't changed.
+      await rescheduleReminders(db).catch(() => {});
       return loadWidgetModel(db).catch((): WidgetModel => ({ kind: 'empty' }));
     });
     renderWidget(

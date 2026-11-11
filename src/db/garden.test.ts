@@ -163,7 +163,7 @@ test('deleting a room moves its plants', async () => {
   expect(garden.plants[0].roomId).toBe(other);
 });
 
-test('daily reminders: one per day when something is due, none for quiet days', async () => {
+test('daily reminders: one per day while something is waiting, none for quiet days', async () => {
   const { db, roomId } = await setup();
   await createPlant(db, pothos(roomId), T0);
   await createPlant(db, pothos(roomId, { nickname: 'Hall fern', lastWatered: today(-5) }), T0);
@@ -174,10 +174,15 @@ test('daily reminders: one per day when something is due, none for quiet days', 
     title: '1 plant could use some care',
     body: 'Water: Kitchen pothos',
   });
-  expect(plans[1].date).toBe(today(2));
-  expect(plans[1].body).toBe('Water: Kitchen pothos, Hall fern');
+  // Still waiting tomorrow: it comes up again, and the fern joins it the day after.
+  expect(plans[1]).toMatchObject({ date: today(1), body: 'Water: Kitchen pothos' });
+  expect(plans[2].date).toBe(today(2));
+  expect(plans[2].body).toBe('Water: Kitchen pothos, Hall fern');
   // After the reminder time, today is skipped.
-  expect(planReminders(tasks, today(), 8 * 60, T0)[0].date).toBe(today(2));
+  expect(planReminders(tasks, today(), 8 * 60, T0)[0].date).toBe(today(1));
+  // With only the fern (watered five days ago), the next two days are quiet.
+  const fern = tasks.filter((t) => t.name === 'Hall fern');
+  expect(planReminders(fern, today(), 9 * 60 + 30, T0)[0].date).toBe(today(2));
 });
 
 test('backup round trip restores everything and keeps this phone’s own settings', async () => {
@@ -539,6 +544,39 @@ test('the archive: no reminders, story kept, leaves its pot, and can come back',
     archiveReason: null,
   });
   expect(buildTasks(garden, 'north', today(30)).some((t) => t.plant.id === a)).toBe(true);
+});
+
+test('a plant back from the archive starts its reminders again instead of being weeks late', async () => {
+  const { db, roomId } = await setup();
+  const away = await createPlant(db, pothos(roomId, { nickname: 'Away' }), T0);
+  const brief = await createPlant(db, pothos(roomId, { nickname: 'Brief' }), T0);
+  await completeTask(db, [away, brief], 'water', T0 + DAY);
+  await completeTask(db, [away, brief], 'fertilize', T0 + DAY);
+  const due = async (id: string, on: number) =>
+    buildTasks(await loadGarden(db), 'north', today(on))
+      .filter((t) => t.plant.id === id)
+      .map((t) => [t.task, t.days]);
+
+  // Two months away: watering is checked the day it returns, feeding waits a full interval.
+  await archivePlant(db, away, { reason: 'gave_away', note: null }, T0 + 2 * DAY);
+  await restorePlant(db, away, T0 + 60 * DAY);
+  expect(await due(away, 60)).toEqual([
+    ['water', 0],
+    ['fertilize', 30],
+  ]);
+  // A second "bring it back" changes nothing, and care after that counts as usual.
+  await restorePlant(db, away, T0 + 61 * DAY);
+  expect(await due(away, 61)).toContainEqual(['water', -1]);
+  await completeTask(db, [away], 'water', T0 + 61 * DAY);
+  expect(await due(away, 61)).toContainEqual(['water', 7]);
+
+  // Back the next day: what's on record is still good, so nothing restarts.
+  await archivePlant(db, brief, { reason: 'other', note: null }, T0 + 2 * DAY);
+  await restorePlant(db, brief, T0 + 3 * DAY);
+  expect(await due(brief, 3)).toEqual([
+    ['water', 5],
+    ['fertilize', 28],
+  ]);
 });
 
 test('deleting a room with only archived plants moves them to another room', async () => {

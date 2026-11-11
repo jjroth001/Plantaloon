@@ -669,14 +669,28 @@ export async function archivePlant(
   });
 }
 
-/** Brings a plant back from the archive, with its reminders as they were. */
+/**
+ * Brings a plant back from the archive with the reminders it had. They start again from
+ * today, so care that came due while it was away doesn't show as weeks late: watering is
+ * checked on the day it returns, and everything else waits one interval.
+ */
 export async function restorePlant(db: SQLiteDatabase, id: string, now = Date.now()) {
-  await db.runAsync(
-    `UPDATE plant SET archived_at = NULL, archive_reason = NULL, archive_note = NULL,
-       updated_at = ? WHERE id = ?`,
-    now,
-    id,
-  );
+  await transaction(db, async () => {
+    const result = await db.runAsync(
+      `UPDATE plant SET archived_at = NULL, archive_reason = NULL, archive_note = NULL,
+         updated_at = ? WHERE id = ? AND archived_at IS NOT NULL`,
+      now,
+      id,
+    );
+    // Not in the archive (a second tap): its reminders are left alone.
+    if (result.changes === 0) return;
+    await db.runAsync(
+      'UPDATE schedule SET started_at = ?, updated_at = ? WHERE plant_id = ?',
+      now,
+      now,
+      id,
+    );
+  });
 }
 
 // --- Shared pots ------------------------------------------------------------
@@ -1141,6 +1155,8 @@ export async function coverPhotos(db: SQLiteDatabase): Promise<Map<string, Photo
 export type TaskHistory = {
   /** Last time the task was done (unix ms). */
   lastDoneAt: number | null;
+  /** When that was written down (unix ms): the same moment, unless it was logged afterwards. */
+  lastDoneLoggedAt: number | null;
   /** "Not yet"s since then, oldest first. */
   skips: { at: number; days: number }[];
 };
@@ -1168,12 +1184,19 @@ export async function loadGarden(db: SQLiteDatabase): Promise<Garden> {
       listPlants(db),
       listArchived(db),
       db.getAllAsync<ScheduleRow>('SELECT * FROM schedule'),
-      db.getAllAsync<{ plant_id: string; type: string; data: string; at: number }>(
-        `SELECT plant_id, type, data, MAX(at) AS at FROM entry
+      // With MAX(), SQLite takes the other columns from the row that holds the maximum.
+      db.getAllAsync<{
+        plant_id: string;
+        type: string;
+        data: string;
+        at: number;
+        created_at: number;
+      }>(
+        `SELECT plant_id, type, data, MAX(at) AS at, created_at FROM entry
        WHERE type IN ('water', 'fertilize', 'mist', 'rotate', 'clean', 'prune', 'repot')
        GROUP BY plant_id, type
        UNION ALL
-       SELECT plant_id, type, data, MAX(at) AS at FROM entry WHERE type = 'custom'
+       SELECT plant_id, type, data, MAX(at) AS at, created_at FROM entry WHERE type = 'custom'
        GROUP BY plant_id, CASE WHEN json_valid(data) THEN json_extract(data, '$.task') END`,
       ),
       db.getAllAsync<{ plant_id: string; at: number; data: string }>(
@@ -1195,12 +1218,15 @@ export async function loadGarden(db: SQLiteDatabase): Promise<Garden> {
   const history = new Map<string, TaskHistory>();
   const get = (key: string) => {
     let h = history.get(key);
-    if (!h) history.set(key, (h = { lastDoneAt: null, skips: [] }));
+    if (!h) history.set(key, (h = { lastDoneAt: null, lastDoneLoggedAt: null, skips: [] }));
     return h;
   };
   for (const row of doneRows) {
     const task = taskForEntry(row.type, parseData(row.data));
-    if (task) get(historyKey(row.plant_id, task)).lastDoneAt = row.at;
+    if (!task) continue;
+    const h = get(historyKey(row.plant_id, task));
+    h.lastDoneAt = row.at;
+    h.lastDoneLoggedAt = row.created_at;
   }
   for (const row of skipRows) {
     const data = parseData(row.data);

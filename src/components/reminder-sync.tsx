@@ -16,7 +16,7 @@ import {
 
 /**
  * Keeps the daily care notifications in step with the plants: whenever anything changes,
- * the next two weeks of reminders are rescheduled. Renders nothing.
+ * the reminders ahead are brought up to date. Renders nothing.
  */
 export function ReminderSync() {
   const garden = useGarden();

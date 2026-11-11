@@ -40,6 +40,7 @@ export function buildTasks(garden: Garden, hemisphere: Hemisphere, today: string
     const lastDoneAt = history?.lastDoneAt ?? null;
     const skips = history?.skips ?? [];
     const lastSkip = skips.at(-1);
+    const startedAt = Math.max(plant.createdAt, schedule.startedAt ?? 0);
     const due = nextDue({
       task: schedule.task,
       intervalDays: schedule.intervalDays,
@@ -51,10 +52,13 @@ export function buildTasks(garden: Garden, hemisphere: Hemisphere, today: string
       lastDone: lastDoneAt == null ? null : dateOf(lastDoneAt),
       lastSkip: lastSkip ? { on: dateOf(lastSkip.at), days: lastSkip.days } : null,
       // A reminder added later starts counting from then, not from when the plant arrived.
-      addedOn: dateOf(Math.max(plant.createdAt, schedule.startedAt ?? 0)),
+      addedOn: dateOf(startedAt),
+      historyBeforeStart:
+        (history?.lastDoneLoggedAt ?? 0) < startedAt && (lastSkip?.at ?? 0) < startedAt,
     });
     const dismissed = schedule.hintDismissedAt ?? 0;
-    const skipsInARow = skips.filter((s) => s.at > dismissed).length;
+    // "Not yet"s from before a restart say nothing about how the soil dries now.
+    const skipsInARow = skips.filter((s) => s.at > dismissed && s.at >= startedAt).length;
     tasks.push({
       plant,
       name: displayName(plant),

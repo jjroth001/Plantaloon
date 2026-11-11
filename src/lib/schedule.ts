@@ -52,21 +52,31 @@ export type DueInput = {
   lastDone: string | null;
   /** The latest "not yet" since it was last done: check again `days` after `on`. */
   lastSkip: { on: string; days: number } | null;
-  /** When the plant was added; a plant never watered here is due that day. */
+  /**
+   * When the reminder started: the day the plant was added, or the day the reminder was last
+   * set up, turned back on, or the plant came back from the archive. A plant never watered
+   * here is due that day.
+   */
   addedOn: string;
+  /**
+   * Everything in `lastDone` and `lastSkip` was recorded before the reminder (re)started.
+   * If that history would make it due before the restart, it's out of date (a plant back
+   * from months in the archive isn't "120 days late") and the reminder starts afresh.
+   */
+  historyBeforeStart?: boolean;
 };
 
 /** The date a task is next due. */
 export function nextDue(input: DueInput): string {
   const { task, intervalDays, care, hemisphere, lastDone, lastSkip, addedOn } = input;
-  let due: string;
-  if (lastDone) {
-    due = addDays(lastDone, intervalOn(task, intervalDays, lastDone, care, hemisphere));
-  } else {
-    // Unknown history: check the soil on day one; feeding can wait a full interval.
-    due = task === 'water' ? addedOn : addDays(addedOn, intervalDays);
-  }
+  // Unknown history: check the soil on day one; feeding can wait a full interval.
+  const afresh = task === 'water' ? addedOn : addDays(addedOn, intervalDays);
+  let due = lastDone
+    ? addDays(lastDone, intervalOn(task, intervalDays, lastDone, care, hemisphere))
+    : afresh;
   if (lastSkip) due = addDays(lastSkip.on, lastSkip.days);
+  // `YYYY-MM-DD` strings sort like dates.
+  if (input.historyBeforeStart && due < addedOn) due = afresh;
   if (task === 'fertilize' && !care.fertilizeInWinter) due = endOfWinter(due, hemisphere);
   return due;
 }

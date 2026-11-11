@@ -1,14 +1,24 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import type { LightTier } from '@/catalog/types';
 import { Icon, type IconName } from '@/components/icons/icon';
 import { LightScale } from '@/components/light-scale';
 import { Screen } from '@/components/screen';
+import { Sheet } from '@/components/sheet';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Divider, Field, Segmented, SwitchRow, TextField } from '@/components/ui';
+import {
+  Button,
+  Card,
+  Divider,
+  Field,
+  RadioList,
+  Segmented,
+  SwitchRow,
+  TextField,
+} from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import { createRoom, deleteRoom, updateRoom } from '@/db/garden';
 import { ROOM_ICONS, type RoomHumidity, type RoomWarmth } from '@/db/types';
@@ -41,6 +51,10 @@ export default function RoomScreen() {
   const room = garden.data?.rooms.find((r) => r.id === id);
   const [form, setForm] = useState<Form | null>(null);
   const [busy, setBusy] = useState(false);
+  // Deleting a room that has plants: where they go (a sheet listing every other room).
+  const [moving, setMoving] = useState(false);
+  const [moveTo, setMoveTo] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   if (!garden.data || (!isNew && !room)) return <Screen belowHeader>{null}</Screen>;
   const value: Form = form ?? {
@@ -99,21 +113,26 @@ export default function RoomScreen() {
       ]);
       return;
     }
-    // Android shows up to three buttons; offer the first two other rooms.
-    Alert.alert(
-      `Move ${plantCount === 1 ? 'its plant' : `its ${plantCount} plants`} where?`,
-      `${room.name} will be deleted and its plants moved.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        ...others.slice(0, 2).map((target) => ({
-          text: target.name,
-          onPress: async () => {
-            await deleteRoom(db, room.id, target.id);
-            router.back();
-          },
-        })),
-      ],
-    );
+    // Its plants need somewhere to go: pick from every other room.
+    setMoveTo(null);
+    setMoving(true);
+  };
+
+  const target = others.find((r) => r.id === moveTo) ?? others[0];
+  const removeAndMove = async () => {
+    if (!room || !target) return;
+    setDeleting(true);
+    try {
+      // Let the sheet slide away first, so nothing vanishes mid-air when the room goes.
+      setMoving(false);
+      await new Promise((resolve) => setTimeout(resolve, 260));
+      await deleteRoom(db, room.id, target.id);
+      router.back();
+    } catch {
+      alertSaveFailed();
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
@@ -254,6 +273,32 @@ export default function RoomScreen() {
         </>
       )}
       {!isNew && <Button title="Delete room" icon="trash" variant="ghost" onPress={remove} />}
+      {room && target && (
+        <Sheet
+          open={moving}
+          onClose={() => setMoving(false)}
+          title={`Move ${plantCount === 1 ? 'its plant' : `its ${plantCount} plants`} where?`}>
+          <ThemedText type="body" color="textSecondary">
+            {room.name} will be deleted. Choose the room{' '}
+            {plantCount === 1 ? 'its plant moves' : 'its plants move'} to.
+          </ThemedText>
+          <ScrollView style={styles.targets}>
+            <RadioList
+              boxed={false}
+              options={others.map((r) => ({ value: r.id, label: r.name, icon: r.icon }))}
+              value={target.id}
+              onChange={setMoveTo}
+            />
+          </ScrollView>
+          <Button
+            title={`Move to ${target.name} and delete`}
+            icon="trash"
+            variant="danger"
+            busy={deleting}
+            onPress={removeAndMove}
+          />
+        </Sheet>
+      )}
     </Screen>
   );
 }
@@ -271,4 +316,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+  // About six rooms tall; a longer list scrolls inside the sheet.
+  targets: { maxHeight: 320, flexGrow: 0 },
 });

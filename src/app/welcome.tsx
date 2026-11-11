@@ -13,6 +13,7 @@ import { useSettings } from '@/db/use-settings';
 import { pickBackup, restoreBackup } from '@/lib/data-transfer';
 import { successFeedback } from '@/lib/haptics';
 import { useTheme } from '@/theme/theme-provider';
+import { alertSaveFailed } from '@/lib/save-failed';
 
 const ROOM_CHOICES: { name: string; icon: IconName }[] = [
   { name: 'Living room', icon: 'couch' },
@@ -54,6 +55,8 @@ export default function WelcomeScreen() {
       successFeedback();
       // The app switches to the tabs once this is saved.
       await setSetting(db, 'onboarded', true);
+    } catch {
+      alertSaveFailed();
     } finally {
       setBusy(false);
     }

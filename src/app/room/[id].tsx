@@ -8,15 +8,7 @@ import { Icon, type IconName } from '@/components/icons/icon';
 import { LightScale } from '@/components/light-scale';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import {
-  Button,
-  Card,
-  Divider,
-  Field,
-  Segmented,
-  SwitchRow,
-  TextField,
-} from '@/components/ui';
+import { Button, Card, Divider, Field, Segmented, SwitchRow, TextField } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import { createRoom, deleteRoom, updateRoom } from '@/db/garden';
 import { ROOM_ICONS, type RoomHumidity, type RoomWarmth } from '@/db/types';
@@ -25,6 +17,7 @@ import { useGarden } from '@/hooks/use-garden';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
 import { formatLux, LIGHT_HINT, LIGHT_LABEL } from '@/lib/light';
 import { useTheme } from '@/theme/theme-provider';
+import { alertSaveFailed } from '@/lib/save-failed';
 
 type Form = {
   name: string;
@@ -76,6 +69,8 @@ export default function RoomScreen() {
       else await updateRoom(db, id, input);
       successFeedback();
       router.back();
+    } catch {
+      alertSaveFailed();
     } finally {
       setBusy(false);
     }

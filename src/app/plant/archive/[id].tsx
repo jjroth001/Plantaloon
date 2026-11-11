@@ -10,6 +10,7 @@ import { archivePlant, getPlant } from '@/db/garden';
 import { ARCHIVE_REASON, type ArchiveReason } from '@/db/types';
 import { useDbQuery } from '@/db/use-db-query';
 import { successFeedback } from '@/lib/haptics';
+import { alertSaveFailed } from '@/lib/save-failed';
 
 const REASONS = Object.keys(ARCHIVE_REASON) as ArchiveReason[];
 
@@ -31,6 +32,8 @@ export default function ArchivePlant() {
       await archivePlant(db, plant.id, { reason, note });
       successFeedback();
       router.dismissAll();
+    } catch {
+      alertSaveFailed();
     } finally {
       setBusy(false);
     }

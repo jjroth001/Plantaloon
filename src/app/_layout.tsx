@@ -14,6 +14,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ReminderSync } from '@/components/reminder-sync';
 import { WidgetSync } from '@/widget/widget-sync';
 import { migrateDbIfNeeded } from '@/db/migrations';
+import { clearBackupCopies } from '@/lib/data-transfer';
 import { useSettings } from '@/db/use-settings';
 import { ThemeProvider, useTheme } from '@/theme/theme-provider';
 
@@ -54,6 +55,13 @@ function RootNavigator() {
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
+
+  // Day-old backup copies left in the cache (each holds every photo) are cleared, once the
+  // app has settled.
+  useEffect(() => {
+    const timer = setTimeout(() => clearBackupCopies(24 * 60 * 60 * 1000), 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // The window shows at the edges during transitions; match the background.
   useEffect(() => {

@@ -5,7 +5,7 @@ import { AppState } from 'react-native';
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { useToday } from '@/hooks/use-today';
-import { remindersFor } from '@/lib/care-actions';
+import { reminderPlan } from '@/lib/care-actions';
 import { handleNotificationAction } from '@/lib/notification-actions';
 import {
   onPermissionGranted,
@@ -73,10 +73,11 @@ export function ReminderSync() {
   useEffect(() => {
     if (!garden.data || !settings.data) return;
     if (!enabled) {
-      syncReminders([]).catch(() => {});
+      syncReminders([], { nothingDue: true }).catch(() => {});
       return;
     }
-    syncReminders(remindersFor(garden.data, settings.data, today)).catch(() => {});
+    const { reminders, nothingDue } = reminderPlan(garden.data, settings.data, today);
+    syncReminders(reminders, { nothingDue }).catch(() => {});
   }, [garden.data, settings.data, enabled, today, granted]);
 
   return null;

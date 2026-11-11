@@ -17,12 +17,49 @@ import { todayString } from './dates';
 import { LineSplitter } from './lines';
 import { photoFile } from './photos';
 
+const BACKUP_NAME = /^plantaloon-backup-.*\.jsonl$/;
+/** Where Android's file picker puts its copy of a picked file (only backups are ever picked). */
+const PICKED_FOLDER = 'DocumentPicker';
+
+/**
+ * Backups written for sharing, and the picker's copies of backups chosen to restore, sit in
+ * the app's cache: each is a copy of everything, photos included. Deletes those older than
+ * `olderThanMs` (0 = all). A fresh one may still be uploading from the share sheet, so the
+ * app only clears day-old ones by itself. Never throws.
+ */
+export function clearBackupCopies(olderThanMs: number, now = Date.now()): void {
+  const stale = (file: File) =>
+    olderThanMs <= 0 || now - (file.modificationTime ?? 0) > olderThanMs;
+  try {
+    for (const item of new Directory(Paths.cache).list()) {
+      if (item instanceof File && BACKUP_NAME.test(item.name) && stale(item)) item.delete();
+    }
+    const picked = new Directory(Paths.cache, PICKED_FOLDER);
+    if (!picked.exists) return;
+    for (const item of picked.list()) {
+      if (item instanceof File && stale(item)) item.delete();
+    }
+  } catch {
+    // Only tidying up: Android clears the cache itself when space runs short.
+  }
+}
+
+/** Deletes the picker's copy of a backup once it's been restored (or turned down). */
+export function discardPickedBackup(picked: { uri: string }): void {
+  try {
+    const file = new File(picked.uri);
+    if (file.exists) file.delete();
+  } catch {
+    // Left for clearBackupCopies.
+  }
+}
+
 /** Writes a backup file (data + photos) to the cache and opens Android's share sheet. */
 export async function shareBackup(db: SQLiteDatabase): Promise<void> {
   const header = await backupHeader(db);
   // Earlier backups waiting in the cache are copies of everything, photos included: clear them.
   for (const old of new Directory(Paths.cache).list()) {
-    if (old instanceof File && /^plantaloon-backup-.*\.jsonl$/.test(old.name)) old.delete();
+    if (old instanceof File && BACKUP_NAME.test(old.name)) old.delete();
   }
   const file = new File(Paths.cache, `plantaloon-backup-${todayString()}.jsonl`);
   file.create();
@@ -90,7 +127,14 @@ export async function pickBackup(): Promise<PickedBackup | null> {
     first = line;
     return false;
   });
-  const header = parseBackupHeader(first);
+  let header: BackupHeader;
+  try {
+    header = parseBackupHeader(first);
+  } catch (error) {
+    // Not a backup: don't keep the copy of whatever it was.
+    discardPickedBackup({ uri });
+    throw error;
+  }
   return { uri, header, summary: summarize(header) };
 }
 
@@ -119,4 +163,5 @@ export async function restoreBackup(db: SQLiteDatabase, picked: PickedBackup): P
   const photos = new Directory(Paths.document, 'photos');
   if (photos.exists) photos.delete();
   incoming.rename('photos');
+  discardPickedBackup(picked);
 }

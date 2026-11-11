@@ -30,6 +30,7 @@ import { deletePhotoFiles, photoUri, type StoredPhoto } from '@/lib/photos';
 import { suggestedWaterDays } from '@/lib/schedule';
 import { petText } from '@/lib/care-text';
 import { useTheme } from '@/theme/theme-provider';
+import { alertSaveFailed } from '@/lib/save-failed';
 
 type LastWatered = 'today' | 'recent' | 'week' | 'unknown';
 
@@ -201,6 +202,8 @@ export default function AddPlantDetails() {
       successFeedback();
       router.dismissAll();
       router.push({ pathname: '/plant/[id]', params: { id } });
+    } catch {
+      alertSaveFailed();
     } finally {
       setBusy(false);
     }

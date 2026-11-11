@@ -12,6 +12,7 @@ import { LOGGABLE, type EntryType } from '@/db/types';
 import { useDbQuery } from '@/db/use-db-query';
 import { dateOf } from '@/lib/dates';
 import { deletePhotoFiles } from '@/lib/photos';
+import { alertSaveFailed } from '@/lib/save-failed';
 
 /** Edit or delete a journal entry. */
 export default function EditEntry() {
@@ -37,6 +38,8 @@ export default function EditEntry() {
         note: value.note,
       });
       router.back();
+    } catch {
+      alertSaveFailed();
     } finally {
       setBusy(false);
     }

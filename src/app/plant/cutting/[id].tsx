@@ -14,6 +14,7 @@ import { Spacing } from '@/constants/theme';
 import { createPlant, newCustomTask } from '@/db/garden';
 import { useGarden } from '@/hooks/use-garden';
 import { successFeedback } from '@/lib/haptics';
+import { alertSaveFailed } from '@/lib/save-failed';
 
 const ALL_METHODS: PropagationId[] = [
   'stem-cuttings-water',
@@ -65,6 +66,8 @@ export default function StartCutting() {
       });
       successFeedback();
       router.replace({ pathname: '/plant/[id]', params: { id: childId } });
+    } catch {
+      alertSaveFailed();
     } finally {
       setBusy(false);
     }

@@ -11,8 +11,9 @@ import { Spacing } from '@/constants/theme';
 import { eraseAllData } from '@/db/backup';
 import { setSetting } from '@/db/settings';
 import { useGarden } from '@/hooks/use-garden';
-import { shareBackup } from '@/lib/data-transfer';
-import { syncReminders } from '@/lib/notifications';
+import { clearBackupCopies, shareBackup } from '@/lib/data-transfer';
+import { clearAllReminders } from '@/lib/notifications';
+import { redrawWidgets } from '@/widget/refresh';
 
 const CONFIRM_WORD = 'DELETE';
 
@@ -37,14 +38,21 @@ export default function EraseScreen() {
   const erase = async () => {
     setBusy(true);
     try {
-      await syncReminders([]).catch(() => {});
+      await clearAllReminders().catch(() => {});
       router.dismissAll();
       try {
         await eraseAllData(db);
       } finally {
         const photos = new Directory(Paths.document, 'photos');
         if (photos.exists) photos.delete();
+        // Backup copies in the cache go too, except one made in the last hour: it may still
+        // be uploading from the share sheet (the app clears it later by itself).
+        clearBackupCopies(60 * 60 * 1000);
       }
+      // Changes made while erasing may have scheduled reminders again: clear them once more.
+      await clearAllReminders().catch(() => {});
+      // The widget would otherwise keep showing the old plants until its next refresh.
+      await redrawWidgets({ kind: 'empty' }).catch(() => {});
       // With settings gone the app returns to the welcome screen by itself.
     } finally {
       setBusy(false);

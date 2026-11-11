@@ -33,6 +33,7 @@ import { useGarden } from '@/hooks/use-garden';
 import { suggestedWaterDays } from '@/lib/schedule';
 import { successFeedback } from '@/lib/haptics';
 import { deletePhotoFiles } from '@/lib/photos';
+import { alertSaveFailed } from '@/lib/save-failed';
 
 export default function EditPlant() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -180,6 +181,8 @@ export default function EditPlant() {
       }
       successFeedback();
       router.back();
+    } catch {
+      alertSaveFailed();
     } finally {
       setBusy(false);
     }

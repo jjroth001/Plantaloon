@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
@@ -67,6 +67,9 @@ type Undo = { message: string; entryIds: string[] };
 /** What an archived plant's page keeps: no care, just its story. */
 const ARCHIVED_KEYS = new Set(['hero', 'archived', 'photos', 'description', 'journal']);
 
+/** Journal entries shown at first, and added by each "Show older entries". */
+const JOURNAL_PAGE = 40;
+
 export default function PlantScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const db = useSQLiteContext();
@@ -79,6 +82,10 @@ export default function PlantScreen() {
   const [undo, setUndo] = useState<Undo | null>(null);
   // Care, About, Growing, Problems and Journal start closed.
   const [openFolds, setOpenFolds] = useState<string[]>([]);
+  // The journal shows its newest entries first; "Show older" adds a page at a time.
+  const [journalShown, setJournalShown] = useState(JOURNAL_PAGE);
+  // Ignores a second tap on Watered / Fed while the first is still being saved.
+  const logging = useRef(false);
   const lows = useClimateLows();
   const hideUndo = useCallback(() => setUndo(null), []);
 
@@ -107,16 +114,22 @@ export default function PlantScreen() {
     .sort((a, b) => b.takenAt - a.takenAt);
 
   const log = async (task: Task) => {
-    successFeedback();
-    const ids = await completeTask(db, [plant.id], task);
-    const others = ids.length - 1;
-    setUndo({
-      message:
-        others > 0
-          ? `${doneMessage(task, null, name)} and ${others === 1 ? 'its pot-mate' : `${others} pot-mates`}`
-          : doneMessage(task, null, name),
-      entryIds: ids,
-    });
+    if (logging.current) return;
+    logging.current = true;
+    try {
+      successFeedback();
+      const ids = await completeTask(db, [plant.id], task);
+      const others = ids.length - 1;
+      setUndo({
+        message:
+          others > 0
+            ? `${doneMessage(task, null, name)} and ${others === 1 ? 'its pot-mate' : `${others} pot-mates`}`
+            : doneMessage(task, null, name),
+        entryIds: ids,
+      });
+    } finally {
+      logging.current = false;
+    }
   };
 
   const undoLast = async () => {
@@ -388,7 +401,7 @@ export default function PlantScreen() {
             Waterings, feeds, photos and notes will collect here.
           </ThemedText>
         ) : (
-          (journal.data ?? []).slice(0, 40).map((entry, i) => (
+          entries.slice(0, journalShown).map((entry, i) => (
             <Animated.View
               key={entry.id}
               entering={FadeIn.duration(200)}
@@ -399,6 +412,16 @@ export default function PlantScreen() {
               <JournalRow entry={entry} today={today} labels={labels} />
             </Animated.View>
           ))
+        )}
+        {entries.length > journalShown && (
+          <Animated.View layout={LinearTransition.duration(200)}>
+            <Button
+              title={`Show older entries (${entries.length - journalShown} more)`}
+              size="small"
+              variant="ghost"
+              onPress={() => setJournalShown((n) => n + JOURNAL_PAGE)}
+            />
+          </Animated.View>
         )}
       </Card>
     </Fold>,

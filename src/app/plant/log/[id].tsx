@@ -15,6 +15,7 @@ import { todayString } from '@/lib/dates';
 import { successFeedback } from '@/lib/haptics';
 import { deletePhotoFiles, photoUri, type StoredPhoto } from '@/lib/photos';
 import { useTheme } from '@/theme/theme-provider';
+import { alertSaveFailed } from '@/lib/save-failed';
 
 /** Adds a journal entry (with optional photos) to a plant. */
 export default function LogEntry() {
@@ -64,13 +65,20 @@ export default function LogEntry() {
       saved.current = true;
       successFeedback();
       router.back();
+    } catch {
+      alertSaveFailed();
     } finally {
       setBusy(false);
     }
   };
 
+  // A note with no words and no photos has nothing in it to save.
+  const empty = value.type === 'note' && !value.note.trim() && photos.length === 0;
+
   return (
-    <Screen belowHeader footer={<Button title="Save" icon="check" onPress={save} busy={busy} />}>
+    <Screen
+      belowHeader
+      footer={<Button title="Save" icon="check" onPress={save} busy={busy} disabled={empty} />}>
       <EntryForm value={value} onChange={setValue} />
       <Field label="Photos">
         <View style={styles.photos}>

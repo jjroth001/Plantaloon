@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
 
@@ -44,6 +44,8 @@ export default function TodayScreen() {
   const [undo, setUndo] = useState<Undo | null>(null);
   const hideUndo = useCallback(() => setUndo(null), []);
   const lows = useClimateLows();
+  // Tasks being saved right now, so a quick second tap can't tick the same one twice.
+  const saving = useRef(new Set<string>());
 
   if (!garden.data || !settings.data) return <Screen title="Today">{null}</Screen>;
 
@@ -66,33 +68,48 @@ export default function TodayScreen() {
     return urgent ? [{ plant, room, care }] : [];
   });
 
-  const done = async (list: CareTask[]) => {
-    successFeedback();
-    const ids = await completeTask(
-      db,
-      list.map((t) => t.plant.id),
-      list[0].task,
-      undefined,
-      list[0].label,
-    );
-    const first = list[0];
-    setUndo({
-      message:
-        ids.length === 1 || list.length === 1
-          ? doneMessage(first.task, first.label, first.name)
-          : `${TASK_INFO[kindOf(first.task)].done} ${ids.length} plants`,
-      entryIds: ids,
-    });
+  /** Runs `save` unless one of these tasks is already being saved. */
+  const once = async (list: CareTask[], save: () => Promise<void>) => {
+    const keys = list.map((t) => `${t.plant.id}:${t.task}`);
+    if (keys.some((key) => saving.current.has(key))) return;
+    keys.forEach((key) => saving.current.add(key));
+    try {
+      await save();
+    } finally {
+      // The row leaves the list a moment after saving; taps until then are still ignored.
+      setTimeout(() => keys.forEach((key) => saving.current.delete(key)), 600);
+    }
   };
 
-  const skip = async (task: CareTask, days: number) => {
-    tapFeedback();
-    const ids = await skipTask(db, task.plant.id, task.task, days, undefined, task.label);
-    setUndo({
-      message: `${task.name}: check again ${days === 1 ? 'tomorrow' : `in ${days} days`}`,
-      entryIds: ids,
+  const done = (list: CareTask[]) =>
+    once(list, async () => {
+      successFeedback();
+      const ids = await completeTask(
+        db,
+        list.map((t) => t.plant.id),
+        list[0].task,
+        undefined,
+        list[0].label,
+      );
+      const first = list[0];
+      setUndo({
+        message:
+          ids.length === 1 || list.length === 1
+            ? doneMessage(first.task, first.label, first.name)
+            : `${TASK_INFO[kindOf(first.task)].done} ${ids.length} plants`,
+        entryIds: ids,
+      });
     });
-  };
+
+  const skip = (task: CareTask, days: number) =>
+    once([task], async () => {
+      tapFeedback();
+      const ids = await skipTask(db, task.plant.id, task.task, days, undefined, task.label);
+      setUndo({
+        message: `${task.name}: check again ${days === 1 ? 'tomorrow' : `in ${days} days`}`,
+        entryIds: ids,
+      });
+    });
 
   const undoLast = async () => {
     if (!undo) return;

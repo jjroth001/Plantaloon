@@ -11,11 +11,17 @@ import { newId } from '@/db/ids';
  */
 const MAX_SIDE = 1600;
 
+/** The photos folder, created if it isn't there yet (for writing). */
 function photoDir(): Directory {
   const dir = new Directory(Paths.document, 'photos');
   if (!dir.exists) dir.create({ idempotent: true, intermediates: true });
   return dir;
 }
+
+// Screens ask for a photo's address on every redraw, for every photo shown: work the
+// folder's address out once instead of checking the folder on disk each time.
+const PROBE = 'x.jpg';
+let folderUri: string | null = null;
 
 /**
  * A photo's file name, as stored: a plain name in the photos folder, never a path. Names come
@@ -29,11 +35,17 @@ export function isSafePhotoName(name: string): boolean {
 const MISSING = 'missing.jpg';
 
 export function photoUri(file: string): string {
-  return new File(photoDir(), isSafePhotoName(file) ? file : MISSING).uri;
+  folderUri ??= new File(new Directory(Paths.document, 'photos'), PROBE).uri.slice(
+    0,
+    -PROBE.length,
+  );
+  // Safe names are plain letters, digits, "_" and "-": nothing that needs escaping.
+  return folderUri + (isSafePhotoName(file) ? file : MISSING);
 }
 
+/** A stored photo, for reading (the folder isn't created if it's missing). */
 export function photoFile(file: string): File {
-  return new File(photoDir(), isSafePhotoName(file) ? file : MISSING);
+  return new File(new Directory(Paths.document, 'photos'), isSafePhotoName(file) ? file : MISSING);
 }
 
 export type StoredPhoto = { file: string; width: number; height: number };
@@ -60,7 +72,7 @@ export function deletePhotoFiles(files: readonly (string | null | undefined)[]) 
   for (const name of files) {
     if (!name || !isSafePhotoName(name)) continue;
     try {
-      const file = new File(photoDir(), name);
+      const file = photoFile(name);
       if (file.exists) file.delete();
     } catch {
       // Already gone; nothing to do.

@@ -19,7 +19,7 @@ import {
 import { ACCENTS, makePalette, Spacing, type AccentName } from '@/constants/theme';
 import { setSetting } from '@/db/settings';
 import { useSettings } from '@/db/use-settings';
-import { pickBackup, restoreBackup, shareBackup } from '@/lib/data-transfer';
+import { discardPickedBackup, pickBackup, restoreBackup, shareBackup } from '@/lib/data-transfer';
 import { requestClimatePlace } from '@/lib/location';
 import { removeScanner, scanModelMb, scannerReady, scannerSupported } from '@/lib/scanner';
 import { formatRelativeDay, dateOf } from '@/lib/dates';
@@ -66,7 +66,7 @@ export default function SettingsScreen() {
         'Restore this backup?',
         `It has ${plants} ${plants === 1 ? 'plant' : 'plants'}, ${entries} journal ${entries === 1 ? 'entry' : 'entries'} and ${photos} ${photos === 1 ? 'photo' : 'photos'}. Everything currently on this phone is replaced.`,
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: 'Cancel', style: 'cancel', onPress: () => discardPickedBackup(picked) },
           {
             text: 'Restore',
             style: 'destructive',

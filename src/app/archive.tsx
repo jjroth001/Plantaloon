@@ -6,7 +6,7 @@ import { Icon } from '@/components/icons/icon';
 import { PlantAvatar } from '@/components/plant-avatar';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Card, Divider, EmptyState } from '@/components/ui';
+import { Card, Divider, EmptyState, pressedStyle } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { ARCHIVE_REASON } from '@/db/types';
 import { useGarden } from '@/hooks/use-garden';
@@ -41,7 +41,7 @@ export default function ArchiveScreen() {
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => router.push({ pathname: '/plant/[id]', params: { id: plant.id } })}
-                  style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}>
+                  style={({ pressed }) => [styles.row, pressed && pressedStyle]}>
                   <PlantAvatar
                     photo={garden.data!.covers.get(plant.id)}
                     groupId={plant.groupId}

@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
+import { useColorScheme } from 'react-native';
 
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { useToday } from '@/hooks/use-today';
 
 import { redrawWidgets, widgetsSupported } from './refresh';
-import { buildWidgetModel, type WidgetModel } from './widget-model';
+import { buildWidgetModel, widgetLook, type WidgetLook, type WidgetModel } from './widget-model';
 
 /**
  * Redraws any home-screen widgets whenever what they show changes, so watering a plant in
@@ -22,14 +23,20 @@ function WidgetSyncInner() {
   // The garden the screens already share: no extra loading after each change.
   const garden = useGarden();
   const settings = useSettings();
+  // Changing the theme or accent (or the phone's dark mode) recolors the widget too.
+  const systemDark = useColorScheme() === 'dark';
   const key =
     garden.data && settings.data
-      ? JSON.stringify(buildWidgetModel(garden.data, settings.data, today))
+      ? JSON.stringify({
+          model: buildWidgetModel(garden.data, settings.data, today),
+          look: widgetLook(settings.data, systemDark),
+        })
       : null;
 
   useEffect(() => {
     if (key === null) return;
-    redrawWidgets(JSON.parse(key) as WidgetModel).catch(() => {
+    const { model, look } = JSON.parse(key) as { model: WidgetModel; look: WidgetLook };
+    redrawWidgets(model, look).catch(() => {
       // Best effort: the widget still refreshes on its own schedule.
     });
   }, [key]);

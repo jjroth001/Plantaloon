@@ -39,8 +39,17 @@ export type Palette = {
   waterSoft: string;
   fertilize: string;
   fertilizeSoft: string;
+  /** Text and icons on top of a solid water or feed button (the Done check on Today). */
+  onTask: string;
+  /** Destructive or truly serious: erase, delete, toxic to pets, unwell. */
   danger: string;
   dangerSoft: string;
+  /** Gentle heads-ups: too dark, too cold, late, struggling. Orange, so it never reads as feed gold. */
+  warning: string;
+  warningSoft: string;
+  /** Sunny yellow for light levels. */
+  sun: string;
+  sunSoft: string;
 };
 
 function withAlpha(hex: string, alpha: number): string {
@@ -66,8 +75,13 @@ export function makePalette(dark: boolean, accent: AccentName): Palette {
       waterSoft: 'rgba(134,189,242,0.16)',
       fertilize: '#E5BC66',
       fertilizeSoft: 'rgba(229,188,102,0.16)',
+      onTask: '#111511',
       danger: '#FF9C94',
       dangerSoft: 'rgba(255,156,148,0.14)',
+      warning: '#F5A15C',
+      warningSoft: 'rgba(245,161,92,0.15)',
+      sun: '#EDC56B',
+      sunSoft: 'rgba(237,197,107,0.14)',
     };
   }
   return {
@@ -85,10 +99,18 @@ export function makePalette(dark: boolean, accent: AccentName): Palette {
     waterSoft: 'rgba(36,104,168,0.10)',
     fertilize: '#8C5F0D',
     fertilizeSoft: 'rgba(140,95,13,0.10)',
+    onTask: '#FFFFFF',
     danger: '#B42318',
     dangerSoft: 'rgba(180,35,24,0.08)',
+    warning: '#A64B00',
+    warningSoft: 'rgba(214,110,20,0.12)',
+    sun: '#9A6410',
+    sunSoft: 'rgba(226,181,76,0.18)',
   };
 }
+
+/** Pressed look for anything tappable that has no other press feedback. */
+export const PRESSED_OPACITY = 0.7;
 
 export type ThemeColor = Exclude<keyof Palette, 'dark'>;
 

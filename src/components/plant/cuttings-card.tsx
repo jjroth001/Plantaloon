@@ -8,7 +8,7 @@ import { getGuide } from '@/catalog/media';
 import { Icon } from '@/components/icons/icon';
 import { PlantAvatar } from '@/components/plant-avatar';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Divider } from '@/components/ui';
+import { Button, Card, Divider, pressedStyle } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { advanceCutting, potUpCutting, type Garden } from '@/db/garden';
 import type { Plant } from '@/db/types';
@@ -81,7 +81,7 @@ export function CuttingsCard({
     };
 
     return (
-      <Card style={{ backgroundColor: theme.tintSoft, borderColor: 'transparent' }}>
+      <Card tone="tip">
         <View style={styles.row}>
           <Icon name="scissors" size={26} color={theme.tint} />
           <View style={styles.flex}>
@@ -143,7 +143,7 @@ export function CuttingsCard({
             <Pressable
               accessibilityRole="button"
               onPress={() => router.push({ pathname: '/plant/[id]', params: { id: child.id } })}
-              style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}>
+              style={({ pressed }) => [styles.row, pressed && pressedStyle]}>
               <PlantAvatar
                 photo={garden.covers.get(child.id)}
                 groupId={child.groupId}

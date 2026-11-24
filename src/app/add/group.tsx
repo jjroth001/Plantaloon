@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Radius, Spacing } from '@/constants/theme';
 import { normalize } from '@/lib/search';
 import { useTheme } from '@/theme/theme-provider';
+import { pressedStyle } from '@/components/ui';
 
 /** For a plant that isn't in the catalog: choose the care group it's most like. */
 export default function ChooseGroup() {
@@ -63,7 +64,7 @@ export default function ChooseGroup() {
           style={({ pressed }) => [
             styles.row,
             { backgroundColor: theme.card, borderColor: theme.border },
-            pressed && { opacity: 0.7 },
+            pressed && pressedStyle,
           ]}>
           <View style={[styles.icon, { backgroundColor: theme.tintSoft }]}>
             <Icon name={item.icon} size={22} color={theme.tint} />

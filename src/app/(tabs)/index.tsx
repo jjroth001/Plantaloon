@@ -137,9 +137,9 @@ export default function TodayScreen() {
         </ThemedText>
 
         {bringIn.length > 0 && (
-          <Card style={{ backgroundColor: theme.dangerSoft, borderColor: 'transparent' }}>
+          <Card tone="warning">
             <View style={styles.suggestion}>
-              <Icon name="snowflake" size={24} color={theme.danger} />
+              <Icon name="snowflake" size={24} color={theme.warning} />
               <View style={styles.flex}>
                 <ThemedText type="subheading">Time to bring inside</ThemedText>
                 <ThemedText type="body">
@@ -264,7 +264,9 @@ function UpcomingRow({ task }: { task: CareTask }) {
         size={36}
       />
       <View style={styles.flex}>
-        <ThemedText numberOfLines={1}>{task.name}</ThemedText>
+        <ThemedText type="name" numberOfLines={1}>
+          {task.name}
+        </ThemedText>
         <View style={styles.meta}>
           <Icon name={taskIcon(task.task)} size={14} color={color} duotone={false} />
           <ThemedText type="caption" style={{ color }}>
@@ -292,7 +294,7 @@ function SuggestionCard({
   const verb = task.task === 'water' ? 'Water' : 'Feed';
   return (
     <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(160)}>
-      <Card style={{ backgroundColor: theme.tintSoft, borderColor: 'transparent' }}>
+      <Card tone="tip">
         <View style={styles.suggestion}>
           <Icon name="lightbulb" size={24} color={theme.tint} />
           <ThemedText type="body" style={styles.flex}>

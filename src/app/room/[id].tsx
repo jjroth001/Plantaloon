@@ -14,6 +14,7 @@ import {
   Card,
   Divider,
   Field,
+  pressedStyle,
   RadioList,
   Segmented,
   SwitchRow,
@@ -199,7 +200,7 @@ export default function RoomScreen() {
               accessibilityLabel="Clear the light"
               hitSlop={8}
               onPress={() => set({ lightTier: null })}
-              style={({ pressed }) => pressed && { opacity: 0.6 }}>
+              style={({ pressed }) => pressed && pressedStyle}>
               <ThemedText type="caption" style={{ color: theme.tint }}>
                 Clear
               </ThemedText>

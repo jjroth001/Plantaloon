@@ -58,7 +58,7 @@ export default function AddPlantSearch() {
         contentContainerStyle={[styles.list, { paddingBottom: insets.bottom + Spacing.five }]}
         ListHeaderComponent={
           <ThemedText type="overline" color="textSecondary" style={styles.heading}>
-            {deferred.trim() ? (results.length ? 'MATCHES' : '') : 'POPULAR HOUSEPLANTS'}
+            {deferred.trim() ? (results.length ? 'Matches' : '') : 'Popular houseplants'}
           </ThemedText>
         }
         ItemSeparatorComponent={() => <View style={styles.separator} />}

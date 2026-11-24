@@ -5,7 +5,7 @@ import { displayName } from '@/catalog';
 import { Icon } from '@/components/icons/icon';
 import { PlantAvatar } from '@/components/plant-avatar';
 import { ThemedText } from '@/components/themed-text';
-import { Card, Divider } from '@/components/ui';
+import { Card, Divider, pressedStyle } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import type { Garden } from '@/db/garden';
 import type { Plant } from '@/db/types';
@@ -38,7 +38,7 @@ export function SharedPotCard({ plant, garden }: { plant: Plant; garden: Garden 
           <Pressable
             accessibilityRole="button"
             onPress={() => router.push({ pathname: '/plant/[id]', params: { id: other.id } })}
-            style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}>
+            style={({ pressed }) => [styles.row, pressed && pressedStyle]}>
             <PlantAvatar
               photo={garden.covers.get(other.id)}
               groupId={other.groupId}
@@ -53,9 +53,9 @@ export function SharedPotCard({ plant, garden }: { plant: Plant; garden: Garden 
         </View>
       ))}
       {warning && (
-        <View style={[styles.warning, { backgroundColor: theme.dangerSoft }]}>
-          <Icon name="warning" size={20} color={theme.danger} />
-          <ThemedText type="caption" style={[styles.flex, { color: theme.danger }]}>
+        <View style={[styles.warning, { backgroundColor: theme.warningSoft }]}>
+          <Icon name="warning" size={20} color={theme.warning} />
+          <ThemedText type="caption" style={[styles.flex, { color: theme.warning }]}>
             {warning}
           </ThemedText>
         </View>

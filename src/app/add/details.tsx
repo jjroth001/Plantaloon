@@ -297,7 +297,7 @@ export default function AddPlantDetails() {
               </View>
             </View>
 
-            <Card style={{ backgroundColor: theme.tintSoft, borderColor: 'transparent' }}>
+            <Card tone="tip">
               <ThemedText type="body">{care.summary}</ThemedText>
               <View style={styles.facts}>
                 <Fact icon="sun" text={LIGHT_LABEL[care.light.best]} />

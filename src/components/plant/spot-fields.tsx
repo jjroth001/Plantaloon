@@ -4,10 +4,10 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import type { LightTier } from '@/catalog/types';
 import { Icon } from '@/components/icons/icon';
-import { LightScale, SUN, SUN_SOFT } from '@/components/light-scale';
+import { LightScale } from '@/components/light-scale';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Divider, Field, SwitchRow } from '@/components/ui';
-import { Spacing } from '@/constants/theme';
+import { Button, Card, Divider, Field, pressedStyle, SwitchRow } from '@/components/ui';
+import { Radius, Spacing } from '@/constants/theme';
 import type { Room } from '@/db/types';
 import type { SpotValue } from '@/lib/plant-form-value';
 import { useLightSensor } from '@/hooks/use-light-sensor';
@@ -50,13 +50,9 @@ export function SpotFields({
         // Picking the room's own light means "same as the room".
         onChange={(tier) => set({ light: tier === room.lightTier ? null : tier, lux: null })}
       />
-      <View
-        style={[
-          styles.lightNote,
-          { backgroundColor: theme.dark ? SUN_SOFT.dark : SUN_SOFT.light },
-        ]}>
+      <View style={[styles.lightNote, { backgroundColor: theme.sunSoft }]}>
         <View style={styles.flex}>
-          <ThemedText type="label" style={{ color: theme.dark ? SUN.dark : SUN.light }}>
+          <ThemedText type="label" style={{ color: theme.sun }}>
             {light == null
               ? 'Not set yet'
               : `${LIGHT_LABEL[light]} · ${
@@ -77,7 +73,7 @@ export function SpotFields({
             accessibilityLabel={`Use ${room.name}'s light`}
             hitSlop={8}
             onPress={() => set({ light: null, lux: null })}
-            style={({ pressed }) => pressed && { opacity: 0.6 }}>
+            style={({ pressed }) => pressed && pressedStyle}>
             <ThemedText type="caption" style={{ color: theme.tint }}>
               Use the room’s
             </ThemedText>
@@ -97,8 +93,8 @@ export function SpotFields({
         <Pressable
           accessibilityRole="button"
           onPress={() => setMeasuring(true)}
-          style={({ pressed }) => [styles.measure, pressed && { opacity: 0.6 }]}>
-          <Icon name="sun" size={22} color={theme.dark ? SUN.dark : SUN.light} />
+          style={({ pressed }) => [styles.measure, pressed && pressedStyle]}>
+          <Icon name="sun" size={22} color={theme.sun} />
           <ThemedText type="label" style={{ color: theme.tint }}>
             Measure the light here
           </ThemedText>
@@ -164,7 +160,7 @@ function Meter({
 
   return (
     <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(150)}>
-      <Card style={{ backgroundColor: theme.tintSoft, borderColor: 'transparent' }}>
+      <Card tone="tip">
         <View style={styles.meterRow}>
           <Icon name="sun" size={28} color={theme.tint} />
           <View style={styles.flex} accessibilityLiveRegion="polite">
@@ -213,7 +209,7 @@ function UseRoom({ text, onPress }: { text: string; onPress: () => void }) {
         accessibilityRole="button"
         hitSlop={8}
         onPress={onPress}
-        style={({ pressed }) => pressed && { opacity: 0.6 }}>
+        style={({ pressed }) => pressed && pressedStyle}>
         <ThemedText type="caption" style={{ color: theme.tint }}>
           Use the room’s
         </ThemedText>
@@ -230,7 +226,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
-    borderRadius: 12,
+    borderRadius: Radius.medium,
     padding: Spacing.three,
   },
   measure: {

@@ -9,7 +9,7 @@ import { CatalogImage } from '@/components/catalog-photo';
 import { Icon } from '@/components/icons/icon';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Divider, EmptyState, IconBadge } from '@/components/ui';
+import { Button, Card, Divider, EmptyState, IconBadge, pressedStyle } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import { successFeedback } from '@/lib/haptics';
 import { pickImage, type PickedImage } from '@/lib/photos';
@@ -191,7 +191,7 @@ export default function ScanScreen() {
                   onPress={() =>
                     router.push({ pathname: '/species/[id]', params: { id: match.species.id } })
                   }
-                  style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}>
+                  style={({ pressed }) => [styles.row, pressed && pressedStyle]}>
                   <CatalogImage
                     speciesId={match.species.id}
                     groupId={match.species.groupId}
@@ -201,7 +201,7 @@ export default function ScanScreen() {
                   <View style={styles.flex}>
                     {i === 0 && (
                       <ThemedText type="overline" style={{ color: theme.tint }}>
-                        BEST MATCH
+                        Best match
                       </ThemedText>
                     )}
                     <ThemedText type={i === 0 ? 'subheading' : 'default'} numberOfLines={1}>

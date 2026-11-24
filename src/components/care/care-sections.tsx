@@ -19,7 +19,7 @@ import { getGuide } from '@/catalog/media';
 import type { CareDetails, GuideId, Habit, LightTier } from '@/catalog/types';
 import { Icon, type IconName } from '@/components/icons/icon';
 import { ThemedText } from '@/components/themed-text';
-import { Card, IconBadge } from '@/components/ui';
+import { Card, IconBadge, pressedStyle } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import { DIFFICULTY_TEXT, formatTemp, HUMIDITY_TEXT, petText } from '@/lib/care-text';
 import { describeMonths, MONTH_INITIALS, outdoorMonths } from '@/lib/climate';
@@ -225,7 +225,7 @@ function Chips({
   return (
     <View style={styles.chipsBlock}>
       <ThemedText type="overline" color="textSecondary">
-        {label.toUpperCase()}
+        {label}
       </ThemedText>
       <View style={styles.chips}>
         {items.map((item) => (
@@ -257,8 +257,8 @@ function GuideLink({ id, label }: { id: GuideId; label: string }) {
       accessibilityRole="link"
       onPress={() => router.push({ pathname: '/guide/[id]', params: { id } })}
       style={({ pressed }) => [styles.link, pressed && styles.pressed]}>
-      <ThemedText type="overline" style={{ color: theme.tint }}>
-        {label.toUpperCase()}
+      <ThemedText type="label" style={{ color: theme.tint }}>
+        {label}
       </ThemedText>
       <Icon name="caret-right" size={14} color={theme.tint} duotone={false} />
     </Pressable>
@@ -268,8 +268,9 @@ function GuideLink({ id, label }: { id: GuideId; label: string }) {
 function Note({ text, tone }: { text: string; tone: 'good' | 'warn' | 'plain' }) {
   const theme = useTheme();
   const background =
-    tone === 'good' ? theme.tintSoft : tone === 'warn' ? theme.dangerSoft : theme.element;
-  const color = tone === 'good' ? theme.tint : tone === 'warn' ? theme.danger : theme.textSecondary;
+    tone === 'good' ? theme.tintSoft : tone === 'warn' ? theme.warningSoft : theme.element;
+  const color =
+    tone === 'good' ? theme.tint : tone === 'warn' ? theme.warning : theme.textSecondary;
   return (
     <View style={[styles.note, { backgroundColor: background }]}>
       <ThemedText type="caption" style={{ color }}>
@@ -283,8 +284,6 @@ const openGuide = (id: string) => router.push({ pathname: '/guide/[id]', params:
 
 // --- Quick facts ------------------------------------------------------------------------------
 
-const SUN = { light: '#9A6410', dark: '#EDC56B' };
-
 function wateringWord(days: number): string {
   if (days <= 1) return 'Daily';
   if (days >= 6 && days <= 8) return 'Weekly';
@@ -294,7 +293,7 @@ function wateringWord(days: number): string {
 
 export function QuickFacts({ care, waterDays }: { care: Care; waterDays: number }) {
   const theme = useTheme();
-  const sun = theme.dark ? SUN.dark : SUN.light;
+  const sun = theme.sun;
   const toxic = care.pets.cats === 'toxic' || care.pets.dogs === 'toxic';
   const safe = care.pets.cats === 'non_toxic' && care.pets.dogs === 'non_toxic';
   const tiles: { icon: IconName; label: string; color: string; background: string }[] = [
@@ -313,7 +312,7 @@ export function QuickFacts({ care, waterDays }: { care: Care; waterDays: number 
         very_high: 'Full sun',
       }[care.light.best],
       color: sun,
-      background: theme.dark ? 'rgba(237,197,107,0.14)' : 'rgba(226,181,76,0.18)',
+      background: theme.sunSoft,
     },
     {
       icon: 'drop',
@@ -365,7 +364,7 @@ const WATER_TITLE: Record<Care['water']['style'], string> = {
 
 function LightRange({ light }: { light: Care['light'] }) {
   const theme = useTheme();
-  const sun = theme.dark ? SUN.dark : SUN.light;
+  const sun = theme.sun;
   const min = LIGHT_TIERS.indexOf(light.min);
   const max = LIGHT_TIERS.indexOf(light.max);
   const short: Record<LightTier, string> = {
@@ -433,7 +432,7 @@ export function CareSection({
   context: CareContext;
 }) {
   const theme = useTheme();
-  const sun = theme.dark ? SUN.dark : SUN.light;
+  const sun = theme.sun;
   const sunSoft = theme.dark ? 'rgba(237,197,107,0.14)' : 'rgba(226,181,76,0.18)';
   const { waterDays, winterWaterDays, nextWater, roomFit } = context;
   const feedDays = context.feedDays ?? care.fertilize?.days;
@@ -510,8 +509,8 @@ export function CareSection({
             <Row
               key={check.text}
               icon={check.icon}
-              color={check.tone === 'warn' ? theme.danger : theme.tint}
-              background={check.tone === 'warn' ? theme.dangerSoft : theme.tintSoft}
+              color={check.tone === 'warn' ? theme.warning : theme.tint}
+              background={check.tone === 'warn' ? theme.warningSoft : theme.tintSoft}
               title={check.text}
               plain
             />
@@ -916,15 +915,15 @@ export function ProblemsSection({ details }: { details: CareDetails | undefined 
       <Chips
         label="Signs"
         items={details.signs.map((id) => ({ key: id, label: label(id) }))}
-        color={theme.danger}
-        background={theme.dangerSoft}
+        color={theme.warning}
+        background={theme.warningSoft}
         onPress={openGuide}
       />
       <Chips
         label="Pests"
         items={details.pests.map((id) => ({ key: id, label: label(id) }))}
-        color={theme.danger}
-        background={theme.dangerSoft}
+        color={theme.warning}
+        background={theme.warningSoft}
         onPress={openGuide}
       />
       <ThemedText type="caption" color="textSecondary">
@@ -937,7 +936,7 @@ export function ProblemsSection({ details }: { details: CareDetails | undefined 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   bold: { fontWeight: 700 },
-  pressed: { opacity: 0.7 },
+  pressed: pressedStyle,
   tabsWrap: { marginHorizontal: -(Spacing.three + Spacing.one), paddingVertical: Spacing.two },
   tabs: { gap: Spacing.two, paddingHorizontal: Spacing.three + Spacing.one },
   tab: { minHeight: 40, paddingHorizontal: 18, borderRadius: 20, justifyContent: 'center' },

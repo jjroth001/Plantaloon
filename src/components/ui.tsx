@@ -19,7 +19,7 @@ import {
 
 import { Icon, type IconName } from '@/components/icons/icon';
 import { ThemedText } from '@/components/themed-text';
-import { Radius, Spacing } from '@/constants/theme';
+import { PRESSED_OPACITY, Radius, Spacing } from '@/constants/theme';
 import { tapFeedback } from '@/lib/haptics';
 import { useTheme } from '@/theme/theme-provider';
 
@@ -28,12 +28,29 @@ import { useTheme } from '@/theme/theme-provider';
 /** Set inside a card (a fold): plain cards within it lose their own box and get a divider. */
 export const InsideCard = createContext(false);
 
-export function Card({ style, ...rest }: ViewProps) {
+/**
+ * `plain`: a white card. The others are flat tinted boxes: `tip` (accent), `warning`
+ * (a heads-up), `danger` (serious) and `muted` (grey, e.g. an archived plant).
+ */
+export type CardTone = 'plain' | 'tip' | 'warning' | 'danger' | 'muted';
+
+export function Card({ style, tone = 'plain', ...rest }: ViewProps & { tone?: CardTone }) {
   const theme = useTheme();
   const inside = useContext(InsideCard);
-  // Tinted boxes (tips, warnings) keep their look; plain cards become divided sections.
-  if (inside && StyleSheet.flatten(style)?.backgroundColor == null) {
+  // Tinted boxes keep their look; plain cards inside a fold become divided sections.
+  if (tone === 'plain' && inside) {
     return <View style={[styles.innerCard, { borderTopColor: theme.border }, style]} {...rest} />;
+  }
+  if (tone !== 'plain') {
+    const background = {
+      tip: theme.tintSoft,
+      warning: theme.warningSoft,
+      danger: theme.dangerSoft,
+      muted: theme.element,
+    }[tone];
+    return (
+      <View style={[styles.card, styles.toned, { backgroundColor: background }, style]} {...rest} />
+    );
   }
   return (
     <View
@@ -47,6 +64,9 @@ export function Card({ style, ...rest }: ViewProps) {
     />
   );
 }
+
+/** The pressed look shared by everything tappable. */
+export const pressedStyle = { opacity: PRESSED_OPACITY } as const;
 
 // --- Buttons ----------------------------------------------------------------
 
@@ -412,11 +432,12 @@ export function Divider() {
   return <View style={[styles.divider, { backgroundColor: theme.border }]} />;
 }
 
+/** A heading over a group of cards, in the display font and sentence case. */
 export function SectionTitle({ children, right }: { children: string; right?: ReactNode }) {
   return (
     <View style={styles.sectionTitle}>
-      <ThemedText type="overline" color="textSecondary">
-        {children.toUpperCase()}
+      <ThemedText type="section" accessibilityRole="header" style={styles.flexShrink}>
+        {children}
       </ThemedText>
       {right}
     </View>
@@ -509,6 +530,8 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth * 2,
   },
   cardShadow: { boxShadow: '0px 1px 8px rgba(30,36,28,0.05)' },
+  toned: { borderColor: 'transparent' },
+  flexShrink: { flexShrink: 1 },
   button: {
     minHeight: 54,
     borderRadius: Radius.medium,
@@ -529,7 +552,7 @@ const styles = StyleSheet.create({
   },
   buttonLabel: { fontSize: 17, fontWeight: 600 },
   buttonLabelSmall: { fontSize: 14, fontWeight: 600 },
-  pressed: { opacity: 0.72 },
+  pressed: { opacity: PRESSED_OPACITY },
   disabled: { opacity: 0.4 },
   chip: {
     minHeight: 40,
@@ -567,8 +590,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: Spacing.two,
     paddingHorizontal: Spacing.one,
-    marginBottom: -Spacing.two,
+    marginBottom: -Spacing.one,
   },
   field: { gap: Spacing.two },
   input: {

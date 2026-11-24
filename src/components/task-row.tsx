@@ -6,7 +6,7 @@ import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanim
 import { Icon } from '@/components/icons/icon';
 import { PlantAvatar } from '@/components/plant-avatar';
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { PRESSED_OPACITY, Spacing } from '@/constants/theme';
 import { useTaskColors } from '@/hooks/use-task-colors';
 import type { CareTask } from '@/lib/care-tasks';
 import { describeDue } from '@/lib/schedule';
@@ -33,7 +33,9 @@ export function TaskRow({
 }) {
   const theme = useTheme();
   const [choosing, setChoosing] = useState(false);
-  const { color, soft } = useTaskColors(task.task);
+  const { color } = useTaskColors(task.task);
+  // Water and feed have their own ink on a solid button; other tasks use the accent's.
+  const onColor = task.task === 'water' || task.task === 'fertilize' ? theme.onTask : theme.onTint;
   const label = taskLabel(task.task, task.label);
   const late = task.days < 0;
 
@@ -52,7 +54,7 @@ export function TaskRow({
             size={48}
           />
           <View style={styles.text}>
-            <ThemedText type="subheading" numberOfLines={1}>
+            <ThemedText type="name" numberOfLines={1}>
               {task.name}
             </ThemedText>
             <View style={styles.meta}>
@@ -61,8 +63,13 @@ export function TaskRow({
                 {label}
               </ThemedText>
               {late && (
-                <ThemedText type="caption" color="textSecondary">
-                  · {describeDue(task.days)}
+                <ThemedText type="caption" numberOfLines={1} style={styles.late}>
+                  <ThemedText type="caption" color="textSecondary">
+                    {' · '}
+                  </ThemedText>
+                  <ThemedText type="caption" style={{ color: theme.warning, fontWeight: 600 }}>
+                    {describeDue(task.days)}
+                  </ThemedText>
                 </ThemedText>
               )}
             </View>
@@ -79,7 +86,8 @@ export function TaskRow({
           }}
           style={({ pressed }) => [
             styles.round,
-            { backgroundColor: choosing ? theme.tintSoft : theme.element },
+            // Quiet: just the icon, unless its choices are open.
+            choosing && { backgroundColor: theme.tintSoft },
             pressed && styles.pressed,
           ]}>
           <Icon
@@ -95,10 +103,11 @@ export function TaskRow({
           onPress={() => onDone(task)}
           style={({ pressed }) => [
             styles.round,
-            { backgroundColor: soft },
-            pressed && styles.pressed,
+            styles.done,
+            { backgroundColor: color },
+            pressed && styles.donePressed,
           ]}>
-          <Icon name="check" size={24} color={color} />
+          <Icon name="check" size={26} color={onColor} duotone={false} />
         </Pressable>
       </View>
       {choosing && (
@@ -140,7 +149,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   main: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   text: { flex: 1, gap: 2 },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  meta: { flexDirection: 'row', alignItems: 'center', gap: 4, minWidth: 0 },
   round: {
     width: 46,
     height: 46,
@@ -148,13 +157,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pressed: { opacity: 0.7 },
+  pressed: { opacity: PRESSED_OPACITY },
+  done: { width: 50, height: 50, borderRadius: 25 },
+  // A small press-in, so the main action feels like a button being pushed.
+  donePressed: { opacity: 0.85, transform: [{ scale: 0.92 }] },
+  late: { flexShrink: 1 },
   skip: { gap: Spacing.two, paddingLeft: 48 + Spacing.three },
   skipChoices: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   skipChip: {
-    minHeight: 36,
-    paddingHorizontal: 14,
-    borderRadius: 18,
+    minHeight: 44,
+    paddingHorizontal: 16,
+    borderRadius: 22,
     justifyContent: 'center',
   },
 });

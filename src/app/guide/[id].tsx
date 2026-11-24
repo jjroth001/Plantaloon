@@ -15,8 +15,8 @@ export default function GuideScreen() {
   const guide = getGuide(id);
   if (!guide) return <Screen belowHeader>{null}</Screen>;
   const warn = guide.kind === 'pest' || guide.kind === 'sign';
-  const color = warn ? theme.danger : theme.tint;
-  const background = warn ? theme.dangerSoft : theme.tintSoft;
+  const color = warn ? theme.warning : theme.tint;
+  const background = warn ? theme.warningSoft : theme.tintSoft;
 
   return (
     <Screen belowHeader>

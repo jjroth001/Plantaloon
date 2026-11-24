@@ -6,6 +6,7 @@ import { Icon } from '@/components/icons/icon';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/theme/theme-provider';
+import { pressedStyle } from '@/components/ui';
 
 export function SpeciesRow({ species, onPress }: { species: Species; onPress: () => void }) {
   const theme = useTheme();
@@ -14,7 +15,7 @@ export function SpeciesRow({ species, onPress }: { species: Species; onPress: ()
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [styles.row, pressed && { opacity: 0.7 }]}>
+      style={({ pressed }) => [styles.row, pressed && pressedStyle]}>
       <CatalogImage speciesId={species.id} groupId={species.groupId} size={48} radius={14} />
       <View style={styles.text}>
         <ThemedText type="default" numberOfLines={1}>

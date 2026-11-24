@@ -6,7 +6,7 @@ import Animated, { LinearTransition } from 'react-native-reanimated';
 import { Icon } from '@/components/icons/icon';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Divider, IconButton } from '@/components/ui';
+import { Button, Card, Divider, IconButton, pressedStyle } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { moveRoom } from '@/db/garden';
 import { useGarden } from '@/hooks/use-garden';
@@ -42,7 +42,7 @@ export default function RoomsScreen() {
                 <Pressable
                   accessibilityRole="button"
                   onPress={() => router.push({ pathname: '/room/[id]', params: { id: room.id } })}
-                  style={({ pressed }) => [styles.main, pressed && { opacity: 0.7 }]}>
+                  style={({ pressed }) => [styles.main, pressed && pressedStyle]}>
                   <View style={[styles.icon, { backgroundColor: theme.tintSoft }]}>
                     <Icon name={room.icon} size={22} color={theme.tint} />
                   </View>

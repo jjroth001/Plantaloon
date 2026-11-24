@@ -81,6 +81,15 @@
         }
       ],
       "expo-sharing",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/fredoka/500Medium/Fredoka_500Medium.ttf",
+            "node_modules/@expo-google-fonts/fredoka/600SemiBold/Fredoka_600SemiBold.ttf"
+          ]
+        }
+      ],
       "./plugins/with-release-signing",
       "./plugins/with-arm64-only",
       [

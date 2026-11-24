@@ -1,14 +1,20 @@
-import { Platform } from 'react-native';
+import { Appearance, Platform } from 'react-native';
 
 import { remindersSupported } from '@/lib/notifications';
 
-import { WIDGET_NAME, type WidgetModel } from './widget-model';
+import { WIDGET_NAME, type WidgetLook, type WidgetModel } from './widget-model';
 
 /** Widgets need Plantaloon's own native code: installed Android builds only, not Expo Go. */
 export const widgetsSupported = Platform.OS === 'android' && remindersSupported;
 
-/** Redraws any home-screen widgets with `model`. Safe to call when there are none. */
-export async function redrawWidgets(model: WidgetModel): Promise<void> {
+/**
+ * Redraws any home-screen widgets with `model`. Safe to call when there are none. Without a
+ * `look` it follows the phone's light or dark mode with the default accent.
+ */
+export async function redrawWidgets(
+  model: WidgetModel,
+  look: WidgetLook = { dark: Appearance.getColorScheme() === 'dark', accent: 'leaf' },
+): Promise<void> {
   if (!widgetsSupported) return;
   // Loaded lazily: these modules touch native code that doesn't exist in Expo Go.
   const [{ requestWidgetUpdate }, { FallbackWidget, PlantaloonWidget }] = await Promise.all([
@@ -21,11 +27,14 @@ export async function redrawWidgets(model: WidgetModel): Promise<void> {
     await requestWidgetUpdate({
       widgetName: WIDGET_NAME,
       renderWidget: (info) => (
-        <PlantaloonWidget model={model} width={info.width} height={info.height} />
+        <PlantaloonWidget model={model} look={look} width={info.width} height={info.height} />
       ),
     });
   } catch (error) {
     console.error('Plantaloon widget failed to draw', error);
-    await requestWidgetUpdate({ widgetName: WIDGET_NAME, renderWidget: () => <FallbackWidget /> });
+    await requestWidgetUpdate({
+      widgetName: WIDGET_NAME,
+      renderWidget: () => <FallbackWidget look={look} />,
+    });
   }
 }

@@ -14,10 +14,6 @@ import { tapFeedback } from '@/lib/haptics';
 import { LIGHT_LABEL, LIGHT_TIERS } from '@/lib/light';
 import { useTheme } from '@/theme/theme-provider';
 
-/** Sunny yellow that reads on both themes (as on the plant page's light card). */
-export const SUN = { light: '#9A6410', dark: '#EDC56B' };
-export const SUN_SOFT = { light: 'rgba(154,100,16,0.10)', dark: 'rgba(237,197,107,0.14)' };
-
 const SHORT: Record<LightTier, string> = {
   low: 'Low',
   medium: 'Medium',
@@ -39,7 +35,7 @@ export function LightScale({
   onChange: (tier: LightTier) => void;
 }) {
   const theme = useTheme();
-  const sun = theme.dark ? SUN.dark : SUN.light;
+  const sun = theme.sun;
   const [width, setWidth] = useState(0);
   const index = value == null ? -1 : LIGHT_TIERS.indexOf(value);
   const step = (width - GAP * (LIGHT_TIERS.length - 1)) / LIGHT_TIERS.length;

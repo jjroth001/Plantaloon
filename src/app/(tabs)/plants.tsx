@@ -7,7 +7,7 @@ import { PlantAvatar } from '@/components/plant-avatar';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Button, EmptyState, IconButton } from '@/components/ui';
-import { Radius, Spacing } from '@/constants/theme';
+import { PRESSED_OPACITY, Radius, Spacing } from '@/constants/theme';
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { useToday } from '@/hooks/use-today';
@@ -29,31 +29,56 @@ export default function PlantsScreen() {
   const cardWidth = (width - SIDE * 2 - GAP * (columns - 1)) / columns;
 
   const header = (
-    <View style={styles.headerButtons}>
-      {(garden.data?.archived.length ?? 0) > 0 && (
-        <IconButton icon="archive" label="Archive" onPress={() => router.push('/archive')} />
-      )}
-      <IconButton icon="heart" label="Wishlist" onPress={() => router.push('/wishlist')} />
-      <IconButton icon="house" label="Rooms" onPress={() => router.push('/rooms')} />
-      <IconButton
-        icon="plus"
-        label="Add a plant"
-        onPress={() => router.push('/add')}
-        background={theme.tint}
-        color={theme.onTint}
+    <IconButton
+      icon="plus"
+      label="Add a plant"
+      onPress={() => router.push('/add')}
+      background={theme.tint}
+      color={theme.onTint}
+    />
+  );
+  // Labelled, so there's nothing to guess.
+  const shortcuts = (
+    <View style={styles.shortcuts}>
+      <Button
+        title="Rooms"
+        icon="house"
+        size="small"
+        variant="secondary"
+        onPress={() => router.push('/rooms')}
       />
+      <Button
+        title="Wishlist"
+        icon="heart"
+        size="small"
+        variant="secondary"
+        onPress={() => router.push('/wishlist')}
+      />
+      {(garden.data?.archived.length ?? 0) > 0 && (
+        <Button
+          title="Archive"
+          icon="archive"
+          size="small"
+          variant="secondary"
+          onPress={() => router.push('/archive')}
+        />
+      )}
     </View>
   );
 
   if (!garden.data || !settings.data) return <Screen title="Plants">{null}</Screen>;
   const { rooms, plants } = garden.data;
   const tasks = buildTasks(garden.data, settings.data.hemisphere, today);
+  // Late is a heads-up (warning), due today is water blue, later is quiet.
+  const dueColor = (days: number) =>
+    days < 0 ? theme.warning : days === 0 ? theme.water : theme.textSecondary;
   const nextWater = new Map<string, CareTask>();
   for (const t of tasks)
     if (t.task === 'water' && !nextWater.has(t.plant.id)) nextWater.set(t.plant.id, t);
 
   return (
     <Screen title="Plants" titleAccessory={header}>
+      {shortcuts}
       {plants.length === 0 ? (
         <EmptyState
           icon="plant"
@@ -76,7 +101,7 @@ export default function PlantsScreen() {
                 onPress={() => router.push({ pathname: '/room/[id]', params: { id: room.id } })}
                 style={styles.roomHeader}>
                 <Icon name={room.icon} size={22} color={theme.textSecondary} />
-                <ThemedText type="subheading" style={styles.flex}>
+                <ThemedText type="section" style={styles.flex}>
                   {room.name}
                 </ThemedText>
                 {room.lightTier && (
@@ -109,10 +134,14 @@ export default function PlantsScreen() {
                       radius={0}
                     />
                     <View style={styles.cardText}>
-                      <ThemedText type="label" numberOfLines={1}>
+                      <ThemedText type="name" numberOfLines={1}>
                         {name}
                       </ThemedText>
-                      <ThemedText type="caption" color="textSecondary" numberOfLines={1}>
+                      <ThemedText
+                        type="caption"
+                        color="textSecondary"
+                        numberOfLines={1}
+                        style={!plant.nickname && styles.italic}>
                         {plant.nickname
                           ? (getSpecies(plant.speciesId)?.common[0] ?? ' ')
                           : (getSpecies(plant.speciesId)?.scientific ?? ' ')}
@@ -142,15 +171,13 @@ export default function PlantsScreen() {
                       )}
                       {!plant.propStage && task && (
                         <View style={styles.due}>
-                          <Icon
-                            name="drop"
-                            size={13}
-                            color={task.days <= 0 ? theme.water : theme.textSecondary}
-                            duotone={false}
-                          />
+                          <Icon name="drop" size={13} color={dueColor(task.days)} duotone={false} />
                           <ThemedText
                             type="caption"
-                            style={{ color: task.days <= 0 ? theme.water : theme.textSecondary }}>
+                            style={{
+                              color: dueColor(task.days),
+                              fontWeight: task.days <= 0 ? 600 : 500,
+                            }}>
                             {describeDue(task.days)}
                           </ThemedText>
                         </View>
@@ -169,7 +196,8 @@ export default function PlantsScreen() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  headerButtons: { flexDirection: 'row', gap: Spacing.two },
+  shortcuts: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, marginTop: -Spacing.two },
+  italic: { fontStyle: 'italic' },
   room: { gap: Spacing.three },
   roomHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, minHeight: 36 },
   badge: {
@@ -188,5 +216,5 @@ const styles = StyleSheet.create({
   },
   cardText: { padding: Spacing.three, paddingTop: Spacing.two + 2, gap: 1 },
   due: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-  pressed: { opacity: 0.75 },
+  pressed: { opacity: PRESSED_OPACITY },
 });

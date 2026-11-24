@@ -11,7 +11,15 @@ import { LightDial } from '@/components/light-dial';
 import { PlantAvatar } from '@/components/plant-avatar';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Chip, Divider, EmptyState, SectionTitle } from '@/components/ui';
+import {
+  Button,
+  Card,
+  Chip,
+  Divider,
+  EmptyState,
+  pressedStyle,
+  SectionTitle,
+} from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { setPlantLight, setRoomLight } from '@/db/garden';
 import { setSetting } from '@/db/settings';
@@ -181,7 +189,7 @@ export default function LightScreen() {
                     successFeedback();
                     setSavedTo(room.id);
                   }}
-                  style={({ pressed }) => [styles.row, pressed && { opacity: 0.6 }]}>
+                  style={({ pressed }) => [styles.row, pressed && pressedStyle]}>
                   <Icon name={room.icon} size={22} color={theme.textSecondary} />
                   <View style={styles.flex}>
                     <ThemedText numberOfLines={1}>{room.name}</ThemedText>
@@ -214,7 +222,6 @@ export default function LightScreen() {
           <Card>
             {plants.map((plant, i) => {
               const fit = lightFit(tier, careFor(plant.groupId, plant.speciesId).light);
-              const bad = fit === 'too_dark' || fit === 'too_bright';
               return (
                 <View key={plant.id} style={styles.gap}>
                   {i > 0 && <Divider />}
@@ -228,20 +235,7 @@ export default function LightScreen() {
                     <ThemedText style={styles.flex} numberOfLines={1}>
                       {displayName(plant)}
                     </ThemedText>
-                    <View
-                      style={[
-                        styles.fit,
-                        { backgroundColor: bad ? theme.dangerSoft : theme.tintSoft },
-                      ]}>
-                      {/* One line, simple breaking: Android can otherwise drop "dark". */}
-                      <ThemedText
-                        type="label"
-                        numberOfLines={1}
-                        textBreakStrategy="simple"
-                        style={{ color: bad ? theme.danger : theme.tint }}>
-                        {FIT_TEXT[fit]}
-                      </ThemedText>
-                    </View>
+                    <FitPill fit={fit} />
                     {tier !== 'too_dark' && (
                       <Pressable
                         accessibilityRole="button"
@@ -252,7 +246,7 @@ export default function LightScreen() {
                           successFeedback();
                           setSavedPlant(plant.id);
                         }}
-                        style={({ pressed }) => [styles.pin, pressed && { opacity: 0.6 }]}>
+                        style={({ pressed }) => [styles.pin, pressed && pressedStyle]}>
                         <Icon
                           name={savedPlant === plant.id ? 'check' : 'map-pin'}
                           size={20}
@@ -275,6 +269,35 @@ export default function LightScreen() {
   );
 }
 
+/** Just right: filled with a check. Fine: outlined. Too dark or bright: a warning. */
+function FitPill({ fit }: { fit: LightFit }) {
+  const theme = useTheme();
+  const look =
+    fit === 'ideal'
+      ? { bg: theme.tint, fg: theme.onTint, border: theme.tint, icon: 'check' as const }
+      : fit === 'ok'
+        ? { bg: 'transparent', fg: theme.tint, border: theme.tint, icon: null }
+        : {
+            bg: theme.warningSoft,
+            fg: theme.warning,
+            border: 'transparent',
+            icon: 'warning' as const,
+          };
+  return (
+    <View style={[styles.fit, { backgroundColor: look.bg, borderColor: look.border }]}>
+      {look.icon && <Icon name={look.icon} size={14} color={look.fg} duotone={false} />}
+      {/* One line, simple breaking: Android can otherwise drop "dark". */}
+      <ThemedText
+        type="label"
+        numberOfLines={1}
+        textBreakStrategy="simple"
+        style={{ color: look.fg }}>
+        {FIT_TEXT[fit]}
+      </ThemedText>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   center: { textAlign: 'center' },
@@ -285,11 +308,15 @@ const styles = StyleSheet.create({
   section: { gap: Spacing.three },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
-  pin: { padding: Spacing.one },
+  pin: { padding: Spacing.two },
   fit: {
     flexShrink: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
     borderRadius: 999,
+    borderWidth: 1.5,
     paddingHorizontal: Spacing.two + 2,
-    paddingVertical: 3,
+    paddingVertical: 2,
   },
 });

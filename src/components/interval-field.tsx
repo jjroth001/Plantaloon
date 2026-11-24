@@ -5,7 +5,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Icon } from '@/components/icons/icon';
 import { Sheet } from '@/components/sheet';
 import { ThemedText } from '@/components/themed-text';
-import { Button, IconButton, RadioList, Segmented } from '@/components/ui';
+import { Button, IconButton, pressedStyle, RadioList, Segmented } from '@/components/ui';
 import { Radius, Spacing } from '@/constants/theme';
 import { tapFeedback } from '@/lib/haptics';
 import {
@@ -58,7 +58,7 @@ export function IntervalField({
         style={({ pressed }) => [
           styles.row,
           { backgroundColor: theme.element },
-          pressed && { opacity: 0.7 },
+          pressed && pressedStyle,
         ]}>
         <ThemedText style={styles.flex}>{describeInterval(value)}</ThemedText>
         <Icon name="caret-right" size={18} color={theme.textSecondary} duotone={false} />
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   input: {
     minWidth: 56,
     minHeight: 40,
-    borderRadius: 10,
+    borderRadius: Radius.small,
     paddingHorizontal: Spacing.two,
     fontSize: 18,
     fontWeight: '600',

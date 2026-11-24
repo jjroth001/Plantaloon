@@ -5,6 +5,7 @@ import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { ThemedText } from '@/components/themed-text';
 import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/theme/theme-provider';
+import { pressedStyle } from '@/components/ui';
 
 const VISIBLE_MS = 6000;
 
@@ -41,7 +42,7 @@ export function UndoBar({
         accessibilityRole="button"
         hitSlop={8}
         onPress={onUndo}
-        style={({ pressed }) => [styles.undo, pressed && { opacity: 0.6 }]}>
+        style={({ pressed }) => [styles.undo, pressed && pressedStyle]}>
         <ThemedText type="label" style={{ color: theme.background }}>
           UNDO
         </ThemedText>

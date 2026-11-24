@@ -5,6 +5,7 @@ import { CATALOG_PHOTOS } from '@/catalog/photos';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/theme/theme-provider';
+import { pressedStyle } from '@/components/ui';
 
 const ROWS = Object.entries(CATALOG_PHOTOS).map(([id, [, author, licence, page]]) => ({
   id,
@@ -34,7 +35,7 @@ export default function CreditsScreen() {
         <Pressable
           accessibilityRole="link"
           onPress={() => Linking.openURL(item.page)}
-          style={({ pressed }) => [styles.row, pressed && { opacity: 0.6 }]}>
+          style={({ pressed }) => [styles.row, pressed && pressedStyle]}>
           <View style={styles.flex}>
             <ThemedText type="label" style={styles.italic}>
               {item.name}

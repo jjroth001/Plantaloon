@@ -39,7 +39,7 @@ export function ArchivedCard({ plant }: { plant: Plant }) {
     );
 
   return (
-    <Card style={{ backgroundColor: theme.element, borderColor: 'transparent' }}>
+    <Card tone="muted">
       <View style={styles.row}>
         <Icon name="archive" size={24} color={theme.textSecondary} />
         <View style={styles.flex}>

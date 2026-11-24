@@ -1,12 +1,15 @@
 import { Image } from 'expo-image';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
+import { setStatusBarStyle } from 'expo-status-bar';
 import { useCallback, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 import Animated, { FadeIn, FadeOut, LinearTransition } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
-import { careFor, displayName, getSpecies, type Care } from '@/catalog';
-import { descriptionFor, detailsFor } from '@/catalog/media';
+import { careFor, displayName, getGroup, getSpecies, type Care } from '@/catalog';
+import { catalogPhoto, descriptionFor, detailsFor } from '@/catalog/media';
 import {
   AboutSection,
   CareSection,
@@ -16,12 +19,11 @@ import {
   sectionLines,
   type CareContext,
 } from '@/components/care/care-sections';
-import { Fold } from '@/components/fold';
+import { Fold, FoldGroup } from '@/components/fold';
 import { Icon, type IconName } from '@/components/icons/icon';
-import { PlantAvatar } from '@/components/plant-avatar';
-import { Screen } from '@/components/screen';
+import { Screen, SCREEN_SIDE } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Button, Card, Divider, IconButton, SectionTitle } from '@/components/ui';
+import { Button, Card, Divider, pressedStyle, SectionTitle } from '@/components/ui';
 import { UndoBar } from '@/components/undo-bar';
 import { Radius, Spacing } from '@/constants/theme';
 import {
@@ -37,6 +39,7 @@ import {
   ENTRY_LABEL,
   HEALTH,
   type HealthStatus,
+  type Photo,
   type Schedule,
   type Task,
 } from '@/db/types';
@@ -64,16 +67,19 @@ import { useTheme } from '@/theme/theme-provider';
 
 type Undo = { message: string; entryIds: string[] };
 
-/** What an archived plant's page keeps: no care, just its story. */
-const ARCHIVED_KEYS = new Set(['hero', 'archived', 'photos', 'description', 'journal']);
-
 /** Journal entries shown at first, and added by each "Show older entries". */
 const JOURNAL_PAGE = 40;
+
+/** The floating buttons over the cover photo, and the bar that appears behind them. */
+const BAR_HEIGHT = 56;
+const FLOAT_SIZE = 40;
 
 export default function PlantScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const db = useSQLiteContext();
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const garden = useGarden();
   const settings = useSettings();
   const today = useToday();
@@ -84,17 +90,28 @@ export default function PlantScreen() {
   const [openFolds, setOpenFolds] = useState<string[]>([]);
   // The journal shows its newest entries first; "Show older" adds a page at a time.
   const [journalShown, setJournalShown] = useState(JOURNAL_PAGE);
+  // Scrolled past the cover photo: a solid bar appears behind the floating buttons.
+  const [pastCover, setPastCover] = useState(false);
   // Ignores a second tap on Watered / Fed while the first is still being saved.
   const logging = useRef(false);
   const lows = useClimateLows();
   const hideUndo = useCallback(() => setUndo(null), []);
 
+  const coverHeight = Math.round(Math.min(Math.max(width * 0.85, 280), 420));
+  // Light status bar icons over the photo; the theme's own once the bar covers it.
+  const lightIcons = !pastCover;
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle(lightIcons ? 'light' : theme.dark ? 'light' : 'dark', true);
+      return () => setStatusBarStyle(theme.dark ? 'light' : 'dark', true);
+    }, [lightIcons, theme.dark]),
+  );
+
   const plant =
     garden.data?.plants.find((p) => p.id === id) ?? garden.data?.archived.find((p) => p.id === id);
-  if (!garden.data || !settings.data) return <Screen belowHeader>{null}</Screen>;
-  if (!plant) {
-    // Deleted: leave quietly.
-    return <Screen belowHeader>{null}</Screen>;
+  if (!garden.data || !settings.data || !plant) {
+    // Still loading, or deleted: leave quietly.
+    return <Screen>{null}</Screen>;
   }
   const isArchived = plant.archivedAt != null;
   const roomRow = garden.data.rooms.find((r) => r.id === plant.roomId);
@@ -202,201 +219,19 @@ export default function PlantScreen() {
     onToggle: () =>
       setOpenFolds((o) => (o.includes(key) ? o.filter((k) => k !== key) : [...o, key])),
   });
-  const children = [
-    <View key="hero" style={styles.hero}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={cover ? 'Open photos' : 'Add a photo'}
-        onPress={() => (cover ? openPhotos(cover.id) : addPlantPhoto(db, plant.id))}>
-        <PlantAvatar
-          photo={cover}
-          groupId={plant.groupId}
-          speciesId={plant.speciesId}
-          size={132}
-          radius={Radius.large + 10}
-        />
-        {!cover && (
-          <View style={[styles.cameraBadge, { backgroundColor: theme.tint }]}>
-            <Icon name="camera" size={18} color={theme.onTint} />
-          </View>
-        )}
-      </Pressable>
-      <View style={styles.heroText}>
-        <ThemedText type="title" style={styles.center}>
-          {name}
-        </ThemedText>
-        {species && (
-          <ThemedText type="body" color="textSecondary" style={[styles.center, styles.italic]}>
-            {plant.nickname ? `${species.common[0]} · ` : ''}
-            {species.scientific}
-          </ThemedText>
-        )}
-        {!species && (
-          <ThemedText type="body" color="textSecondary" style={styles.center}>
-            Cared for like: {care.name}
-          </ThemedText>
-        )}
-        {room && (
-          <View style={[styles.roomChip, { backgroundColor: theme.element }]}>
-            <Icon name={room.icon} size={16} color={theme.textSecondary} />
-            <ThemedText type="caption" color="textSecondary">
-              {room.name}
-              {room.outdoor ? (plant.inGround ? ' · in the ground' : ' · outdoors') : ''}
-            </ThemedText>
-          </View>
-        )}
-        {!isArchived && <HealthChip plantId={plant.id} status={garden.data.health.get(plant.id)} />}
-      </View>
-    </View>,
-    isArchived ? <ArchivedCard key="archived" plant={plant} /> : null,
-    <View key="actions" style={styles.actions}>
-      <QuickAction
-        icon="drop"
-        label="Watered"
-        color={theme.water}
-        background={theme.waterSoft}
-        onPress={() => log('water')}
-      />
-      <QuickAction
-        icon="flask"
-        label="Fed"
-        color={theme.fertilize}
-        background={theme.fertilizeSoft}
-        onPress={() => log('fertilize')}
-      />
-      <QuickAction
-        icon="camera"
-        label="Photo"
-        color={theme.tint}
-        background={theme.tintSoft}
-        onPress={() => addPlantPhoto(db, plant.id)}
-      />
-      <QuickAction
-        icon="note-pencil"
-        label="Journal"
-        color={theme.tint}
-        background={theme.tintSoft}
-        onPress={() => router.push({ pathname: '/plant/log/[id]', params: { id: plant.id } })}
-      />
-    </View>,
-    suggestions.length > 0 ? (
-      <View key="suggestions" style={styles.gap}>
-        {suggestions.map((t) => (
-          <Card
-            key={t.task}
-            style={{ backgroundColor: theme.tintSoft, borderColor: 'transparent' }}>
-            <View style={styles.suggestion}>
-              <Icon name="lightbulb" size={24} color={theme.tint} />
-              <ThemedText type="body" style={styles.flex}>
-                The soil has been too damp to {t.task === 'water' ? 'water' : 'feed'} three times in
-                a row. Change to every {t.suggestion} days?
-              </ThemedText>
-            </View>
-            <View style={styles.suggestionButtons}>
-              <Button
-                title="Keep as is"
-                size="small"
-                variant="ghost"
-                onPress={() => dismissIntervalHint(db, plant.id, t.task)}
-              />
-              <Button
-                title={`Every ${t.suggestion} days`}
-                size="small"
-                onPress={() =>
-                  setSchedule(db, plant.id, t.task, { intervalDays: t.suggestion!, enabled: true })
-                }
-              />
-            </View>
-          </Card>
-        ))}
-      </View>
-    ) : null,
-    <Card key="schedule">
-      {shownSchedules.map((schedule, i) => (
-        <View key={schedule.task} style={styles.gap}>
-          {i > 0 && <Divider />}
-          <ScheduleLine
-            schedule={schedule}
-            due={tasks.find((t) => t.task === schedule.task)}
-            care={care}
-            hemisphere={settings.data!.hemisphere}
-            today={today}
-            onEdit={() => router.push({ pathname: '/plant/edit/[id]', params: { id: plant.id } })}
-          />
-        </View>
-      ))}
-    </Card>,
-    plant.sharedPot ? <SharedPotCard key="pot" plant={plant} garden={garden.data} /> : null,
-    <CuttingsCard key="cuttings" plant={plant} garden={garden.data} today={today} />,
-    photos.length > 0 ? (
-      <View key="photos" style={styles.section}>
-        <SectionTitle
-          right={
-            <Pressable accessibilityRole="button" hitSlop={8} onPress={() => openPhotos()}>
-              <ThemedText type="label" color="tint">
-                See all
-              </ThemedText>
-            </Pressable>
-          }>
-          {`Photos (${photos.length})`}
-        </SectionTitle>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.strip}>
-          {photos.slice(0, 12).map((photo) => (
-            <Pressable
-              key={photo.id}
-              accessibilityRole="imagebutton"
-              accessibilityLabel={`Photo from ${formatRelativeDay(dateOf(photo.takenAt), today)}`}
-              onPress={() => openPhotos(photo.id)}>
-              <Image
-                cachePolicy="memory-disk"
-                source={{ uri: photoUri(photo.file) }}
-                style={[styles.thumb, { backgroundColor: theme.element }]}
-                contentFit="cover"
-                transition={150}
-              />
-              <ThemedText type="caption" color="textSecondary" style={styles.thumbDate}>
-                {formatRelativeDay(dateOf(photo.takenAt), today)}
-              </ThemedText>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </View>
-    ) : null,
-    description ? (
-      <ThemedText key="description" type="body">
-        {description}
-      </ThemedText>
-    ) : null,
-    <QuickFacts key="facts" care={care} waterDays={waterDays} />,
-    <Fold key="care" {...fold('care', 'Care', lines.care)}>
-      <CareSection care={care} details={details} context={context} />
-    </Fold>,
-    <Fold key="about" {...fold('about', 'About', lines.about)}>
-      <AboutSection care={care} details={details} />
-    </Fold>,
-    <Fold key="growing" {...fold('growing', 'Growing', lines.growing)}>
-      <GrowingSection
-        care={care}
-        details={details}
-        unit={settings.data.temperatureUnit}
-        lows={lows}
-      />
-    </Fold>,
-    <Fold key="problems" {...fold('problems', 'Problems', lines.problems)}>
-      <ProblemsSection details={details} />
-    </Fold>,
+  const editPlant = () => router.push({ pathname: '/plant/edit/[id]', params: { id: plant.id } });
+
+  const descriptionText = description ? <ThemedText type="body">{description}</ThemedText> : null;
+
+  const journalFold = (
     <Fold
-      key="journal"
       {...fold('journal', 'Journal', {
         text: entries.length
           ? `${entries.length === 1 ? '1 entry' : `${entries.length} entries`} · latest ${formatRelativeDay(dateOf(entries[0].at), today).toLowerCase()}`
           : 'Nothing yet',
       })}>
       <Card>
-        {(journal.data ?? []).length === 0 ? (
+        {entries.length === 0 ? (
           <ThemedText type="body" color="textSecondary">
             Waterings, feeds, photos and notes will collect here.
           </ThemedText>
@@ -424,28 +259,314 @@ export default function PlantScreen() {
           </Animated.View>
         )}
       </Card>
-    </Fold>,
-  ].filter((child) => child != null && (!isArchived || ARCHIVED_KEYS.has(String(child.key))));
+    </Fold>
+  );
+
+  const roomChip = room ? (
+    <View style={[styles.roomChip, { backgroundColor: theme.element }]}>
+      <Icon name={room.icon} size={16} color={theme.textSecondary} />
+      <ThemedText type="caption" color="textSecondary">
+        {room.name}
+        {room.outdoor ? (plant.inGround ? ' · in the ground' : ' · outdoors') : ''}
+      </ThemedText>
+    </View>
+  ) : null;
+
+  const children = [
+    // The cover photo, edge to edge, fading into the page.
+    <Pressable
+      key="cover"
+      accessibilityRole="button"
+      accessibilityLabel={cover ? 'Open photos' : 'Add a photo'}
+      onPress={() => (cover ? openPhotos(cover.id) : addPlantPhoto(db, plant.id))}
+      style={[styles.cover, { height: coverHeight }]}>
+      <Cover
+        photo={cover}
+        groupId={plant.groupId}
+        speciesId={plant.speciesId}
+        width={width}
+        height={coverHeight}
+      />
+      <Svg style={StyleSheet.absoluteFill} width={width} height={coverHeight} pointerEvents="none">
+        <Defs>
+          <LinearGradient id="shade" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#000000" stopOpacity={0.4} />
+            <Stop offset="1" stopColor="#000000" stopOpacity={0} />
+          </LinearGradient>
+          <LinearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor={theme.background} stopOpacity={0} />
+            <Stop offset="1" stopColor={theme.background} stopOpacity={1} />
+          </LinearGradient>
+        </Defs>
+        {/* Keeps the status bar and the floating buttons readable on bright photos. */}
+        <Rect x={0} y={0} width={width} height={insets.top + BAR_HEIGHT + 24} fill="url(#shade)" />
+        <Rect
+          x={0}
+          y={coverHeight * 0.62}
+          width={width}
+          height={coverHeight * 0.38 + 1}
+          fill="url(#fade)"
+        />
+      </Svg>
+    </Pressable>,
+    <View key="name" style={styles.nameBlock}>
+      <ThemedText type="title" accessibilityRole="header">
+        {name}
+      </ThemedText>
+      {species ? (
+        <ThemedText type="body" color="textSecondary">
+          {plant.nickname ? `${species.common[0]} · ` : ''}
+          <ThemedText type="body" color="textSecondary" style={styles.italic}>
+            {species.scientific}
+          </ThemedText>
+        </ThemedText>
+      ) : (
+        <ThemedText type="body" color="textSecondary">
+          Cared for like: {care.name}
+        </ThemedText>
+      )}
+      <View style={styles.chips}>
+        {isArchived ? (
+          roomChip
+        ) : (
+          <HealthChip
+            plantId={plant.id}
+            status={garden.data.health.get(plant.id)}
+            leading={roomChip}
+          />
+        )}
+      </View>
+    </View>,
+    isArchived ? <ArchivedCard key="archived" plant={plant} /> : null,
+
+    // Care now: quick actions, what's due, and anything this plant is part of.
+    isArchived ? null : (
+      <View key="care" style={styles.zone}>
+        <SectionTitle>Care</SectionTitle>
+        <View style={styles.actions}>
+          <QuickAction
+            icon="drop"
+            label="Watered"
+            color={theme.water}
+            background={theme.waterSoft}
+            onPress={() => log('water')}
+          />
+          <QuickAction
+            icon="flask"
+            label="Fed"
+            color={theme.fertilize}
+            background={theme.fertilizeSoft}
+            onPress={() => log('fertilize')}
+          />
+          <QuickAction
+            icon="camera"
+            label="Photo"
+            color={theme.tint}
+            background={theme.tintSoft}
+            onPress={() => addPlantPhoto(db, plant.id)}
+          />
+          <QuickAction
+            icon="note-pencil"
+            label="Journal"
+            color={theme.tint}
+            background={theme.tintSoft}
+            onPress={() => router.push({ pathname: '/plant/log/[id]', params: { id: plant.id } })}
+          />
+        </View>
+        {suggestions.map((t) => (
+          <Card key={t.task} tone="tip">
+            <View style={styles.suggestion}>
+              <Icon name="lightbulb" size={24} color={theme.tint} />
+              <ThemedText type="body" style={styles.flex}>
+                The soil has been too damp to {t.task === 'water' ? 'water' : 'feed'} three times in
+                a row. Change to every {t.suggestion} days?
+              </ThemedText>
+            </View>
+            <View style={styles.suggestionButtons}>
+              <Button
+                title="Keep as is"
+                size="small"
+                variant="ghost"
+                onPress={() => dismissIntervalHint(db, plant.id, t.task)}
+              />
+              <Button
+                title={`Every ${t.suggestion} days`}
+                size="small"
+                onPress={() =>
+                  setSchedule(db, plant.id, t.task, { intervalDays: t.suggestion!, enabled: true })
+                }
+              />
+            </View>
+          </Card>
+        ))}
+        <Card>
+          {shownSchedules.map((schedule, i) => (
+            <View key={schedule.task} style={styles.gap}>
+              {i > 0 && <Divider />}
+              <ScheduleLine
+                schedule={schedule}
+                due={tasks.find((t) => t.task === schedule.task)}
+                care={care}
+                hemisphere={settings.data!.hemisphere}
+                today={today}
+                onEdit={editPlant}
+              />
+            </View>
+          ))}
+        </Card>
+        {plant.sharedPot ? <SharedPotCard plant={plant} garden={garden.data} /> : null}
+        <CuttingsCard plant={plant} garden={garden.data} today={today} />
+      </View>
+    ),
+
+    // Its story: photos and the journal.
+    <View key="story" style={styles.zone}>
+      <SectionTitle
+        right={
+          photos.length > 0 ? (
+            <Pressable
+              accessibilityRole="button"
+              hitSlop={12}
+              onPress={() => openPhotos()}
+              style={({ pressed }) => [styles.seeAll, pressed && pressedStyle]}>
+              <ThemedText type="label" color="tint">
+                {`See all ${photos.length}`}
+              </ThemedText>
+            </Pressable>
+          ) : undefined
+        }>
+        Photos and journal
+      </SectionTitle>
+      {photos.length > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.stripScroll}
+          contentContainerStyle={styles.strip}>
+          {photos.slice(0, 12).map((photo) => (
+            <Pressable
+              key={photo.id}
+              accessibilityRole="imagebutton"
+              accessibilityLabel={`Photo from ${formatRelativeDay(dateOf(photo.takenAt), today)}`}
+              onPress={() => openPhotos(photo.id)}>
+              <Image
+                cachePolicy="memory-disk"
+                source={{ uri: photoUri(photo.file) }}
+                style={[styles.thumb, { backgroundColor: theme.element }]}
+                contentFit="cover"
+                transition={150}
+              />
+              <ThemedText type="caption" color="textSecondary" style={styles.thumbDate}>
+                {formatRelativeDay(dateOf(photo.takenAt), today)}
+              </ThemedText>
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
+      {journalFold}
+    </View>,
+
+    // Reference: what the plant is and how to grow it. An archived plant keeps its story only.
+    isArchived ? (
+      descriptionText ? (
+        <View key="about" style={styles.zone}>
+          <SectionTitle>About this plant</SectionTitle>
+          {descriptionText}
+        </View>
+      ) : null
+    ) : (
+      <View key="about" style={styles.zone}>
+        <SectionTitle>About this plant</SectionTitle>
+        <QuickFacts care={care} waterDays={waterDays} />
+        <FoldGroup>
+          {[
+            <Fold key="about" grouped {...fold('about', 'About', lines.about)}>
+              {descriptionText}
+              <AboutSection care={care} details={details} />
+            </Fold>,
+            <Fold key="care" grouped {...fold('care', 'Care', lines.care)}>
+              <CareSection care={care} details={details} context={context} />
+            </Fold>,
+            <Fold key="growing" grouped {...fold('growing', 'Growing', lines.growing)}>
+              <GrowingSection
+                care={care}
+                details={details}
+                unit={settings.data.temperatureUnit}
+                lows={lows}
+              />
+            </Fold>,
+            <Fold key="problems" grouped {...fold('problems', 'Problems', lines.problems)}>
+              <ProblemsSection details={details} />
+            </Fold>,
+          ]}
+        </FoldGroup>
+      </View>
+    ),
+  ].filter((child) => child != null);
+
+  // Over the photo the buttons are dark glass with white icons; once the bar is behind
+  // them they take the page's own colors.
+  const floatBg = pastCover ? theme.element : 'rgba(0,0,0,0.38)';
+  const floatInk = pastCover ? theme.text : '#FFFFFF';
+  const pastAt = coverHeight - insets.top - BAR_HEIGHT;
 
   return (
     <View style={styles.fill}>
-      <Stack.Screen
-        options={{
-          title: '',
-          headerRight: isArchived
-            ? undefined
-            : () => (
-                <IconButton
-                  icon="pencil-simple"
-                  label="Edit plant"
-                  onPress={() =>
-                    router.push({ pathname: '/plant/edit/[id]', params: { id: plant.id } })
-                  }
-                />
-              ),
-        }}
-      />
-      <Screen belowHeader>{children}</Screen>
+      <Screen
+        bleed
+        onScroll={(e) => {
+          const past = e.nativeEvent.contentOffset.y > pastAt;
+          if (past !== pastCover) setPastCover(past);
+        }}>
+        {children}
+      </Screen>
+      {pastCover && (
+        <Animated.View
+          entering={FadeIn.duration(180)}
+          exiting={FadeOut.duration(180)}
+          pointerEvents="none"
+          style={[
+            styles.bar,
+            {
+              height: insets.top + BAR_HEIGHT,
+              backgroundColor: theme.background,
+              borderBottomColor: theme.border,
+            },
+          ]}>
+          <ThemedText type="heading" numberOfLines={1} style={styles.barTitle}>
+            {name}
+          </ThemedText>
+        </Animated.View>
+      )}
+      <View style={[styles.floats, { top: insets.top + (BAR_HEIGHT - FLOAT_SIZE) / 2 }]}>
+        <FloatButton
+          icon="caret-left"
+          label="Back"
+          bg={floatBg}
+          ink={floatInk}
+          // Opened from a reminder there may be nothing behind it: go to Today then.
+          onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        />
+        <View style={styles.flex} />
+        {!isArchived && (
+          <FloatButton
+            icon="camera"
+            label="Add a photo"
+            bg={floatBg}
+            ink={floatInk}
+            onPress={() => addPlantPhoto(db, plant.id)}
+          />
+        )}
+        {!isArchived && (
+          <FloatButton
+            icon="pencil-simple"
+            label="Edit plant"
+            bg={floatBg}
+            ink={floatInk}
+            onPress={editPlant}
+          />
+        )}
+      </View>
       {undo && (
         <UndoBar
           key={undo.entryIds.join()}
@@ -455,6 +576,80 @@ export default function PlantScreen() {
         />
       )}
     </View>
+  );
+}
+
+/** The plant's own photo, the catalog's photo of its species, or its group's icon on a tint. */
+function Cover({
+  photo,
+  groupId,
+  speciesId,
+  width,
+  height,
+}: {
+  photo: Photo | null | undefined;
+  groupId: string;
+  speciesId: string | null;
+  width: number;
+  height: number;
+}) {
+  const theme = useTheme();
+  const size = { width, height };
+  if (photo) {
+    return (
+      <Image
+        cachePolicy="memory-disk"
+        source={{ uri: photoUri(photo.file) }}
+        style={[size, { backgroundColor: theme.element }]}
+        contentFit="cover"
+        transition={180}
+        accessible={false}
+      />
+    );
+  }
+  const fallback = catalogPhoto(speciesId);
+  if (fallback) {
+    return (
+      <Image
+        cachePolicy="memory-disk"
+        source={fallback.image}
+        style={[size, { backgroundColor: theme.element }]}
+        contentFit="cover"
+        transition={180}
+        accessible={false}
+      />
+    );
+  }
+  return (
+    <View style={[size, styles.coverEmpty, { backgroundColor: theme.tintSoft }]}>
+      <Icon name={getGroup(groupId).icon} size={Math.round(height * 0.32)} color={theme.tint} />
+    </View>
+  );
+}
+
+/** A round button floating over the cover photo. */
+function FloatButton({
+  icon,
+  label,
+  bg,
+  ink,
+  onPress,
+}: {
+  icon: IconName;
+  label: string;
+  bg: string;
+  ink: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      hitSlop={4}
+      onPress={onPress}
+      style={({ pressed }) => [styles.float, { backgroundColor: bg }, pressed && pressedStyle]}>
+      <Icon name={icon} size={22} color={ink} duotone={false} />
+    </Pressable>
   );
 }
 
@@ -621,31 +816,55 @@ function JournalRow({
 const styles = StyleSheet.create({
   fill: { flex: 1 },
   flex: { flex: 1 },
-  center: { textAlign: 'center' },
   italic: { fontStyle: 'italic' },
   gap: { gap: Spacing.three },
-  pressed: { opacity: 0.7 },
-  hero: { alignItems: 'center', gap: Spacing.three },
-  heroText: { alignItems: 'center', gap: Spacing.one },
-  cameraBadge: {
-    position: 'absolute',
-    right: -4,
-    bottom: -4,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
+  pressed: pressedStyle,
+  cover: {
+    marginHorizontal: -SCREEN_SIDE,
+    // The name sits on the faded bottom of the photo.
+    marginBottom: -Spacing.five - Spacing.two,
+    overflow: 'hidden',
   },
+  coverEmpty: { alignItems: 'center', justifyContent: 'center' },
+  nameBlock: { gap: Spacing.one },
+  chips: { marginTop: Spacing.two },
   roomChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    minHeight: 32,
     paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 14,
-    marginTop: Spacing.one,
+    borderRadius: 16,
   },
+  zone: { gap: Spacing.three, marginTop: Spacing.two },
+  bar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    justifyContent: 'flex-end',
+    borderBottomWidth: StyleSheet.hairlineWidth * 2,
+  },
+  barTitle: {
+    height: BAR_HEIGHT,
+    lineHeight: BAR_HEIGHT,
+    marginHorizontal: SCREEN_SIDE + FLOAT_SIZE + Spacing.three,
+  },
+  floats: {
+    position: 'absolute',
+    left: SCREEN_SIDE - Spacing.one,
+    right: SCREEN_SIDE - Spacing.one,
+    flexDirection: 'row',
+    gap: Spacing.two,
+  },
+  float: {
+    width: FLOAT_SIZE,
+    height: FLOAT_SIZE,
+    borderRadius: FLOAT_SIZE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  seeAll: { minHeight: 32, justifyContent: 'center' },
   actions: { flexDirection: 'row', justifyContent: 'space-around' },
   action: { alignItems: 'center', gap: 6, minWidth: 72 },
   actionIcon: {
@@ -665,14 +884,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  section: { gap: Spacing.three },
-  strip: { gap: Spacing.two + 2 },
+  // The strip runs to the screen edges and scrolls under them.
+  stripScroll: { marginHorizontal: -SCREEN_SIDE },
+  strip: { gap: Spacing.two + 2, paddingHorizontal: SCREEN_SIDE },
   thumb: { width: 112, height: 112, borderRadius: Radius.medium },
   thumbDate: { marginTop: 4 },
-  fact: { flexDirection: 'row', gap: Spacing.three, alignItems: 'flex-start' },
-  fit: { borderRadius: Radius.small, padding: Spacing.two + 2, marginLeft: 22 + Spacing.three },
-  tip: { flexDirection: 'row', gap: Spacing.three, alignItems: 'flex-start' },
-  bullet: { width: 6, height: 6, borderRadius: 3, marginTop: 9, marginLeft: 8 },
   journalRow: { flexDirection: 'row', gap: Spacing.three },
   journalIcon: {
     width: 34,

@@ -1,11 +1,11 @@
 import { useSQLiteContext } from 'expo-sqlite';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { Icon } from '@/components/icons/icon';
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
+import { PRESSED_OPACITY, Spacing } from '@/constants/theme';
 import { setHealth } from '@/db/garden';
 import { HEALTH, type HealthStatus } from '@/db/types';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
@@ -17,16 +17,19 @@ const ORDER: HealthStatus[] = ['thriving', 'fine', 'struggling', 'sick'];
 export function HealthChip({
   plantId,
   status,
+  leading,
 }: {
   plantId: string;
   status: HealthStatus | undefined;
+  /** Shown before the chip on the same line (the room); the choices open below both. */
+  leading?: ReactNode;
 }) {
   const db = useSQLiteContext();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const tone = (s: HealthStatus | undefined) =>
     s === 'struggling'
-      ? { color: theme.fertilize, background: theme.fertilizeSoft }
+      ? { color: theme.warning, background: theme.warningSoft }
       : s === 'sick'
         ? { color: theme.danger, background: theme.dangerSoft }
         : s
@@ -36,24 +39,27 @@ export function HealthChip({
 
   return (
     <View style={styles.wrap}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ expanded: open }}
-        accessibilityLabel={status ? `Health: ${HEALTH[status].label}. Change` : 'Set health'}
-        onPress={() => {
-          tapFeedback();
-          setOpen((o) => !o);
-        }}
-        style={({ pressed }) => [
-          styles.chip,
-          { backgroundColor: current.background },
-          pressed && styles.pressed,
-        ]}>
-        <Icon name={status ? HEALTH[status].icon : 'heart'} size={16} color={current.color} />
-        <ThemedText type="caption" style={{ color: current.color, fontWeight: 700 }}>
-          {status ? HEALTH[status].label : 'How is it doing?'}
-        </ThemedText>
-      </Pressable>
+      <View style={styles.line}>
+        {leading}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: open }}
+          accessibilityLabel={status ? `Health: ${HEALTH[status].label}. Change` : 'Set health'}
+          onPress={() => {
+            tapFeedback();
+            setOpen((o) => !o);
+          }}
+          style={({ pressed }) => [
+            styles.chip,
+            { backgroundColor: current.background },
+            pressed && styles.pressed,
+          ]}>
+          <Icon name={status ? HEALTH[status].icon : 'heart'} size={16} color={current.color} />
+          <ThemedText type="caption" style={{ color: current.color, fontWeight: 700 }}>
+            {status ? HEALTH[status].label : 'How is it doing?'}
+          </ThemedText>
+        </Pressable>
+      </View>
       {open && (
         <Animated.View
           entering={FadeIn.duration(160)}
@@ -94,16 +100,17 @@ export function HealthChip({
 }
 
 const styles = StyleSheet.create({
-  wrap: { alignItems: 'center', gap: Spacing.two },
+  wrap: { alignItems: 'flex-start', gap: Spacing.two },
+  line: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: Spacing.two },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    minHeight: 32,
     paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 14,
+    borderRadius: 16,
   },
-  choices: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: Spacing.two },
+  choices: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
   choice: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -113,5 +120,5 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1.5,
   },
-  pressed: { opacity: 0.7 },
+  pressed: { opacity: PRESSED_OPACITY },
 });

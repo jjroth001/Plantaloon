@@ -7,24 +7,48 @@ import { FlexWidget, SvgWidget, TextWidget } from 'react-native-android-widget';
 
 import type { IconName } from '@/components/icons/icon';
 import { PHOSPHOR } from '@/components/icons/phosphor-paths';
+import { makePalette } from '@/constants/theme';
 
-import type { WidgetModel, WidgetRow } from './widget-model';
+import type { WidgetLook, WidgetModel, WidgetRow } from './widget-model';
 
 /** Tapping "Watered" on the widget. */
 export const WATER_ACTION = 'WATER_ALL';
 
-// A calm deep green that reads on any wallpaper. Widget colours are #RRGGBB or rgba().
-const BG = '#1C2A21';
-const TEXT = '#E8EDE9';
-const MUTED = '#A6B4AA';
-const ACCENT = '#86C99A';
-const ON_ACCENT = '#0F2A19';
-const ROW = 'rgba(255, 255, 255, 0.07)';
 const RADIUS = 24;
+
+/**
+ * The title font, built into installed builds (assets/fonts) by the expo-font plugin in
+ * app.json. If it's ever missing, Android falls back to the phone's font.
+ */
+const TITLE_FONT = 'Fredoka_600SemiBold';
 
 /** The default 4×2 widget on a typical phone, in dp; text scales from this. */
 const BASE_WIDTH = 330;
 const BASE_HEIGHT = 170;
+
+/** Widget colours must be #RRGGBB or "rgba(r, g, b, a)" with spaces, as the library expects. */
+type WidgetColor = `#${string}` | `rgba(${number}, ${number}, ${number}, ${number})`;
+function widgetColor(color: string): WidgetColor {
+  if (color.startsWith('#')) return color as WidgetColor;
+  return color.replace(/\s/g, '').replace(/,/g, ', ') as WidgetColor;
+}
+
+/** The app's own colors for this look, in the widget's format. */
+function colorsFor(look: WidgetLook) {
+  const p = makePalette(look.dark, look.accent);
+  return {
+    bg: widgetColor(p.card),
+    text: widgetColor(p.text),
+    muted: widgetColor(p.textSecondary),
+    accent: widgetColor(p.tint),
+    onAccent: widgetColor(p.onTint),
+    row: widgetColor(p.element),
+    water: widgetColor(p.water),
+    fertilize: widgetColor(p.fertilize),
+  };
+}
+
+type Colors = ReturnType<typeof colorsFor>;
 
 function textScale(width?: number, height?: number): number {
   if (!width || !height) return 1;
@@ -42,13 +66,15 @@ function iconSvg(name: IconName, color: string, size: number): string {
   );
 }
 
-type Props = { model: WidgetModel; width?: number; height?: number };
+type Props = { model: WidgetModel; look: WidgetLook; width?: number; height?: number };
 
 /**
  * Home-screen widget: what the plants need today, or "All caught up". Tapping it opens the
  * app; "Watered" marks everything that needs water as done. Only loaded in installed builds.
+ * It wears the app's colors: light or dark as set in Settings, with the chosen accent.
  */
-export function PlantaloonWidget({ model, width, height }: Props) {
+export function PlantaloonWidget({ model, look, width, height }: Props) {
+  const c = colorsFor(look);
   const s = textScale(width, height);
   const size = (base: number) => Math.round(base * s);
   const ready = model.kind === 'ready' ? model : null;
@@ -61,7 +87,7 @@ export function PlantaloonWidget({ model, width, height }: Props) {
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: BG,
+        backgroundColor: c.bg,
         borderRadius: RADIUS,
         paddingHorizontal: size(14),
         paddingVertical: size(12),
@@ -69,12 +95,12 @@ export function PlantaloonWidget({ model, width, height }: Props) {
       }}>
       <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', width: 'match_parent' }}>
         <SvgWidget
-          svg={iconSvg('potted-plant', ACCENT, size(20))}
+          svg={iconSvg('potted-plant', c.accent, size(20))}
           style={{ width: size(20), height: size(20) }}
         />
         <TextWidget
           text={due ? '  Today' : '  Plantaloon'}
-          style={{ fontSize: size(17), fontWeight: '600', color: TEXT }}
+          style={{ fontSize: size(18), fontFamily: TITLE_FONT, color: c.text }}
           maxLines={1}
         />
       </FlexWidget>
@@ -89,23 +115,23 @@ export function PlantaloonWidget({ model, width, height }: Props) {
         {!ready ? (
           <TextWidget
             text="Add a plant to see its care here"
-            style={{ fontSize: size(14), color: MUTED }}
+            style={{ fontSize: size(14), color: c.muted }}
           />
         ) : due === 0 ? (
           <FlexWidget style={{ flexDirection: 'row', alignItems: 'center' }}>
             <SvgWidget
-              svg={iconSvg('check-circle', ACCENT, size(22))}
+              svg={iconSvg('check-circle', c.accent, size(22))}
               style={{ width: size(22), height: size(22) }}
             />
             <FlexWidget style={{ flexDirection: 'column' }}>
               <TextWidget
                 text="  All caught up"
-                style={{ fontSize: size(16), fontWeight: '600', color: TEXT }}
+                style={{ fontSize: size(16), fontWeight: '600', color: c.text }}
               />
               {ready.next ? (
                 <TextWidget
                   text={`  Next: ${ready.next.toLowerCase()}`}
-                  style={{ fontSize: size(13), color: MUTED }}
+                  style={{ fontSize: size(13), color: c.muted }}
                 />
               ) : null}
             </FlexWidget>
@@ -113,12 +139,12 @@ export function PlantaloonWidget({ model, width, height }: Props) {
         ) : (
           <FlexWidget style={{ width: 'match_parent', flexDirection: 'column' }}>
             {ready.rows.map((row) => (
-              <Row key={row.key} row={row} size={size} />
+              <Row key={row.key} row={row} colors={c} size={size} />
             ))}
             {ready.more > 0 ? (
               <TextWidget
                 text={`+ ${ready.more} more`}
-                style={{ fontSize: size(12), color: MUTED }}
+                style={{ fontSize: size(12), color: c.muted }}
               />
             ) : null}
           </FlexWidget>
@@ -135,16 +161,16 @@ export function PlantaloonWidget({ model, width, height }: Props) {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: ACCENT,
+            backgroundColor: c.accent,
             borderRadius: size(18),
           }}>
           <SvgWidget
-            svg={iconSvg('drop', ON_ACCENT, size(16))}
+            svg={iconSvg('drop', c.onAccent, size(16))}
             style={{ width: size(16), height: size(16) }}
           />
           <TextWidget
             text={ready.waterDue === 1 ? '  Watered' : `  Watered all ${ready.waterDue}`}
-            style={{ fontSize: size(14), fontWeight: '600', color: ON_ACCENT }}
+            style={{ fontSize: size(14), fontWeight: '600', color: c.onAccent }}
             maxLines={1}
           />
         </FlexWidget>
@@ -153,33 +179,42 @@ export function PlantaloonWidget({ model, width, height }: Props) {
   );
 }
 
-/** One thing to do: the task's icon, the plant, then the task. */
-function Row({ row, size }: { row: WidgetRow; size: (base: number) => number }) {
+/** One thing to do: the task's icon, the plant, then the task, in the task's color. */
+function Row({
+  row,
+  colors: c,
+  size,
+}: {
+  row: WidgetRow;
+  colors: Colors;
+  size: (base: number) => number;
+}) {
+  const tone = row.tone === 'water' ? c.water : row.tone === 'fertilize' ? c.fertilize : c.accent;
   return (
     <FlexWidget
       style={{
         width: 'match_parent',
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: ROW,
+        backgroundColor: c.row,
         borderRadius: size(12),
         paddingHorizontal: size(10),
         paddingVertical: size(4),
         marginBottom: size(4),
       }}>
       <SvgWidget
-        svg={iconSvg(row.icon, ACCENT, size(16))}
+        svg={iconSvg(row.icon, tone, size(16))}
         style={{ width: size(16), height: size(16) }}
       />
       <TextWidget
         text={`  ${row.name}`}
-        style={{ fontSize: size(14), fontWeight: '600', color: TEXT }}
+        style={{ fontSize: size(14), fontWeight: '600', color: c.text }}
         maxLines={1}
         truncate="END"
       />
       <TextWidget
         text={`  ${row.task}`}
-        style={{ fontSize: size(12), color: MUTED }}
+        style={{ fontSize: size(12), fontWeight: '600', color: tone }}
         maxLines={1}
       />
     </FlexWidget>
@@ -187,19 +222,20 @@ function Row({ row, size }: { row: WidgetRow; size: (base: number) => number }) 
 }
 
 /** Shown if drawing the real widget fails, so it's never just blank. */
-export function FallbackWidget() {
+export function FallbackWidget({ look }: { look?: WidgetLook }) {
+  const c = colorsFor(look ?? { dark: false, accent: 'leaf' });
   return (
     <FlexWidget
       clickAction="OPEN_APP"
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: BG,
+        backgroundColor: c.bg,
         borderRadius: RADIUS,
         padding: 16,
         justifyContent: 'center',
       }}>
-      <TextWidget text="Tap to open Plantaloon" style={{ fontSize: 16, color: ACCENT }} />
+      <TextWidget text="Tap to open Plantaloon" style={{ fontSize: 16, color: c.accent }} />
     </FlexWidget>
   );
 }

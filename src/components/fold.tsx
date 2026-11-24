@@ -12,7 +12,7 @@ import Animated, {
 
 import { Icon } from '@/components/icons/icon';
 import { ThemedText } from '@/components/themed-text';
-import { Card, InsideCard } from '@/components/ui';
+import { Card, Divider, InsideCard, pressedStyle } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { tapFeedback } from '@/lib/haptics';
 import { useTheme } from '@/theme/theme-provider';
@@ -29,14 +29,17 @@ export function Fold({
   open,
   onToggle,
   alert,
+  grouped = false,
   children,
 }: {
   title: string;
   summary: string;
-  /** The summary is a warning (shown in red with an icon), so it's seen while closed. */
+  /** The summary is a warning (shown in the warning color with an icon), so it's seen while closed. */
   alert?: boolean;
   open: boolean;
   onToggle: () => void;
+  /** A row inside a FoldGroup's card, rather than a card of its own. */
+  grouped?: boolean;
   children: ReactNode;
 }) {
   const theme = useTheme();
@@ -50,9 +53,10 @@ export function Fold({
     transform: [{ rotate: `${turn.value * 180}deg` }],
   }));
 
+  const Box = grouped ? View : Card;
   return (
     <Animated.View layout={LinearTransition.duration(220).easing(EASE)}>
-      <Card>
+      <Box style={grouped ? styles.grouped : undefined}>
         <Pressable
           accessibilityRole="button"
           accessibilityState={{ expanded: open }}
@@ -61,17 +65,21 @@ export function Fold({
             tapFeedback();
             onToggle();
           }}
-          style={({ pressed }) => [styles.header, pressed && { opacity: 0.7 }]}>
+          style={({ pressed }) => [
+            styles.header,
+            grouped && styles.groupedHeader,
+            pressed && pressedStyle,
+          ]}>
           <View style={styles.flex}>
             <ThemedText type="subheading">{title}</ThemedText>
             {!open &&
               (alert ? (
                 <View style={styles.alert}>
-                  <Icon name="warning" size={16} color={theme.danger} />
+                  <Icon name="warning" size={16} color={theme.warning} />
                   <ThemedText
                     type="caption"
                     numberOfLines={1}
-                    style={[styles.flex, { color: theme.danger }]}>
+                    style={[styles.flex, { color: theme.warning }]}>
                     {summary}
                   </ThemedText>
                 </View>
@@ -93,6 +101,23 @@ export function Fold({
             <InsideCard.Provider value={true}>{children}</InsideCard.Provider>
           </Animated.View>
         )}
+      </Box>
+    </Animated.View>
+  );
+}
+
+/** Several folds sharing one card, as rows with dividers between them. */
+export function FoldGroup({ children }: { children: ReactNode[] }) {
+  const rows = children.filter((c) => c != null && c !== false);
+  return (
+    <Animated.View layout={LinearTransition.duration(220).easing(EASE)}>
+      <Card style={styles.group}>
+        {rows.map((row, i) => (
+          <View key={i}>
+            {i > 0 && <Divider />}
+            {row}
+          </View>
+        ))}
       </Card>
     </Animated.View>
   );
@@ -102,5 +127,8 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   body: { gap: Spacing.four },
+  group: { gap: 0, paddingVertical: Spacing.one },
+  grouped: { gap: Spacing.three, paddingBottom: Spacing.two },
+  groupedHeader: { minHeight: 60, paddingVertical: Spacing.two },
   alert: { flexDirection: 'row', alignItems: 'center', gap: Spacing.one },
 });

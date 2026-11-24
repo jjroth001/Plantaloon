@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-import { loadWidgetModel } from '@/widget/load-widget-model';
+import { loadWidgetLook, loadWidgetModel } from '@/widget/load-widget-model';
 import { redrawWidgets } from '@/widget/refresh';
 
 import { rescheduleReminders, waterEverythingDue } from './care-actions';
@@ -36,7 +36,7 @@ export async function handleNotificationAction(
     await dismissNotification(notification.request.identifier).catch(() => {});
     await waterEverythingDue(db);
     await rescheduleReminders(db).catch(() => {});
-    await redrawWidgets(await loadWidgetModel(db)).catch(() => {});
+    await redrawWidgets(await loadWidgetModel(db), await loadWidgetLook(db)).catch(() => {});
   } else if (action === ACTION.later) {
     await dismissNotification(notification.request.identifier).catch(() => {});
     await remindLater(notification.request.content);

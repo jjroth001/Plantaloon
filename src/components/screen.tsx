@@ -14,6 +14,8 @@ type ScreenProps = {
   titleAccessory?: ReactNode;
   /** The screen has a navigation header, which already covers the status bar. */
   belowHeader?: boolean;
+  /** Content starts at the very top, under the status bar (a full-width cover photo). */
+  bleed?: boolean;
   /** Pinned under the scrolling content (e.g. a Save button). */
   footer?: ReactNode;
   ref?: Ref<ScrollView>;
@@ -29,6 +31,7 @@ export function Screen({
   title,
   titleAccessory,
   belowHeader = false,
+  bleed = false,
   footer,
   ref,
   onScroll,
@@ -50,7 +53,7 @@ export function Screen({
         contentContainerStyle={[
           styles.content,
           {
-            paddingTop: (belowHeader ? 0 : insets.top) + Spacing.three,
+            paddingTop: bleed ? 0 : (belowHeader ? 0 : insets.top) + Spacing.three,
             paddingBottom: (footer ? 0 : insets.bottom) + Spacing.five,
           },
         ]}>
@@ -81,10 +84,13 @@ export function Screen({
   );
 }
 
+/** The side margin of every screen; full-width pieces pull out by this much. */
+export const SCREEN_SIDE = Spacing.three + Spacing.one;
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: {
-    paddingHorizontal: Spacing.three + Spacing.one,
+    paddingHorizontal: SCREEN_SIDE,
     gap: Spacing.four,
   },
   titleRow: {
@@ -96,9 +102,9 @@ const styles = StyleSheet.create({
   },
   title: { flexShrink: 1 },
   footer: {
-    paddingHorizontal: Spacing.three + Spacing.one,
+    paddingHorizontal: SCREEN_SIDE,
     paddingTop: Spacing.three,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopWidth: StyleSheet.hairlineWidth * 2,
     gap: Spacing.two,
   },
 });

@@ -6,6 +6,7 @@ import { catalogPhoto } from '@/catalog/media';
 import { Icon } from '@/components/icons/icon';
 import { ThemedText } from '@/components/themed-text';
 import { useTheme } from '@/theme/theme-provider';
+import { pressedStyle } from '@/components/ui';
 
 /** A catalog plant's Wikimedia Commons photo, or its group icon when there's none. */
 export function CatalogImage({
@@ -57,7 +58,7 @@ export function PhotoCredit({ speciesId }: { speciesId: string | null | undefine
     <Pressable
       accessibilityRole="link"
       onPress={() => Linking.openURL(photo.page)}
-      style={({ pressed }) => [styles.credit, pressed && { opacity: 0.6 }]}>
+      style={({ pressed }) => [styles.credit, pressed && pressedStyle]}>
       <ThemedText type="caption" color="textSecondary" numberOfLines={2} style={styles.center}>
         {photo.ofSpecies ? 'Photo of the species. ' : ''}Photo: {photo.author}, {photo.licence} ·
         Wikimedia Commons

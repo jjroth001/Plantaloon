@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Icon } from '@/components/icons/icon';
-import { IconButton } from '@/components/ui';
+import { IconButton, pressedStyle } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { deletePhoto, getPlant, listPhotos, updatePlant } from '@/db/garden';
 import { useDbQuery } from '@/db/use-db-query';
@@ -128,7 +128,7 @@ export default function PlantPhotos() {
               await updatePlant(db, id, { coverPhotoId: shown.id });
               successFeedback();
             }}
-            style={({ pressed }) => [styles.pill, pressed && { opacity: 0.7 }]}>
+            style={({ pressed }) => [styles.pill, pressed && pressedStyle]}>
             <Icon name={isCover ? 'check' : 'image'} size={18} color={INK} />
             <ThemedText type="label" style={{ color: INK }}>
               {isCover ? 'Cover photo' : 'Use as cover photo'}

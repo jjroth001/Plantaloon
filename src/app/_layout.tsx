@@ -1,3 +1,6 @@
+import { Fredoka_500Medium } from '@expo-google-fonts/fredoka/500Medium';
+import { Fredoka_600SemiBold } from '@expo-google-fonts/fredoka/600SemiBold';
+import { useFonts } from '@expo-google-fonts/fredoka/useFonts';
 import {
   DarkTheme,
   DefaultTheme,
@@ -12,6 +15,7 @@ import { Suspense, useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { ReminderSync } from '@/components/reminder-sync';
+import { DISPLAY } from '@/components/themed-text';
 import { WidgetSync } from '@/widget/widget-sync';
 import { migrateDbIfNeeded } from '@/db/migrations';
 import { clearBackupCopies } from '@/lib/data-transfer';
@@ -50,7 +54,10 @@ const sheet = {
 function RootNavigator() {
   const theme = useTheme();
   const settings = useSettings();
-  const ready = settings.status !== 'loading';
+  // Installed builds have the title font built in; this loads it in Expo Go (and is
+  // instant otherwise). If it fails, text falls back to the phone's font.
+  const [fontsLoaded, fontError] = useFonts({ Fredoka_500Medium, Fredoka_600SemiBold });
+  const ready = settings.status !== 'loading' && (fontsLoaded || fontError != null);
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
@@ -96,12 +103,12 @@ function RootNavigator() {
           headerStyle: { backgroundColor: theme.background },
           headerShadowVisible: false,
           headerTintColor: theme.text,
-          headerTitleStyle: { fontWeight: '600' },
+          headerTitleStyle: { fontFamily: DISPLAY.semibold },
           animation: 'slide_from_right',
         }}>
         <Stack.Protected guard={onboarded}>
           <Stack.Screen name="(tabs)" options={{ animation: 'fade' }} />
-          <Stack.Screen name="plant/[id]" options={{ headerShown: true, title: '' }} />
+          <Stack.Screen name="plant/[id]" options={{ headerShown: false }} />
           <Stack.Screen name="plant/edit/[id]" options={{ ...sheet, title: 'Edit plant' }} />
           <Stack.Screen
             name="plant/cutting/[id]"

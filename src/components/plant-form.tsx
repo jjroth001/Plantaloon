@@ -18,7 +18,7 @@ import {
   SwitchRow,
   TextField,
 } from '@/components/ui';
-import { Spacing } from '@/constants/theme';
+import { Radius, Spacing } from '@/constants/theme';
 import { newCustomTask } from '@/db/garden';
 import { displayName } from '@/catalog';
 import { POT_MATERIAL, type Plant, type PotMaterial, type Room, type Task } from '@/db/types';
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
   diameterInput: {
     width: 72,
     minHeight: 44,
-    borderRadius: 12,
+    borderRadius: Radius.medium,
     paddingHorizontal: Spacing.two,
     fontSize: 17,
     textAlign: 'center',

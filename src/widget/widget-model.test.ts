@@ -8,7 +8,7 @@ import { planReminders } from '@/lib/reminders';
 import { buildTasks } from '@/lib/care-tasks';
 import { openTestDatabase } from '@/test-utils/node-sqlite';
 
-import { buildWidgetModel } from './widget-model';
+import { buildWidgetModel, widgetLook } from './widget-model';
 
 jest.mock('expo-crypto', () => ({ randomUUID: () => mockRandomUUID() }));
 
@@ -76,4 +76,24 @@ test('"Watered" waters only the plants that need it, and the reminder offers it 
   const plans = planReminders(tasks, today(), 9 * 60 + 30, T0);
   expect(plans.length).toBeGreaterThan(0);
   expect(plans.every((p) => p.water === p.body.includes('Water:'))).toBe(true);
+});
+
+test('the widget wears the app theme: set light or dark, or the phone mode for system', () => {
+  expect(widgetLook({ themeMode: 'light', accent: 'plum' }, true)).toEqual({
+    dark: false,
+    accent: 'plum',
+  });
+  expect(widgetLook({ themeMode: 'dark', accent: 'leaf' }, false)).toEqual({
+    dark: true,
+    accent: 'leaf',
+  });
+  expect(widgetLook({ themeMode: 'system', accent: 'teal' }, true).dark).toBe(true);
+  expect(widgetLook({ themeMode: 'system', accent: 'teal' }, false).dark).toBe(false);
+});
+
+test('widget rows say which kind of task they are, for their color', async () => {
+  const { db, roomId } = await setup();
+  await createPlant(db, plant(roomId, 'Fay'), T0);
+  const model = buildWidgetModel(await loadGarden(db), await getSettings(db), today());
+  expect(model.kind === 'ready' && model.rows.map((r) => r.tone)).toContain('water');
 });

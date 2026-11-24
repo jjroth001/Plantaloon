@@ -70,6 +70,7 @@ Pet safety comes from the ASPCA's lists where they cover a plant, and is otherwi
 - **Climate:** [NASA POWER](https://power.larc.nasa.gov) monthly temperatures, on a 1° grid.
 - **Plant scanner:** [BioCLIP](https://imageomics.github.io/bioclip/) (MIT), with example photos from openly licensed [iNaturalist](https://www.inaturalist.org) observations. Details in the [scanner repository](https://github.com/jjroth001/plantaloon-scanner).
 - **Icons:** [Phosphor Icons](https://phosphoricons.com) (MIT).
+- **Title font:** [Fredoka](https://fonts.google.com/specimen/Fredoka) by the Fredoka Project Authors (SIL Open Font License 1.1).
 - Built with [Expo](https://expo.dev) and React Native.
 
 Plantaloon is an independent project, not affiliated with or endorsed by Planta, the ASPCA or any other plant-care app or organisation.

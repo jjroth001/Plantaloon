@@ -44,6 +44,12 @@ const SOURCES = [
     detail: 'Icons. MIT licence.',
     url: 'https://phosphoricons.com',
   },
+  {
+    title: 'Fredoka',
+    detail:
+      'The font for titles and plant names, by the Fredoka Project Authors. SIL Open Font License.',
+    url: 'https://fonts.google.com/specimen/Fredoka',
+  },
 ] as const;
 
 export default function AboutScreen() {

@@ -109,6 +109,8 @@ export function Button({
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ disabled: !!disabled, busy }}
+      // Small buttons are 40dp tall; the touch area reaches 48.
+      hitSlop={size === 'small' ? 4 : undefined}
       disabled={disabled || busy}
       style={({ pressed }) => [
         size === 'large' ? styles.button : styles.buttonSmall,
@@ -192,6 +194,7 @@ export function Chip({
     <Pressable
       accessibilityRole="checkbox"
       accessibilityState={{ checked: selected }}
+      hitSlop={4}
       onPress={() => {
         tapFeedback();
         onPress();
@@ -231,6 +234,7 @@ export function Segmented<T extends string>({
             key={option.value}
             accessibilityRole="radio"
             accessibilityState={{ selected }}
+            hitSlop={{ top: 4, bottom: 4 }}
             onPress={() => {
               if (!selected) tapFeedback();
               onChange(option.value);

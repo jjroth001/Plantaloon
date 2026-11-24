@@ -40,11 +40,11 @@ export function UndoBar({
       </ThemedText>
       <Pressable
         accessibilityRole="button"
-        hitSlop={8}
+        hitSlop={14}
         onPress={onUndo}
         style={({ pressed }) => [styles.undo, pressed && pressedStyle]}>
         <ThemedText type="label" style={{ color: theme.background }}>
-          UNDO
+          Undo
         </ThemedText>
       </Pressable>
     </Animated.View>

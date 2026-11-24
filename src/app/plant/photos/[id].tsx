@@ -124,6 +124,7 @@ export default function PlantPhotos() {
           <Pressable
             accessibilityRole="button"
             disabled={isCover}
+            hitSlop={4}
             onPress={async () => {
               await updatePlant(db, id, { coverPhotoId: shown.id });
               successFeedback();

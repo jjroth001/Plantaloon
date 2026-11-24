@@ -5,6 +5,7 @@ import { Alert, Pressable, StyleSheet, View } from 'react-native';
 
 import { Icon } from '@/components/icons/icon';
 import { Screen } from '@/components/screen';
+import { SensitivityField } from '@/components/sensitivity-field';
 import { ThemedText } from '@/components/themed-text';
 import {
   Card,
@@ -218,6 +219,22 @@ export default function SettingsScreen() {
       </View>
 
       <View style={styles.section}>
+        <SectionTitle>Light meter</SectionTitle>
+        <Card>
+          <Field label="Sensor sensitivity">
+            <SensitivityField
+              value={s.lightCalibration}
+              onChange={(v) => setSetting(db, 'lightCalibration', v)}
+            />
+          </Field>
+          <ThemedText type="caption" color="textSecondary">
+            If a bright window reads dim on the light meter, turn this up; if a dim corner reads
+            bright, turn it down.
+          </ThemedText>
+        </Card>
+      </View>
+
+      <View style={styles.section}>
         <SectionTitle>Your area</SectionTitle>
         <Card>
           {s.climatePlace ? (
@@ -228,7 +245,7 @@ export default function SettingsScreen() {
               right={
                 <Pressable
                   accessibilityRole="button"
-                  hitSlop={8}
+                  hitSlop={14}
                   onPress={() => setSetting(db, 'climatePlace', null)}>
                   <ThemedText type="label" color="danger">
                     Forget
@@ -296,7 +313,7 @@ export default function SettingsScreen() {
                 right={
                   <Pressable
                     accessibilityRole="button"
-                    hitSlop={8}
+                    hitSlop={14}
                     onPress={() =>
                       Alert.alert('Remove the plant scanner?', `Frees ${scanModelMb()} MB.`, [
                         { text: 'Cancel', style: 'cancel' },

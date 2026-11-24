@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   shortcuts: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two, marginTop: -Spacing.two },
   italic: { fontStyle: 'italic' },
   room: { gap: Spacing.three },
-  roomHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, minHeight: 36 },
+  roomHeader: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two, minHeight: 48 },
   badge: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -125,6 +125,7 @@ export function TaskRow({
               <Pressable
                 key={choice.days}
                 accessibilityRole="button"
+                hitSlop={2}
                 onPress={() => {
                   setChoosing(false);
                   onSkip(task, choice.days);

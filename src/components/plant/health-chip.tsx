@@ -43,6 +43,7 @@ export function HealthChip({
         {leading}
         <Pressable
           accessibilityRole="button"
+          hitSlop={8}
           accessibilityState={{ expanded: open }}
           accessibilityLabel={status ? `Health: ${HEALTH[status].label}. Change` : 'Set health'}
           onPress={() => {
@@ -71,6 +72,7 @@ export function HealthChip({
               <Pressable
                 key={s}
                 accessibilityRole="button"
+                hitSlop={6}
                 onPress={async () => {
                   setOpen(false);
                   if (s !== status) {

@@ -28,9 +28,26 @@ export type ThemedTextProps = TextProps & {
   color?: ThemeColor;
 };
 
+/**
+ * How far each style may grow with the phone's text size. Big titles are already large, so
+ * they stop sooner and don't push buttons off the screen; reading text grows freely.
+ */
+const MAX_SCALE: Partial<Record<NonNullable<ThemedTextProps['type']>, number>> = {
+  title: 1.3,
+  heading: 1.4,
+  section: 1.5,
+  name: 1.6,
+};
+
 export function ThemedText({ style, type = 'default', color = 'text', ...rest }: ThemedTextProps) {
   const theme = useTheme();
-  return <Text style={[{ color: theme[color] }, styles[type], style]} {...rest} />;
+  return (
+    <Text
+      maxFontSizeMultiplier={MAX_SCALE[type]}
+      style={[{ color: theme[color] }, styles[type], style]}
+      {...rest}
+    />
+  );
 }
 
 const styles = StyleSheet.create({

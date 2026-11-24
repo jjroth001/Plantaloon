@@ -8,21 +8,13 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { careFor, displayName } from '@/catalog';
 import { Icon } from '@/components/icons/icon';
 import { LightDial } from '@/components/light-dial';
+import { sensitivityLabel } from '@/components/sensitivity-field';
 import { PlantAvatar } from '@/components/plant-avatar';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import {
-  Button,
-  Card,
-  Chip,
-  Divider,
-  EmptyState,
-  pressedStyle,
-  SectionTitle,
-} from '@/components/ui';
+import { Button, Card, Divider, EmptyState, pressedStyle, SectionTitle } from '@/components/ui';
 import { Spacing } from '@/constants/theme';
 import { setPlantLight, setRoomLight } from '@/db/garden';
-import { setSetting } from '@/db/settings';
 import { useSettings } from '@/db/use-settings';
 import { useGarden } from '@/hooks/use-garden';
 import { successFeedback, tapFeedback } from '@/lib/haptics';
@@ -38,9 +30,6 @@ import {
 import { useTheme } from '@/theme/theme-provider';
 
 type SensorState = 'checking' | 'ready' | 'missing';
-
-/** Multipliers for the phone's light sensor (100% = as it reads). */
-const CALIBRATIONS = [0.5, 0.75, 1, 1.5, 2, 3, 4];
 
 const FIT_TEXT: Record<LightFit, string> = {
   ideal: 'Just right',
@@ -155,24 +144,19 @@ export default function LightScreen() {
         </View>
       </Card>
 
-      <View style={styles.section}>
-        <SectionTitle>Sensor sensitivity</SectionTitle>
-        <View style={styles.chips}>
-          {CALIBRATIONS.map((c) => (
-            <Chip
-              key={c}
-              label={`${Math.round(c * 100)}%`}
-              selected={Math.abs(calibration - c) < 0.001}
-              onPress={() => setSetting(db, 'lightCalibration', c)}
-            />
-          ))}
-        </View>
-        <ThemedText type="caption" color="textSecondary">
-          Phone light sensors vary, and many sit under the screen and read low. If a bright window
-          reads dim, turn this up; if a dim corner reads bright, turn it down. If you can, compare
-          with a light meter or another phone.
+      {/* The sensitivity setting lives in Settings; this is the way there. */}
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.navigate('/settings')}
+        style={({ pressed }) => [styles.adjust, pressed && pressedStyle]}>
+        <ThemedText type="body" color="textSecondary" style={styles.flex}>
+          Readings look off? Sensor sensitivity:{' '}
+          <ThemedText type="label" color="tint">
+            {sensitivityLabel(calibration)}
+          </ThemedText>
         </ThemedText>
-      </View>
+        <Icon name="caret-right" size={18} color={theme.textSecondary} duotone={false} />
+      </Pressable>
 
       {tier && tier !== 'too_dark' && rooms.length > 0 && (
         <Animated.View entering={FadeIn.duration(200)} style={styles.section}>
@@ -306,7 +290,14 @@ const styles = StyleSheet.create({
   reading: { alignItems: 'center', gap: Spacing.one },
   tip: { flexDirection: 'row', gap: Spacing.three, alignItems: 'flex-start' },
   section: { gap: Spacing.three },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.two },
+  adjust: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    minHeight: 48,
+    marginTop: -Spacing.two,
+    paddingHorizontal: Spacing.one,
+  },
   row: { flexDirection: 'row', alignItems: 'center', gap: Spacing.three },
   pin: { padding: Spacing.two },
   fit: {

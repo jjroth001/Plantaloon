@@ -198,7 +198,7 @@ export default function RoomScreen() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Clear the light"
-              hitSlop={8}
+              hitSlop={14}
               onPress={() => set({ lightTier: null })}
               style={({ pressed }) => pressed && pressedStyle}>
               <ThemedText type="caption" style={{ color: theme.tint }}>

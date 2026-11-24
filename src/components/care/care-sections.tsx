@@ -125,6 +125,7 @@ export function SectionTabs({
               accessibilityRole="tab"
               accessibilityState={{ selected }}
               onPress={() => onPress(name)}
+              hitSlop={4}
               style={[styles.tab, { backgroundColor: selected ? theme.tint : theme.element }]}>
               <ThemedText type="label" style={{ color: selected ? theme.onTint : theme.text }}>
                 {SECTION_LABEL[name]}
@@ -232,6 +233,7 @@ function Chips({
           <Pressable
             key={item.key}
             disabled={!onPress}
+            hitSlop={8}
             accessibilityRole={onPress ? 'button' : 'text'}
             onPress={() => onPress?.(item.key)}
             style={({ pressed }) => [

@@ -71,7 +71,7 @@ export function SpotFields({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`Use ${room.name}'s light`}
-            hitSlop={8}
+            hitSlop={14}
             onPress={() => set({ light: null, lux: null })}
             style={({ pressed }) => pressed && pressedStyle}>
             <ThemedText type="caption" style={{ color: theme.tint }}>
@@ -207,7 +207,7 @@ function UseRoom({ text, onPress }: { text: string; onPress: () => void }) {
       </ThemedText>
       <Pressable
         accessibilityRole="button"
-        hitSlop={8}
+        hitSlop={14}
         onPress={onPress}
         style={({ pressed }) => pressed && pressedStyle}>
         <ThemedText type="caption" style={{ color: theme.tint }}>
